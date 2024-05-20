@@ -1,35 +1,36 @@
-import { DOUBLE, STRING } from "sequelize";
+import { DataTypes } from 'sequelize';
+import sequelize from '../server';
 
 const FoodEstablishment = sequelize.define("foodEstablishments", {
     id: {
-        type: STRING,
+        type: DataTypes.STRING,
         primaryKey: true,
         allowNull: false,
     },
     
     type: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     
     name: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     
     price: {
-        type: DOUBLE,
+        type: DataTypes.DOUBLE,
         allowNull: false,
     },
     
     avgRating: {
-        type: DOUBLE,
+        type: DataTypes.DOUBLE,
         allowNull: false,
     },
 
     // owner
     userId: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: "users",
@@ -38,4 +39,4 @@ const FoodEstablishment = sequelize.define("foodEstablishments", {
     }
 });
 
-module.exports = FoodEstablishment;
+export default FoodEstablishment;

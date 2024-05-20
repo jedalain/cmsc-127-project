@@ -1,45 +1,46 @@
-import { DATE, INTEGER, STRING } from "sequelize";
+import { DataTypes } from "sequelize";
+import sequelize from "../server";
 
 const Review = sequelize.define("reviews", {
     id: {
-        type: STRING,
+        type: DataTypes.STRING,
         primaryKey: true,
         allowNull: false,
     },
     
     type: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     
     rating: {
-        type: INTEGER,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     
     title: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     
     comment: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     
     dateCreated: {
-        type: DATE,
+        type: DataTypes.DATE,
         allowNull: false,
     },
     
     dateModified: {
-        type: DATE,
+        type: DataTypes.DATE,
         allowNull: false,
     },
 
     // owner
     userId: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: "users",
@@ -49,7 +50,7 @@ const Review = sequelize.define("reviews", {
 
     // food item review
     foodItemId: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: 'foodItems',
@@ -59,7 +60,7 @@ const Review = sequelize.define("reviews", {
     
     // food establishment review
     foodEstablishmentId: {
-        type: STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: 'foodEstablishments',
@@ -68,4 +69,4 @@ const Review = sequelize.define("reviews", {
     }
 });
 
-module.exports = Review;
+export default Review;
