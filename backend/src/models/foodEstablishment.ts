@@ -1,5 +1,14 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../server';
+import { DataTypes, Sequelize } from 'sequelize';
+
+const sequelize = new Sequelize(
+    '127project',
+    'adminProject',
+    '127project',
+        {
+        host: 'localhost',
+        dialect: 'mariadb'
+        }
+);
 
 const FoodEstablishment = sequelize.define("foodEstablishments", {
     id: {
