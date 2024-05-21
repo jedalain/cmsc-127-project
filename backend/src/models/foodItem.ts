@@ -13,7 +13,9 @@ const FoodItem = sequelize.define("foodItems", {
         defaultValue: DataTypes.UUIDV4, // automatically generates id
     },
     
-    type: {
+    // [type --> change to classification]
+    // meat, veggies, beverages, meat and veggies, etc.
+    classification: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -34,14 +36,14 @@ const FoodItem = sequelize.define("foodItems", {
     },
 
     // owner
-    userId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: "users",
-            key: 'userId'
-        }
-    },
+    // userId: {
+    //     type: DataTypes.UUID,
+    //     allowNull: false,
+    //     references: {
+    //         model: "users",
+    //         key: 'userId'
+    //     }
+    // },
 
     // vendor
     establishmentId: {
