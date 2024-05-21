@@ -1,13 +1,16 @@
 import { DataTypes } from 'sequelize';
 import { dbConfig } from '../config/dbConfig';
+import FoodEstablishment from './foodEstablishment';
+import Review from './review';
 
 const sequelize = dbConfig;
 
 const FoodItem = sequelize.define("foodItems", {
-    id: {
-        type: DataTypes.STRING,
+    foodId: {
+        type: DataTypes.UUID,
         primaryKey: true,
         allowNull: false,
+        defaultValue: DataTypes.UUIDV4, // automatically generates id
     },
     
     type: {
@@ -32,23 +35,28 @@ const FoodItem = sequelize.define("foodItems", {
 
     // owner
     userId: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
             model: "users",
-            key: 'id'
+            key: 'userId'
         }
     },
 
     // vendor
-    foodEstablishmentId: {
-        type: DataTypes.STRING,
+    establishmentId: {
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: "foodEstablishments",
-            key: 'id'
+            model: 'foodEstablishments',
+            key: 'establishmentId'
         }
     }
+}, {
+    timestamps: false,
 });
+
+FoodItem.belongsTo(FoodEstablishment, { foreignKey: "establishmentId" });
+FoodItem.hasMany(Review, { foreignKey: "foodId" })
 
 export default FoodItem;

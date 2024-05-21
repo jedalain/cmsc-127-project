@@ -1,17 +1,15 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import { dbConfig } from '../config/dbConfig';
+import User from './user';
+import FoodItem from './foodItem';
+import Review from './review';
 
 const sequelize = dbConfig;
 
 const FoodEstablishment = sequelize.define("foodEstablishments", {
-    id: {
+    establishmentId: {
         type: DataTypes.STRING,
         primaryKey: true,
-        allowNull: false,
-    },
-    
-    type: {
-        type: DataTypes.STRING,
         allowNull: false,
     },
     
@@ -20,25 +18,31 @@ const FoodEstablishment = sequelize.define("foodEstablishments", {
         allowNull: false,
     },
     
-    price: {
-        type: DataTypes.DOUBLE,
+    address: {
+        type: DataTypes.TEXT,
         allowNull: false,
     },
     
-    avgRating: {
+    average_rating: {
         type: DataTypes.DOUBLE,
         allowNull: false,
     },
 
     // owner
     userId: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
             model: "users",
-            key: 'id'
+            key: 'userId'
         }
     }
+}, {
+    timestamps: false,
 });
+
+FoodEstablishment.belongsTo(User, { foreignKey: "userId" })
+FoodEstablishment.hasMany(FoodItem, { foreignKey: "establishmentId" })
+FoodEstablishment.hasMany(Review, { foreignKey: "establishmentId" })
 
 export default FoodEstablishment;
