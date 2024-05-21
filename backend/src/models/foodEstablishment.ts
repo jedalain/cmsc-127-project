@@ -23,7 +23,7 @@ const FoodEstablishment = sequelize.define("foodEstablishments", {
         allowNull: false,
     },
     
-    average_rating: {
+    avgRating: {
         type: DataTypes.DOUBLE,
         allowNull: false,
     },
