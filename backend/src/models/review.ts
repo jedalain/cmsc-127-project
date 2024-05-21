@@ -14,7 +14,9 @@ const Review = sequelize.define("reviews", {
         defaultValue: DataTypes.UUIDV4, // automatically generates id 
     },
     
-    type: {
+    // [type --> change to status]
+    // created, updated, deleted
+    status: {
         type: DataTypes.STRING,
         allowNull: false,
     },
