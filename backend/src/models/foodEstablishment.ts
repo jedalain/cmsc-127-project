@@ -1,14 +1,7 @@
 import { DataTypes, Sequelize } from 'sequelize';
+import { dbConfig } from '../config/dbConfig';
 
-const sequelize = new Sequelize(
-    '127project',
-    'adminProject',
-    '127project',
-        {
-        host: 'localhost',
-        dialect: 'mariadb'
-        }
-);
+const sequelize = dbConfig;
 
 const FoodEstablishment = sequelize.define("foodEstablishments", {
     id: {

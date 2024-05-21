@@ -1,17 +1,10 @@
 import express, { urlencoded } from 'express';
 import { Sequelize } from 'sequelize';
 import router from './routes/router';
+import { dbConfig } from './config/dbConfig';
 
 // connection to database
-const sequelize = new Sequelize(
- '127project',
- 'adminProject',
- '127project',
-  {
-    host: 'localhost',
-    dialect: 'mariadb'
-  }
-);
+const sequelize = dbConfig;
 
 sequelize.authenticate().then(() => {
   console.log('Connection has been established successfully.');

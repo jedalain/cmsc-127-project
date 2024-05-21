@@ -1,5 +1,7 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../server';
+import { dbConfig } from '../config/dbConfig';
+
+const sequelize = dbConfig;
 
 const FoodItem = sequelize.define("foodItems", {
     id: {
