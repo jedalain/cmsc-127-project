@@ -1,9 +1,11 @@
 {
   "name": "127-server",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "npx tsx src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "aguinaldo, silva, victorio, zamora",
@@ -20,6 +22,7 @@
     "typescript": "^5.4.5"
   },
   "devDependencies": {
-    "@types/node": "^20.12.12"
+    "@types/node": "^20.12.12",
+    "tsx": "^4.10.5"
   }
 }
