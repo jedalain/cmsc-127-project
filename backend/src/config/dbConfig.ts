@@ -1,14 +1,14 @@
 //npm i mariadb
 
-import mariadb from 'mariadb';
+import mariadb from "mariadb";
 
 export const pool = mariadb.createPool({
-  host: 'localhost',
-  user: 'adminProject',
-  password: '127project',
-  database: '127project',
+  host: "localhost",
+  user: "adminProject",
+  password: "127project",
+  database: "127project",
   connectionLimit: 10,
-  trace: true
+  trace: true,
 });
 
 // Function to test the connection
@@ -20,7 +20,6 @@ const testConnection = async () => {
 
     await conn.query("SELECT 1");
     console.log("Connected to MariaDB successfully!");
-    
   } catch (err) {
     console.error("Error connecting to MariaDB:", err);
   } finally {
