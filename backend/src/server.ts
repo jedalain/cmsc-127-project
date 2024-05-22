@@ -1,16 +1,21 @@
 import express, { urlencoded } from 'express';
-import { Sequelize } from 'sequelize';
 import router from './routes/router';
 import { dbConfig } from './config/dbConfig';
 
-// connection to database
-const sequelize = dbConfig;
+// test connection
+async function testDatabaseConnection() {
+  try {
+    const connection = await dbConfig.getConnection();
+    console.log('Connected to the database.');
+    connection.release();
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+    process.exit(1);
+  }
+}
 
-sequelize.authenticate().then(() => {
-  console.log('Connection has been established successfully.');
-}).catch((error) => {
-  console.error('Unable to connect to the database: ', error);
-});
+// Call the function to test the connection
+testDatabaseConnection();
 
 // entry point
 const app = express();
@@ -28,3 +33,8 @@ app.listen(8000, () => {
   console.log("Server started on port 8000");
 })
 
+// Handle unexpected errors
+process.on('uncaughtException', err => {
+  console.error('There was an uncaught error', err);
+  process.exit(1); 
+});

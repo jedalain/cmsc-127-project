@@ -1,9 +1,14 @@
 import { Express } from 'express';
-import { getAllEstablishments } from '../controllers/foodEstablishmentController';
+import { createEstablishment, deleteEstablishment, getAllEstablishment } from '../controllers/foodEstablishmentController';
 
 
 function router(app: Express) {
-    app.get("/", getAllEstablishments)
-  }
-  
-  export default router;
+  // food establishment routes
+  app.get("/getEstablishments", getAllEstablishment);
+  app.post('/createEstablishment', createEstablishment);
+  app.patch('/editEstablishment', deleteEstablishment);
+  app.delete('/deleteEstablishment/:establishmentId', deleteEstablishment);
+
+}
+
+export default router;
