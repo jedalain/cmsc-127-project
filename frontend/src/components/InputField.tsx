@@ -48,7 +48,7 @@ export function InputField(props: InputFieldProps) {
       targetColor = "text-red127";
     } else {
       targetColor =
-        activeField === props.name ? "text-green127" : "text-base127c";
+        activeField === props.name ? "text-green127" : "text-base127d";
     }
 
     setIconColor(targetColor);
@@ -87,7 +87,7 @@ export function InputField(props: InputFieldProps) {
         <div className="w-full sm:col-span-3">
           <label
             htmlFor={props.name}
-            className="font-regular mt-2.5 inline-block text-left text-sm text-base127c"
+            className="font-regular mt-2.5 inline-block text-left text-sm text-base127d"
           >
             {props.label}
           </label>
@@ -109,7 +109,7 @@ export function InputField(props: InputFieldProps) {
             id={props.id}
             className={`block w-full rounded-lg bg-base127b outline-none py-2 pe-11 pl-9 ${
               props.type === "password" ? "pr-9" : "pr-3"
-            } text-sm placeholder:text-base127c text-black127 placeholder:font-light shadow-sm transition-all disabled:pointer-events-none disabled:opacity-50 ${borderColor}`}
+            } text-sm placeholder:text-base127d text-black127 placeholder:font-light shadow-sm transition-all disabled:pointer-events-none disabled:opacity-50 ${borderColor}`}
             placeholder={props.placeholder ? props.placeholder : ""}
             disabled={props.disabled ? props.disabled : false}
             onFocus={() => {
@@ -126,7 +126,7 @@ export function InputField(props: InputFieldProps) {
 
           {props.type === "password" && (
             <span
-              className={`absolute right-3 top-[0.65rem] cursor-pointer text-base127c transition-all`}
+              className={`absolute right-3 top-[0.65rem] cursor-pointer text-base127d transition-all`}
               onClick={toggleVisibility}
             >
               {passwordVisible === "password" ? <BsEye /> : <BsEyeSlash />}
@@ -142,7 +142,7 @@ export function InputField(props: InputFieldProps) {
             id={props.id ? props.id : undefined}
             className={`block w-full rounded-lg bg-base127b outline-none border-none pl-3 ${
               props.type === "password" ? "pr-9" : "pr-3"
-            } py-2 pe-11 placeholder:text-base127c text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
+            } py-2 pe-11 placeholder:text-base127d text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
             placeholder={props.placeholder ? props.placeholder : ""}
             disabled={props.disabled ? props.disabled : false}
             onChange={props.onChange}
@@ -151,7 +151,7 @@ export function InputField(props: InputFieldProps) {
 
           {props.type === "password" && (
             <span
-              className={`absolute right-3 top-[0.65rem] cursor-pointer text-base127c transition-all`}
+              className={`absolute right-3 top-[0.65rem] cursor-pointer text-base127d transition-all`}
               onClick={toggleVisibility}
             >
               {passwordVisible === "password" ? <BsEye /> : <BsEyeSlash />}
