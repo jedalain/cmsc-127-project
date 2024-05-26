@@ -30,3 +30,11 @@ export const signUpSchema = z.object({
 });
 export type signUpData = z.infer<typeof signUpSchema>;
 export type signUpErrors = ZodError<FormData>;
+
+export const reviewSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  comment: z.string().min(60, "Review must be at least 60 characters"),
+  rating: z.number().min(1, "Rating must be between 1 and 5").max(5, "Rating must be between 1 and 5"),
+})
+export type reviewData = z.infer<typeof reviewSchema>;
+export type reviewErrors = ZodError<FormData>;
