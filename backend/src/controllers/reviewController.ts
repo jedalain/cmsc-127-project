@@ -115,7 +115,9 @@ export const getReviewFor = async (req: Request, res: Response) => {
 
     const result = await query(sql, params);
     res.status(200).json(convertBigInt(result));
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
@@ -126,8 +128,11 @@ export const getAllReviews = async (req: Request, res: Response) => {
   try {
     const sql = 'SELECT * FROM reviews WHERE status != "DELETED"';
     const result = await query(sql);
+    
     res.status(200).json(convertBigInt(result));
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
