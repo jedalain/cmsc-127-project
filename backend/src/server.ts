@@ -1,30 +1,24 @@
-import express, { urlencoded } from 'express';
-import { Sequelize } from 'sequelize';
-import router from './routes/router';
-import { dbConfig } from './config/dbConfig';
+import express from 'express'
+import cors from 'cors'
+import userRoutes from './routes/userRoutes';
+import foodItemRoutes from './routes/foodItemRoutes';
+import foodEstablishmentRoutes from './routes/foodEstablishmentRoutes';
+import reviewRoutes from './routes/reviewRoutes';
 
-// connection to database
-const sequelize = dbConfig;
-
-sequelize.authenticate().then(() => {
-  console.log('Connection has been established successfully.');
-}).catch((error) => {
-  console.error('Unable to connect to the database: ', error);
-});
-
-// entry point
 const app = express();
+
+// middleware
+app.use(cors());
 app.use(express.json());
-app.use(urlencoded(
-  {
-    extended: false
-  }
-));
 
-// routes
-router(app);
+// router
+app.use('/users', userRoutes);
+app.use('/food-items', foodItemRoutes);
+app.use('/food-establishments', foodEstablishmentRoutes);
+app.use('/reviews', reviewRoutes);
 
-app.listen(8000, () => {
-  console.log("Server started on port 8000");
-})
+const PORT = 8000;
 
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

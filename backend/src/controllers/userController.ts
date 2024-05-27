@@ -1,24 +1,13 @@
-import sequelize from '../server';
-import User from '../models/user';
+import { Request, Response } from 'express';
+import { query } from '../config/dbConfig';
 
-// sample lang
-sequelize.sync().then(() => {
-  console.log('User table created successfully!');
-
-  User.create({
-    id: "100",
-    email: "test127@gmail.com",
-    password: "127721Cmsc",
-    fname: "Juan",
-    mname: null,
-    lname: "Dela Cruz",
-    role: "Customer"
-  }).then(res => {
-    console.log(res);
-  }).catch((error) => {
-    console.error('Failed to create a new user: ', error);
-  });
-
-}).catch((error) => {
-  console.error('Unable to create table: ', error);
-});
+export const addUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password, fname, mname, lname, role } = req.body;
+    const sql = 'INSERT INTO users (email, password, fname, mname, lname, role) VALUES (?, ?, ?, ?, ?, ?)';
+    const result = await query(sql, [email, password, fname, mname, lname, role]);
+    res.status(201).json({ id: result.insertId, email, fname, mname, lname, role });
+  } catch (error) {
+    console.log(error);
+  }
+}
