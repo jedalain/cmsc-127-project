@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
 import { query } from '../config/dbConfig';
 
+
+//date created and date modified is set as NOW() in mariadb
 export const addReview = async (req: Request, res: Response) => {
   try {
-    const { status, rating, title, comment, dateCreated, dateModified, userId, establishmentId, foodId } = req.body;
-    const sql = 'INSERT INTO reviews (status, rating, title, comment, dateCreated, dateModified, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const result = await query(sql, [status, rating, title, comment, dateCreated, dateModified, userId, establishmentId, foodId]);
-    res.status(201).json({ id: result.insertId, status, rating, title, comment, dateCreated, dateModified, userId, establishmentId, foodId });
+    const { status, rating, title, comment, userId, establishmentId, foodId } = req.body;
+    const sql = 'INSERT INTO reviews (status, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const result = await query(sql, [status, rating, title, comment, userId, establishmentId, foodId]);
+    res.status(201).json({ id: result.insertId, status, rating, title, comment, userId, establishmentId, foodId });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 export const updateReview = async (req: Request, res: Response) => {
   try {
