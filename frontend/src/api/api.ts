@@ -112,6 +112,8 @@ export const getReviewFor = async (reviewFor: string) => { // review for specifi
     try {
         const response = await axios.get(`${API_URL}/reviews/filtered`, {
             params: { reviewFor }
+        });
+
         return response.data;
     } catch (error) {
         console.error('Error fetching reviews:', error);
