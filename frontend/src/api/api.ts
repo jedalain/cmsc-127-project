@@ -5,13 +5,24 @@ const API_URL = 'http://localhost:8000'; // Replace with your backend URL
 // user API
 export const addUser = async (user: any) => {
     try {
-        const response = await axios.post(`${API_URL}/users`, user);
+        const response = await axios.post(`${API_URL}/users/signup`, user);
         return response.data;
     } catch (error) {
         console.error('Error adding user:', error);
         throw error;
     }
 };
+
+export const loginUser = async (email: string, password: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/users/login`, { email, password });
+        return response.data;
+    } catch (error) {
+        console.error('Error logging in user:', error);
+        throw error;
+    }
+};
+
 
 // food Item API
 export const getFoodItems = async () => {
@@ -96,15 +107,41 @@ export const deleteFoodEstablishment = async (id: string) => {
 };
 
 // review API
-export const getReviews = async () => {
+
+export const getReviewFor = async (reviewFor: string) => { // review for specific estab or food
     try {
-        const response = await axios.get(`${API_URL}/reviews`);
+        const response = await axios.get(`${API_URL}/reviews/filtered`, {
+            params: { reviewFor }
         return response.data;
     } catch (error) {
         console.error('Error fetching reviews:', error);
         throw error;
     }
 };
+
+
+export const getReviewById = async (id: string) => {  // get review by id
+    try {
+        const response = await axios.get(`${API_URL}/reviews/byId/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching review:', error);
+        throw error;
+    }
+};
+
+// get all review regardless of kung paano kanino
+export const getAllReviews = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/reviews`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all reviews:', error);
+        throw error;
+    }
+};
+
+
 
 export const addReview = async (review: any) => {
     try {
