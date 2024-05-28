@@ -3,14 +3,14 @@
 
 import { query } from '../config/dbConfig';
 
-// Helper function to check if an ID exists in a specified table
+// helper function to check if an ID exists in a specified table
 export const checkExistence = async (table: string, column: string, value: any): Promise<boolean> => {
   const sql = `SELECT COUNT(*) as count FROM ${table} WHERE ${column} = ?`;
   const result = await query(sql, [value]);
   return result[0].count > 0;
 };
 
-// Helper function to convert BigInt values to strings
+// helper function to convert BigInt values to strings since nag error siya siguro kasi thousand id natin
 export const convertBigInt = (data: any): any => {
   if (Array.isArray(data)) {
     return data.map(item => {
