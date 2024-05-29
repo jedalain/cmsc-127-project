@@ -18,6 +18,6 @@ router.delete('/:id', deleteFoodItem);
 router.get('/:id', getFoodItem);
 router.get('/', getAllFoodItems);
 router.get('/establishments/:establishmentId/food-items', getFoodItemsByEstablishment);
-router.get('/establishments/:establishmentId/food-items/:foodType', getFoodItemsByTypeAndEstablishment);
+router.get('/establishments/:establishmentId/food-items/:classification', getFoodItemsByTypeAndEstablishment);
 
 export default router;

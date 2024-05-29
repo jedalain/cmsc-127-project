@@ -10,10 +10,10 @@ import {
 
 const router = Router();
 
-router.post('/', addFoodEstablishment);
-router.put('/:id', updateFoodEstablishment);
-router.delete('/:id', deleteFoodEstablishment);
-router.get('/:id', getFoodEstablishment);
+router.post('/', addFoodEstablishment); // add food estab
+router.put('/:id', updateFoodEstablishment); //update
+router.delete('/:id', deleteFoodEstablishment); //delete
+router.get('/:id', getFoodEstablishment); // get specific estab
 router.get('/', getAllFoodEstablishments);  // view all food establishment
 
 export default router;

@@ -126,7 +126,7 @@ export const getFoodItemsByEstablishment = async (req: Request, res: Response) =
 //view all food item from an estab that belong to a food type
 export const getFoodItemsByTypeAndEstablishment = async (req: Request, res: Response) => {
   try {
-    const { establishmentId, foodType } = req.params;
+    const { establishmentId, classification } = req.params;
 
     // Check if establishmentId exists
     if (!await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
@@ -134,7 +134,7 @@ export const getFoodItemsByTypeAndEstablishment = async (req: Request, res: Resp
     }
 
     const sql = 'SELECT * FROM foodItems WHERE establishmentId = ? AND classification = ?';
-    const result = await query(sql, [establishmentId, foodType]);
+    const result = await query(sql, [establishmentId, classification]);
 
     res.status(200).json(convertBigInt(result));
   } catch (error) {

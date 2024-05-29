@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000'; // Replace with your backend URL
+const API_URL = 'http://localhost:8000'; 
 
 // user API
 export const addUser = async (user: any) => {
@@ -38,7 +38,7 @@ export const getFoodItems = async () => {
 };
 
 // view all food items from an estab
-export const getFoodItemsByEstab = async (establishmentId: string) => {
+export const getFoodItemsByEstablishment = async (establishmentId: string) => {
     try {
         const response = await axios.get(`${API_URL}/establishments/${establishmentId}/food-items`);
 
@@ -51,10 +51,10 @@ export const getFoodItemsByEstab = async (establishmentId: string) => {
     }
 };
 
-//view all food items from an estab that belongs to a food type
-export const getFoodItemsByTypeAndEstablishment = async (establishmentId: string, foodType: string) => {
+//view all food items from an estab that belongs to a food type (classification)
+export const getFoodItemsByTypeAndEstablishment = async (establishmentId: string, classification: string) => {
     try {
-        const response = await axios.get(`${API_URL}/establishments/${establishmentId}/food-items/${foodType}`);
+        const response = await axios.get(`${API_URL}/establishments/${establishmentId}/food-items/${classification}`);
         return response.data;
 
     } 

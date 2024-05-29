@@ -1,5 +1,6 @@
 // this contain helper fuctions
 // check existence of data
+//converting key to int
 
 import { query } from '../config/dbConfig';
 
@@ -10,7 +11,7 @@ export const checkExistence = async (table: string, column: string, value: any):
   return result[0].count > 0;
 };
 
-// helper function to convert BigInt values to strings since nag error siya siguro kasi thousand id natin
+// helper function to convert BigInt values to strings since nag error dahil malaki yung value ng ids natin
 export const convertBigInt = (data: any): any => {
   if (Array.isArray(data)) {
     return data.map(item => {

@@ -19,11 +19,18 @@ export const addFoodEstablishment = async (req: Request, res: Response) => {
   }
 };
 
+
 export const updateFoodEstablishment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
     const { name, address, avgRating } = req.body;
+
+    // check if food estab that we want to update exist
+    const exists = await checkExistence('foodEstablishments', 'establishmentId', id);
+    if (!exists) {
+      return res.status(404).json({ error: 'Food Establishment not found' });
+    }
+
     const sql = 'UPDATE foodEstablishments SET name = ?, address = ?, avgRating = ? WHERE establishmentId = ?';
 
 
@@ -38,42 +45,28 @@ export const updateFoodEstablishment = async (req: Request, res: Response) => {
 };
 
 
-
 // If a food establishment or food item is deleted, reviews associated with them are also deleted.
 export const deleteFoodEstablishment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // delete review associated with estab
+
+    //check if existing
+    const exists = await checkExistence('foodEstablishments', 'establishmentId', id);
+    if (!exists) {
+      return res.status(404).json({ error: 'Food Establishment not found' });
+    }
+
+    // delete associated review
     const deleteReviewsSql = 'DELETE FROM reviews WHERE establishmentId = ?';
     await query(deleteReviewsSql, [id]);
 
-    // delete the establishment
+
+    //delete estab
     const deleteEstablishmentSql = 'DELETE FROM foodEstablishments WHERE establishmentId = ?';
     await query(deleteEstablishmentSql, [id]);
 
     res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-export const getFoodEstablishment = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    const sql = 'SELECT * FROM foodEstablishments WHERE establishmentId = ?';
-
-    const result = await query(sql, [id]);
-    
-
-    if (result.length > 0) {
-      res.status(200).json(convertBigInt(result[0]));
-    } else {
-      res.status(404).json({ error: 'Food Establishment not found' });
-    }
-
   } 
   
   catch (error) {
@@ -82,6 +75,34 @@ export const getFoodEstablishment = async (req: Request, res: Response) => {
   }
 };
 
+
+
+// view specific food estab
+export const getFoodEstablishment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const sql = 'SELECT * FROM foodEstablishments WHERE establishmentId = ?';
+    const result = await query(sql, [id]);
+
+
+    //check if estab exist
+    if (result.length > 0) {
+      res.status(200).json(convertBigInt(result[0]));
+    } else {
+      res.status(404).json({ error: 'Food Establishment not found' });
+    }
+  } 
+  
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+// get all food estab
 export const getAllFoodEstablishments = async (req: Request, res: Response) => {
   try {
     const sql = 'SELECT * FROM foodEstablishments';

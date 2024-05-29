@@ -105,6 +105,7 @@ export const getReviewFor = async (req: Request, res: Response) => {
   try {
     const { reviewFor } = req.query;
 
+    // get only those reviews na hindi deleted
     let sql = 'SELECT * FROM reviews WHERE status != "DELETED"';
     const params = [];
 
@@ -123,7 +124,7 @@ export const getReviewFor = async (req: Request, res: Response) => {
   }
 };
 
-
+// get all review except deleted
 export const getAllReviews = async (req: Request, res: Response) => {
   try {
     const sql = 'SELECT * FROM reviews WHERE status != "DELETED"';
