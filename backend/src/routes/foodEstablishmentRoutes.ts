@@ -14,6 +14,6 @@ router.post('/', addFoodEstablishment);
 router.put('/:id', updateFoodEstablishment);
 router.delete('/:id', deleteFoodEstablishment);
 router.get('/:id', getFoodEstablishment);
-router.get('/', getAllFoodEstablishments);
+router.get('/', getAllFoodEstablishments);  // view all food establishment
 
 export default router;

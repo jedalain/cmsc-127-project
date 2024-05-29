@@ -7,7 +7,8 @@ export const pool = mariadb.createPool({
   user: 'adminProject',
   password: '127project',
   database: '127project',
-  connectionLimit: 10
+  connectionLimit: 10,
+  trace: true
 });
 
 // Function to test the connection

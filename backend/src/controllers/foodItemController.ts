@@ -43,27 +43,29 @@ export const updateFoodItem = async (req: Request, res: Response) => {
   }
 };
 
+
+// If a food establishment or food item is deleted, reviews associated with them are also deleted.
 export const deleteFoodItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Check if food item exists
-    if (!await checkExistence('foodItems', 'foodId', id)) {
-      return res.status(404).json({ error: 'Food Item not found' });
-    }
+    // if food item deleted then delete associated review
+    const deleteReviewsSql = 'DELETE FROM reviews WHERE foodId = ?';
+    await query(deleteReviewsSql, [id]);
 
-    const sql = 'DELETE FROM foodItems WHERE foodId = ?';
-    await query(sql, [id]);
+    // delete food item
+    const deleteFoodItemSql = 'DELETE FROM foodItems WHERE foodId = ?';
+    await query(deleteFoodItemSql, [id]);
 
     res.status(204).send();
-
-  } 
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
+
+// get specific food item based on foodId
 export const getFoodItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -84,6 +86,8 @@ export const getFoodItem = async (req: Request, res: Response) => {
   }
 };
 
+
+//view all food items
 export const getAllFoodItems = async (req: Request, res: Response) => {
   try {
     const sql = 'SELECT * FROM foodItems';
@@ -93,6 +97,47 @@ export const getAllFoodItems = async (req: Request, res: Response) => {
     res.status(200).json(convertBigInt(result));
   }
   catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+//view all food item from an establishment
+export const getFoodItemsByEstablishment = async (req: Request, res: Response) => {
+  try {
+    const { establishmentId } = req.params;
+
+    // Check if establishmentId exists
+    if (!await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
+      return res.status(400).json({ error: 'Invalid establishmentId' });
+    }
+
+    const sql = 'SELECT * FROM foodItems WHERE establishmentId = ?';
+    const result = await query(sql, [establishmentId]);
+
+    res.status(200).json(convertBigInt(result));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+//view all food item from an estab that belong to a food type
+export const getFoodItemsByTypeAndEstablishment = async (req: Request, res: Response) => {
+  try {
+    const { establishmentId, foodType } = req.params;
+
+    // Check if establishmentId exists
+    if (!await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
+      return res.status(400).json({ error: 'Invalid establishmentId' });
+    }
+
+    const sql = 'SELECT * FROM foodItems WHERE establishmentId = ? AND classification = ?';
+    const result = await query(sql, [establishmentId, foodType]);
+
+    res.status(200).json(convertBigInt(result));
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }

@@ -37,17 +37,23 @@ export const updateFoodEstablishment = async (req: Request, res: Response) => {
   }
 };
 
+
+
+// If a food establishment or food item is deleted, reviews associated with them are also deleted.
 export const deleteFoodEstablishment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const sql = 'DELETE FROM foodEstablishments WHERE establishmentId = ?';
+    // delete review associated with estab
+    const deleteReviewsSql = 'DELETE FROM reviews WHERE establishmentId = ?';
+    await query(deleteReviewsSql, [id]);
 
-    await query(sql, [id]);
+    // delete the establishment
+    const deleteEstablishmentSql = 'DELETE FROM foodEstablishments WHERE establishmentId = ?';
+    await query(deleteEstablishmentSql, [id]);
+
     res.status(204).send();
-  } 
-  
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }

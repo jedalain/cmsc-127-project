@@ -5,7 +5,9 @@ import {
   updateFoodItem,
   deleteFoodItem,
   getFoodItem,
-  getAllFoodItems
+  getAllFoodItems,
+  getFoodItemsByEstablishment,
+  getFoodItemsByTypeAndEstablishment
 } from '../controllers/foodItemController';
 
 const router = Router();
@@ -15,5 +17,7 @@ router.put('/:id', updateFoodItem);
 router.delete('/:id', deleteFoodItem);
 router.get('/:id', getFoodItem);
 router.get('/', getAllFoodItems);
+router.get('/establishments/:establishmentId/food-items', getFoodItemsByEstablishment);
+router.get('/establishments/:establishmentId/food-items/:foodType', getFoodItemsByTypeAndEstablishment);
 
 export default router;
