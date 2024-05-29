@@ -40,7 +40,7 @@ export const getFoodItems = async () => {
 // view all food items from an estab
 export const getFoodItemsByEstablishment = async (establishmentId: string) => {
     try {
-        const response = await axios.get(`${API_URL}/establishments/${establishmentId}/food-items`);
+        const response = await axios.get(`${API_URL}/food-items/${establishmentId}/food-items`);
 
         return response.data;
     } 
@@ -54,7 +54,7 @@ export const getFoodItemsByEstablishment = async (establishmentId: string) => {
 //view all food items from an estab that belongs to a food type (classification)
 export const getFoodItemsByTypeAndEstablishment = async (establishmentId: string, classification: string) => {
     try {
-        const response = await axios.get(`${API_URL}/establishments/${establishmentId}/food-items/${classification}`);
+        const response = await axios.get(`${API_URL}/food-items/${establishmentId}/food-items/${classification}`);
         return response.data;
 
     } 
