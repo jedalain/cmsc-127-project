@@ -1,12 +1,14 @@
-import { motion as m } from "framer-motion";
-import { InputField } from "../components/InputField";
-import { PiMagnifyingGlass } from "react-icons/pi";
 import { useState } from "react";
+import { motion as m } from "framer-motion";
 import ESTCard from "../components/feed/ESTCard.tsx";
 import { foodEstablishment, mcdo } from "../models/Models.tsx";
-import ESTExpandedView from "../components/feed/ESTExpandedView.tsx";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { ScrollToTop } from "../utils/helper.ts";
+import { ESTFilter } from "../components/feed/ESTFilter.tsx";
 
 export default function Feed() {
+  const navigate = useNavigate();
+  const [filterApplied, setFilterApplied] = useState<string>("");
   const [establishments] = useState<foodEstablishment[]>([
     mcdo,
     mcdo,
@@ -14,6 +16,21 @@ export default function Feed() {
     mcdo,
     mcdo,
   ]);
+
+  // fetches the id from the parameter
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const establishmentId = searchParams.get("id") || "";
+
+  /** Function - updates the state of searchInput  */
+  const openEstablishment = (establishmentId: string) => {
+    if (establishmentId) {
+      navigate(
+        `/establishments/detailed?id=${encodeURIComponent(establishmentId)}`
+      );
+      ScrollToTop();
+    }
+  };
 
   return (
     <m.div
@@ -26,29 +43,28 @@ export default function Feed() {
       }}
       className="flex h-full w-full flex-col items-center justify-center"
     >
-      <div className="flex h-full w-full max-w-[1080px] flex-col gap-3 p-6">
-        <div className="flex h-full gap-6 min-h-screen md:flex-row flex-col">
-          <div className="h-full max-h-[400px] overflow-y-auto md:max-h-screen w-full flex-1 md:h-screen bg-orange127 rounded-xl p-6">
-            <span className="sticky top-0">
-              <InputField
-                name="search"
-                placeholder="Search"
-                icon={PiMagnifyingGlass}
-                onChange={() => {}}
-                type="text"
+      {establishmentId === "" ? (
+        <div className="flex h-full w-full max-w-[1080px] flex-col gap-3 p-6">
+          <div className="flex h-full gap-9 min-h-screen flex-col">
+            <span>
+              <ESTFilter
+                filterApplied={filterApplied}
+                setFilterApplied={setFilterApplied}
+                sortEstablishments={() => {}}
               />
             </span>
-
-            <div className="mt-3 w-full grid md:grid-cols-1 grid-rows-1">
+            <div className="flex-[3] w-full h-full gap-6 grid grid-cols-1 auto-rows-min xs:grid-cols-2 sm:grid-cols-3">
               {establishments.map((establishment, key) => {
                 return (
-                  <div className="h-full w-full py-2">
+                  <div className="h-full w-full" onClick={() => {}}>
                     <span key={key}>
                       <ESTCard
                         name={establishment.name}
                         avgRating={establishment.avgRating}
                         address={establishment.address}
-                        openDetailed={() => {}}
+                        openDetailed={() => {
+                          openEstablishment(establishment.establishmentId);
+                        }}
                       />
                     </span>
                   </div>
@@ -56,11 +72,10 @@ export default function Feed() {
               })}
             </div>
           </div>
-          <div className="flex-[4] p-6 border-2 rounded-xl border-base127b">
-            <ESTExpandedView foodEstablishment={mcdo} />
-          </div>
         </div>
-      </div>
+      ) : (
+        <Outlet />
+      )}
     </m.div>
   );
 }

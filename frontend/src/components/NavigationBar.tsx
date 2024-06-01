@@ -17,7 +17,7 @@ export default function NavigationBar(props: NavigationBarProps) {
         aria-label="Global"
       >
         <Link to={"/"} className="text-lg font-semibold">
-          Lorem ipsum
+          TasteTracker
         </Link>
 
         <div className="flex items-center gap-9">

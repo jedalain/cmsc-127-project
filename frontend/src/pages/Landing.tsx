@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion as m } from "framer-motion";
 import { PiMagnifyingGlass } from "react-icons/pi";
@@ -30,7 +30,7 @@ export default function Landing() {
   };
 
   /** Function - triggers search function when user hits enter  */
-  const onButtonSearch = (e: MouseEvent<HTMLButtonElement>) => {
+  const onButtonSearch = () => {
     const searchValue = searchInput.trim();
     if (searchValue !== "") {
       navigate(`/establishments?keyword=${encodeURIComponent(searchValue)}`);
@@ -53,8 +53,9 @@ export default function Landing() {
     >
       <div className="flex -mt-20 h-full w-full max-w-[1080px] flex-col gap-3 p-6">
         <div className="h-screen w-full flex flex-col gap-3 justify-center items-center">
-          <div className="mb-6 font-semibold text-3xl text-base127d">
-            Lorem ipsum
+          <div className="mb-6 font-semibold flex flex-col text-3xl text-base127d">
+            TasteTracker
+            <span className="text-sm text-right font-light">by Tininiw</span>
           </div>
 
           <div className="flex max-w-[30rem] items-center gap-3 w-full">

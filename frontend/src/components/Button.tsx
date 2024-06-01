@@ -27,6 +27,9 @@ interface ButtonProps {
 export function Button(props: ButtonProps) {
   const getButtonStyle = () => {
     switch (props.style) {
+      case "white":
+        return "font-regular w-full min-w-fit rounded-lg bg-white p-3 text-orange127c shadow-md transition-all hover:bg-white active:scale-[0.97]";
+
       case "orange":
         return "font-regular w-full min-w-fit rounded-lg bg-orange127 p-3 text-white shadow-md transition-all hover:bg-orange127z active:scale-[0.97]";
 

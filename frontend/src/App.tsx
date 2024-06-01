@@ -4,10 +4,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Landing from "./pages/Landing.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
-import LoggedInPage from "./pages/LoggedInPage.tsx";
+import AuthPage from "./pages/LoggedInPage.tsx";
 import LoggedOutPage from "./pages/LoggedOutPage.tsx";
 import Feed from "./pages/Feed.tsx";
 import Profile from "./pages/Profile.tsx";
+import ESTExpandedView from "./components/feed/ESTExpandedView.tsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -15,38 +16,32 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: isLoggedIn ? (
-        <LoggedInPage>
+      element: (
+        <AuthPage>
           <Landing />
-        </LoggedInPage>
-      ) : (
-        <LoggedOutPage>
-          <Landing />
-        </LoggedOutPage>
+        </AuthPage>
       ),
     },
     {
       path: "/establishments",
-      element: isLoggedIn ? (
-        <LoggedInPage>
+      element: (
+        <AuthPage>
           <Feed />
-        </LoggedInPage>
-      ) : (
-        <LoggedOutPage>
-          <Feed />
-        </LoggedOutPage>
+        </AuthPage>
       ),
+      children: [
+        {
+          path: "detailed",
+          element: <ESTExpandedView />,
+        },
+      ],
     },
     {
       path: "/profile",
-      element: isLoggedIn ? (
-        <LoggedOutPage>
-          <Feed />
-        </LoggedOutPage>
-      ) : (
-        <LoggedInPage>
+      element: (
+        <AuthPage>
           <Profile />
-        </LoggedInPage>
+        </AuthPage>
       ),
     },
     {

@@ -1,16 +1,26 @@
+import { createContext, useState } from "react";
 import NavigationBar from "../components/NavigationBar.tsx";
 
-interface LoggedInPageProps {
+interface AuthPageProps {
   children: JSX.Element;
 }
 
-export default function LoggedInPage({ children }: LoggedInPageProps) {
+interface AuthPageContext {
+  isLoggedIn: boolean;
+}
+
+export const AuthPageContext = createContext<AuthPageContext>({
+  isLoggedIn: true,
+});
+
+export default function AuthPage({ children }: AuthPageProps) {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   return (
-    <>
-      <NavigationBar isLoggedIn={true} />
+    <AuthPageContext.Provider value={{ isLoggedIn: isLoggedIn }}>
+      <NavigationBar isLoggedIn={isLoggedIn} />
       {children}
       {/* {alertBubble !== null ? alertBubble : ""} */}
       {/* // <Footer /> */}
-    </>
+    </AuthPageContext.Provider>
   );
 }

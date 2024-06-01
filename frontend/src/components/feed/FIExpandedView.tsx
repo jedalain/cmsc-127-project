@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AnimatePresence, motion as m } from "framer-motion";
 import { PiPlusCircleFill, PiStarFill } from "react-icons/pi";
 
@@ -7,9 +7,11 @@ import { foodItem, mcflurry, review } from "../../models/Models.tsx";
 import { Pagination } from "../Pagination.tsx";
 import ReviewCard from "../ReviewCard.tsx";
 import { ReviewModal } from "./ReviewModal.tsx";
+import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
 
 interface FIExpandedViewProps {
   foodItemId: string;
+  isOwnerRoute: boolean;
   closeModal: () => void;
 }
 
@@ -22,9 +24,13 @@ interface FIExpandedViewProps {
  * @returns modal for editing profile
  */
 export function FIExpandedView(props: FIExpandedViewProps) {
+  const { isLoggedIn } = useContext(AuthPageContext);
   const [foodItem] = useState<foodItem | null>(mcflurry);
   const [currentPageReview, setCurrentPageReview] = useState<number>(1);
   const [currentReviews, setCurrentReviews] = useState<review[]>([]);
+
+  // for checking if the owner is the viewer
+  const isOwnerRoute = location.pathname.startsWith("/profile");
 
   const totalReviews = foodItem?.reviews.length;
   const reviewPerPage = 9;
@@ -122,15 +128,17 @@ export function FIExpandedView(props: FIExpandedViewProps) {
             <div className="flex-1 h-full p-4">
               <span className="flex items-center justify-between text-orange127a font-medium">
                 <span>Reviews:</span>
-                <span>
-                  <Button
-                    type="button"
-                    action="addComment"
-                    style="blue"
-                    icon={PiPlusCircleFill}
-                    onClick={() => setNewReview(true)}
-                  />
-                </span>
+                {isLoggedIn && !props.isOwnerRoute && (
+                  <span>
+                    <Button
+                      type="button"
+                      action="addComment"
+                      style="blue"
+                      icon={PiPlusCircleFill}
+                      onClick={() => setNewReview(true)}
+                    />
+                  </span>
+                )}
               </span>
               <div className="bg-base127b h-full max-h-[390px] w-full gap-3 mt-2 p-3 flex-col flex justify-between overflow-y-scroll rounded-lg">
                 {foodItem.reviews.map((review, key) => {
@@ -173,7 +181,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
         }}
       ></div>
 
-      {newReview && (
+      {isLoggedIn && !props.isOwnerRoute && newReview && (
         <AnimatePresence mode="wait">
           <m.span
             key={String(newReview)}
@@ -184,6 +192,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
             transition={{ duration: 0.15, ease: "easeInOut" }}
           >
             <ReviewModal
+              action="add"
               closeModal={toggleReviewModal}
               setAlertBubble={() => {}}
             />

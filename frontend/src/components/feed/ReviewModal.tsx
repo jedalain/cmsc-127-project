@@ -184,19 +184,21 @@ export function ReviewModal(props: ReviewModalProps) {
             </div>
 
             <div className="flex items-center justify-end gap-x-2 overflow-auto border-t border-base127c px-4 py-3 text-sm italic text-grey0">
-              <button
-                type="submit"
-                className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50"
-              >
-                <span className="">
-                  <Button
-                    action="button"
-                    style="red"
-                    text="DISCARD"
-                    onClick={discardChanges}
-                  />
-                </span>
-              </button>
+              {props.review && (
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50"
+                >
+                  <span className="">
+                    <Button
+                      action="button"
+                      style="red"
+                      text="DELETE"
+                      onClick={discardChanges}
+                    />
+                  </span>
+                </button>
+              )}
 
               <button
                 type="submit"
