@@ -1,10 +1,45 @@
+import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion as m } from "framer-motion";
-import { InputField } from "../components/InputField";
 import { PiMagnifyingGlass } from "react-icons/pi";
-import { Button } from "../components/Button";
-import { Link } from "react-router-dom";
+
+import { InputField } from "../components/InputField.tsx";
+import { Button } from "../components/Button.tsx";
+import { ScrollToTop } from "../utils/helper.ts";
 
 export default function Landing() {
+  const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState<string>("");
+
+  /** Function - updates the searchInput state with current value entered in search bar */
+  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+
+  /** Function - triggers search function when user hits enter  */
+  const onEnterSearch = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const searchValue = searchInput.trim();
+      if (searchValue !== "") {
+        navigate(`/establishments?keyword=${encodeURIComponent(searchValue)}`);
+        ScrollToTop();
+      } else {
+        navigate("/establishments");
+      }
+    }
+  };
+
+  /** Function - triggers search function when user hits enter  */
+  const onButtonSearch = (e: MouseEvent<HTMLButtonElement>) => {
+    const searchValue = searchInput.trim();
+    if (searchValue !== "") {
+      navigate(`/establishments?keyword=${encodeURIComponent(searchValue)}`);
+      ScrollToTop();
+    } else {
+      navigate("/establishments");
+    }
+  };
+
   return (
     <m.div
       initial={{ opacity: 0, scale: 0.75 }}
@@ -27,8 +62,9 @@ export default function Landing() {
               <InputField
                 name="search"
                 placeholder="Find a food establishment"
-                onChange={() => {}}
+                onChange={handleSearchInput}
                 type="text"
+                onEnter={onEnterSearch}
               />
             </span>
 
@@ -38,7 +74,7 @@ export default function Landing() {
                 action="search"
                 style="orange"
                 icon={PiMagnifyingGlass}
-                onClick={() => {}}
+                onClick={onButtonSearch}
               />
             </span>
           </div>
