@@ -11,6 +11,7 @@ interface InputFieldProps {
   error?: string;
   id?: string;
   disabled?: boolean;
+  defaultValue?: string | number;
   type: string;
   name: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -120,6 +121,7 @@ export function InputField(props: InputFieldProps) {
               focusedIcon();
               focusedField();
             }}
+            defaultValue={props.defaultValue ? props.defaultValue : ""}
             onChange={props.onChange}
             onKeyDown={props.onEnter ? props.onEnter : undefined}
           />
@@ -145,6 +147,7 @@ export function InputField(props: InputFieldProps) {
             } py-2 pe-11 placeholder:text-base127d text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
             placeholder={props.placeholder ? props.placeholder : ""}
             disabled={props.disabled ? props.disabled : false}
+            defaultValue={props.defaultValue ? props.defaultValue : ""}
             onChange={props.onChange}
             onKeyDown={props.onEnter ? props.onEnter : undefined}
           />

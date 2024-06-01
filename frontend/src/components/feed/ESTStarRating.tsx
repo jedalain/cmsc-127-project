@@ -5,11 +5,14 @@ interface ESTStarRatingProps {
   name: string;
   id?: string;
   error?: string;
+  defaultValue?: number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ESTStarRating = (props: ESTStarRatingProps) => {
-  const [rating, setRating] = useState<number>(0);
+  const [rating, setRating] = useState<number>(
+    props.defaultValue ? props.defaultValue : 0
+  );
   const [hover, setHover] = useState<number>(0);
 
   const handleClick = (value: number) => {

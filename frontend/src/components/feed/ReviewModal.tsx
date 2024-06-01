@@ -13,14 +13,17 @@ import { InputField } from "../InputField.tsx";
 import { Button } from "../Button.tsx";
 import { TextAreaField } from "../TextAreaField.tsx";
 import { ESTStarRating } from "./ESTStarRating.tsx";
+import { review } from "../../models/Models.tsx";
 
 interface ReviewModalProps {
+  action: string;
+  review?: review;
   setAlertBubble: Dispatch<SetStateAction<JSX.Element | null>>;
   closeModal: () => void;
 }
 
 /**
- * CPEditProfile
+ * ReviewModal
  *
  * @param userDetails details of an instance of the User class
  * @param editProfile updates user profile data, when changes were saved, from the server
@@ -29,10 +32,10 @@ interface ReviewModalProps {
  * @returns modal for editing profile
  */
 export function ReviewModal(props: ReviewModalProps) {
-  const [estReview, setEstReview] = useState<reviewData>({
-    title: "",
-    comment: "",
-    rating: 0,
+  const [review, setReview] = useState<reviewData>({
+    title: props.review ? props.review.title : "",
+    comment: props.review ? props.review.comment : "",
+    rating: props.review ? props.review.rating : 0,
   });
   const [errors, setErrors] = useState<reviewErrors | null>(null);
 
@@ -40,7 +43,7 @@ export function ReviewModal(props: ReviewModalProps) {
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setEstReview((prevState) => ({
+    setReview((prevState) => ({
       ...prevState,
       [name]: name === "rating" ? parseInt(value) : value,
     }));
@@ -48,7 +51,7 @@ export function ReviewModal(props: ReviewModalProps) {
 
   const handleTextAreaInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setEstReview((prevState) => ({
+    setReview((prevState) => ({
       ...prevState,
       [name]: value,
     }));
@@ -59,7 +62,7 @@ export function ReviewModal(props: ReviewModalProps) {
     e.preventDefault();
 
     try {
-      reviewSchema.parse(estReview);
+      reviewSchema.parse(review);
       setErrors(null);
       props.closeModal();
     } catch (error) {
@@ -75,7 +78,7 @@ export function ReviewModal(props: ReviewModalProps) {
 
     // reset inputs
     setErrors(null);
-    setEstReview({
+    setReview({
       title: "",
       comment: "",
       rating: 0,
@@ -112,7 +115,8 @@ export function ReviewModal(props: ReviewModalProps) {
           <div className="pointer-events-auto flex h-full w-full flex-col rounded-xl border border-base127c bg-base127 shadow-md">
             <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
               <h3 className="flex w-full justify-center text-xl font-semibold text-green0">
-                Add a review
+                {props.action === "edit" && "Edit review"}
+                {props.action === "add" && "Add a review"}
               </h3>
 
               <button
@@ -149,6 +153,7 @@ export function ReviewModal(props: ReviewModalProps) {
                     ?.message
                 }
                 name="rating"
+                defaultValue={props.review ? props.review.rating : 0}
                 onChange={handleUserInput}
               />
 
@@ -157,6 +162,7 @@ export function ReviewModal(props: ReviewModalProps) {
                 name="title"
                 label="Title"
                 placeholder="Enter title"
+                defaultValue={props.review ? props.review.title : ""}
                 error={
                   errors?.errors.find((error) => error.path[0] === "title")
                     ?.message
@@ -168,6 +174,7 @@ export function ReviewModal(props: ReviewModalProps) {
                 name="comment"
                 label="Comment"
                 placeholder="Enter review"
+                defaultValue={props.review ? props.review.comment : ""}
                 error={
                   errors?.errors.find((error) => error.path[0] === "comment")
                     ?.message

@@ -30,6 +30,17 @@ export interface foodEstablishment {
   userId: string;
 }
 
+export interface user {
+  userId: string;
+  role: string;
+  email: string;
+  fname: string;
+  mname: string;
+  lname: string;
+  establishments: foodEstablishment[];
+  reviews: review[];
+}
+
 /**
  *
  * SAMPLE DATA
@@ -38,7 +49,7 @@ export interface foodEstablishment {
 export const foodReview: review = {
   reviewId: "rev123",
   title: "Delicious",
-  rating: 4.89,
+  rating: 4,
   comment: "Great food! Good value for money and great flavor.",
   dateCreated: new Date("05/26/2024"),
   dateModified: new Date("05/26/2024"),
@@ -49,7 +60,7 @@ export const foodReview: review = {
 export const establishmentReview: review = {
   reviewId: "rev123",
   title: "Great place",
-  rating: 4.9,
+  rating: 5,
   comment:
     "The ambiance of the place is really nice. The staff were also kind and approachable",
   dateCreated: new Date("05/26/2024"),

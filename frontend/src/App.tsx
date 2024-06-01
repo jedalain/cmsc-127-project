@@ -7,6 +7,7 @@ import SignUp from "./pages/SignUp.tsx";
 import LoggedInPage from "./pages/LoggedInPage.tsx";
 import LoggedOutPage from "./pages/LoggedOutPage.tsx";
 import Feed from "./pages/Feed.tsx";
+import Profile from "./pages/Profile.tsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -34,6 +35,18 @@ function App() {
         <LoggedOutPage>
           <Feed />
         </LoggedOutPage>
+      ),
+    },
+    {
+      path: "/profile",
+      element: isLoggedIn ? (
+        <LoggedOutPage>
+          <Feed />
+        </LoggedOutPage>
+      ) : (
+        <LoggedInPage>
+          <Profile />
+        </LoggedInPage>
       ),
     },
     {
