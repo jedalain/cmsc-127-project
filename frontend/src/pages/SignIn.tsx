@@ -1,12 +1,15 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import { PiEnvelopeLight, PiLockKeyThin } from "react-icons/pi";
+import { motion as m } from "framer-motion";
+import { PiEnvelopeLight, PiHouse, PiLockKeyThin } from "react-icons/pi";
 import { ZodError } from "zod";
 
 import { Button } from "../components/Button.tsx";
 import { InputField } from "../components/InputField.tsx";
 import { signInData, signInErrors, signInSchema } from "../utils/schema.ts";
+import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
+  const navigate = useNavigate();
   const [signinCredential, setSigninCredential] = useState<signInData>({
     email: "",
     password: "",
@@ -39,65 +42,83 @@ export default function SignIn() {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col justify-center items-center bg-red127">
-      <form
-        onSubmit={handleSignIn}
-        className="h-full max-h-[30rem] w-full max-w-[20rem] rounded-lg shadow-md bg-base127 flex flex-col p-9 items-center justify-center gap-6"
+    <div className="bg-orange127">
+      <m.div
+        initial={{ opacity: 0, scale: 0.75 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.6,
+          delay: 0.05,
+          ease: [0, 0.71, 0.2, 1.01],
+        }}
+        className="h-screen w-full flex flex-col justify-center items-center"
       >
-        <span className="font-bold text-2xl uppercase text-red127">
-          Sign In
-        </span>
+        <form
+          onSubmit={handleSignIn}
+          className="h-full max-h-[30rem] w-full max-w-[20rem] rounded-lg shadow-md bg-base127 flex flex-col p-9 items-center justify-center gap-6"
+        >
+          <span
+            className="bg-base127 text-base127d p-2 rounded-full size-10 flex items-center justify-center cursor-pointer active:scale-95 transition-all active:bg-base127b"
+            onClick={() => navigate("/")}
+          >
+            <PiHouse size={24} />
+          </span>
 
-        <div className="w-full flex flex-col gap-3">
-          {/* Email */}
-          <div>
-            <InputField
-              name="email"
-              type="text"
-              icon={PiEnvelopeLight}
-              error={
-                errors?.errors.find((error) => error.path[0] === "email")
-                  ?.message
-              }
-              placeholder="Email"
-              onChange={handleUserInput}
-            />
+          <span className="font-bold text-2xl uppercase text-orange127a">
+            Sign In
+          </span>
+
+          <div className="w-full flex flex-col gap-3">
+            {/* Email */}
+            <div>
+              <InputField
+                name="email"
+                type="text"
+                icon={PiEnvelopeLight}
+                error={
+                  errors?.errors.find((error) => error.path[0] === "email")
+                    ?.message
+                }
+                placeholder="Email"
+                onChange={handleUserInput}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <InputField
+                name="password"
+                type="password"
+                icon={PiLockKeyThin}
+                error={
+                  errors?.errors.find((error) => error.path[0] === "password")
+                    ?.message
+                }
+                placeholder="Password"
+                onChange={handleUserInput}
+              />
+            </div>
           </div>
 
-          {/* Password */}
-          <div>
-            <InputField
-              name="password"
-              type="password"
-              icon={PiLockKeyThin}
-              error={
-                errors?.errors.find((error) => error.path[0] === "password")
-                  ?.message
-              }
-              placeholder="Password"
-              onChange={handleUserInput}
+          <div className="w-full flex flex-col gap-3">
+            <Button
+              action="signIn"
+              type="submit"
+              style="orange"
+              text="SIGN IN"
+              onClick={() => {}}
+            />
+
+            <Button
+              action="signUp"
+              type="button"
+              style="orange-alt"
+              text="SIGN UP"
+              onClick={() => navigate("/sign-up")}
             />
           </div>
-        </div>
-
-        <div className="w-full flex flex-col gap-3">
-          <Button
-            action="signIn"
-            type="submit"
-            style="red"
-            text="SIGN IN"
-            onClick={() => {}}
-          />
-
-          <Button
-            action="signUp"
-            type="button"
-            style="red-alt"
-            text="SIGN UP"
-            onClick={() => {}}
-          />
-        </div>
-      </form>
+        </form>
+      </m.div>
     </div>
   );
 }

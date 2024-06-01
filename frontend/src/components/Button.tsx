@@ -30,8 +30,14 @@ export function Button(props: ButtonProps) {
       case "orange":
         return "font-regular w-full min-w-fit rounded-lg bg-orange127 p-3 text-white shadow-md transition-all hover:bg-orange127z active:scale-[0.97]";
 
+      case "orange-alt":
+        return "font-regular w-full min-w-fit rounded-lg bg-transparent p-3 text-orange127 border-2 border-orange127 shadow-md transition-all hover:text-orange127 hover:border-orange127 active:scale-[0.97]";
+
       case "blue":
         return "font-regular w-full min-w-fit rounded-lg bg-blue127b p-3 text-white shadow-md transition-all hover:bg-blue127 active:scale-[0.97]";
+
+      case "blue-alt":
+        return "font-regular w-full min-w-fit rounded-lg bg-transparent p-3 text-blue127b border-2 border-blue127b shadow-md transition-all hover:text-blue127 hover:border-blue127 active:scale-[0.97]";
 
       case "red":
         return "font-regular w-full min-w-fit rounded-lg bg-red127 p-3 text-white shadow-md transition-all hover:bg-red127b active:scale-[0.97]";
