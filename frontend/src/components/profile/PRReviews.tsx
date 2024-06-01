@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   PiArrowsOutSimpleLight,
   PiBowlFoodBold,
@@ -17,6 +17,7 @@ interface PRReviewsProps {
   currentPage: number;
   reviewsPerPage: number;
   filter: string;
+  setEstablishmentId: Dispatch<SetStateAction<string>>;
 }
 
 export default function PRReviews(props: PRReviewsProps) {
@@ -32,12 +33,17 @@ export default function PRReviews(props: PRReviewsProps) {
     setExpanded(!expanded);
   };
 
+  useEffect(() => {
+    props.setEstablishmentId("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return reviews.length > 0 ? (
     <div className="h-full w-full gap-3 items-stretch flex flex-col">
       {reviews.map((review, index) => {
         return (
           <div key={index} className="w-full h-full flex flex-col gap-3">
-            <div className="text-base127d bg-base127b2 flex flex-col text-sm rounded-lg p-3 w-full h-[75px]">
+            <div className="text-base127d bg-base127b2 flex flex-col text-sm rounded-lg p-3 w-full h-[90px]">
               <span className="flex items-center justify-between font-medium">
                 <span className="flex gap-1 items-center">
                   {review.foodItemId ? (
@@ -62,6 +68,9 @@ export default function PRReviews(props: PRReviewsProps) {
               </span>
 
               <div className="text-justify line-clamp-1">{review.comment}</div>
+              <div className="text-justify mt-2 text-xs line-clamp-1">
+                {review.dateCreated.toDateString()}
+              </div>
             </div>
           </div>
         );

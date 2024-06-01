@@ -5,9 +5,11 @@ import { PRTabs } from "../components/profile/PRTabs";
 import PRReviews from "../components/profile/PRReviews";
 import { Pagination } from "../components/Pagination.tsx";
 import PREstablishments from "../components/profile/PREstablishments.tsx";
+import ESTExpandedView from "../components/feed/ESTExpandedView.tsx";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState<string>("reviews");
+  const [establishmentId, setEstablishmentId] = useState<string>("");
 
   return (
     <m.div
@@ -33,7 +35,7 @@ export default function Profile() {
             </div>
 
             <div
-              className={`z-0 h-full min-h-[400px] items-center flex flex-col justify-between w-full min-w-[600px] rounded-lg bg-base127b p-10 ${
+              className={`z-0 h-full items-center flex flex-col justify-between w-full min-w-[600px] rounded-lg bg-base127b p-10 ${
                 activeTab === "reviews" ? "rounded-tl-none" : "rounded-tr-none"
               }`}
             >
@@ -47,10 +49,17 @@ export default function Profile() {
                   className="w-full"
                 >
                   {activeTab === "reviews" && (
-                    <PRReviews currentPage={1} filter="" reviewsPerPage={10} />
+                    <PRReviews
+                      currentPage={1}
+                      setEstablishmentId={setEstablishmentId}
+                      filter=""
+                      reviewsPerPage={10}
+                    />
                   )}
 
-                  {activeTab === "establishments" && <PREstablishments />}
+                  {activeTab === "establishments" && (
+                    <PREstablishments setEstablishmentId={setEstablishmentId} />
+                  )}
                 </m.div>
               </AnimatePresence>
               <div className="flex items-center">
@@ -61,6 +70,12 @@ export default function Profile() {
                 />
               </div>
             </div>
+
+            {establishmentId !== "" && (
+              <div>
+                <ESTExpandedView establishmentId={establishmentId} />
+              </div>
+            )}
           </div>
         </div>
       </div>
