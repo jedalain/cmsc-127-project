@@ -7,9 +7,12 @@ import { Button } from "../components/Button.tsx";
 import { InputField } from "../components/InputField.tsx";
 import { signInData, signInErrors, signInSchema } from "../utils/schema.ts";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api.ts";
+import axios from "axios";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [signinCredential, setSigninCredential] = useState<signInData>({
     email: "",
     password: "",
@@ -26,6 +29,28 @@ export default function SignIn() {
     }));
   };
 
+  /** API Call - Sign in */
+  const signIn = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await api.post("/", signinCredential);
+      sessionStorage.setItem("tt_token", response.data.token);
+      navigate("/");
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Invalid email or password";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   /** Function - validates inputs in the form. Returns error messages if input is invalid */
   const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +58,7 @@ export default function SignIn() {
     try {
       signInSchema.parse(signinCredential);
       setErrors(null);
-      //   signIn();
+      signIn();
     } catch (error) {
       if (error instanceof ZodError) {
         setErrors(error);
@@ -105,7 +130,8 @@ export default function SignIn() {
               action="signIn"
               type="submit"
               style="orange"
-              text="SIGN IN"
+              disabled={isLoading}
+              text={isLoading ? "SIGNING IN" : "SIGN IN"}
               onClick={() => {}}
             />
 
@@ -113,6 +139,7 @@ export default function SignIn() {
               action="signUp"
               type="button"
               style="orange-alt"
+              disabled={isLoading}
               text="SIGN UP"
               onClick={() => navigate("/sign-up")}
             />

@@ -6,10 +6,13 @@ import { signUpData, signUpErrors, signUpSchema } from "../utils/schema.ts";
 import { InputField } from "../components/InputField.tsx";
 import { Button } from "../components/Button.tsx";
 import { useNavigate } from "react-router-dom";
-import { PiHouse } from "react-icons/pi";
+import { PiHouse, PiWarningCircle } from "react-icons/pi";
+import api from "../api/api.ts";
+import axios from "axios";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [successfulSignUp, setSuccessfulSignUp] = useState<boolean | null>(
     null
   );
@@ -24,6 +27,29 @@ export default function SignUp() {
   });
   const [errors, setErrors] = useState<signUpErrors | null>(null);
 
+  /** API Call - Sign up */
+  const signUp = async () => {
+    setIsLoading(true);
+    try {
+      await api.post("/", signUpCredential);
+      setSuccessfulSignUp(true);
+      navigate("/sign-in");
+    } catch (error) {
+      setSuccessfulSignUp(false);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot fetch products";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   /** Function - updates the signUpCredential state with the values entered */
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,14 +60,6 @@ export default function SignUp() {
     }));
   };
 
-  /** Function - updates the role in signUpCredential state with the role chosen */
-  const handleRoleChange = (role: string) => {
-    setSignUpCredential((prevState) => ({
-      ...prevState,
-      role: role,
-    }));
-  };
-
   /** Function - validates inputs in the form. Returns error messages if input is invalid */
   const handleSignUp = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,7 +67,7 @@ export default function SignUp() {
     try {
       signUpSchema.parse(signUpCredential);
       setErrors(null);
-      //   signUp();
+      signUp();
     } catch (error) {
       if (error instanceof ZodError) {
         setErrors(error);
@@ -69,128 +87,170 @@ export default function SignUp() {
         }}
         className="h-screen w-full flex flex-col justify-center items-center"
       >
-        <form
-          onSubmit={handleSignUp}
-          className="h-fit max-h-[39rem] w-full max-w-[20rem] rounded-lg shadow-md bg-base127 flex flex-col p-9 items-center justify-center gap-6"
-        >
-          <span
-            className="bg-base127 text-blue127b p-2 rounded-full size-10 flex items-center justify-center cursor-pointer active:scale-95 transition-all active:bg-base127b"
-            onClick={() => navigate("/")}
+        {successfulSignUp === null && (
+          <form
+            onSubmit={handleSignUp}
+            className="h-fit max-h-[39rem] w-full max-w-[20rem] rounded-lg shadow-md bg-base127 flex flex-col p-9 items-center justify-center gap-6"
           >
-            <PiHouse size={24} />
-          </span>
+            <span
+              className="bg-base127 text-blue127b p-2 rounded-full size-10 flex items-center justify-center cursor-pointer active:scale-95 transition-all active:bg-base127b"
+              onClick={() => navigate("/")}
+            >
+              <PiHouse size={24} />
+            </span>
 
-          <span className="font-bold text-2xl uppercase text-blue127">
-            Sign Up
-          </span>
+            <span className="font-bold text-2xl uppercase text-blue127">
+              Sign Up
+            </span>
 
-          <div className="w-full flex flex-col overflow-y-auto px-1 gap-3">
-            {/* First Name */}
-            <div>
-              <InputField
-                name="fname"
-                type="text"
-                error={
-                  errors?.errors.find((error) => error.path[0] === "fname")
-                    ?.message
-                }
-                placeholder="First Name"
-                onChange={handleUserInput}
-              />
+            <div className="w-full flex flex-col overflow-y-auto p-1 gap-3">
+              {/* First Name */}
+              <div>
+                <InputField
+                  name="fname"
+                  type="text"
+                  error={
+                    errors?.errors.find((error) => error.path[0] === "fname")
+                      ?.message
+                  }
+                  placeholder="First Name"
+                  onChange={handleUserInput}
+                />
+              </div>
+
+              {/* Middle name */}
+              <div>
+                <InputField
+                  name="mname"
+                  type="text"
+                  error={
+                    errors?.errors.find((error) => error.path[0] === "mname")
+                      ?.message
+                  }
+                  placeholder="Middle Name"
+                  onChange={handleUserInput}
+                />
+              </div>
+
+              {/* Last name */}
+              <div>
+                <InputField
+                  name="lname"
+                  type="text"
+                  error={
+                    errors?.errors.find((error) => error.path[0] === "lname")
+                      ?.message
+                  }
+                  placeholder="Last Name"
+                  onChange={handleUserInput}
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <InputField
+                  name="email"
+                  type="text"
+                  error={
+                    errors?.errors.find((error) => error.path[0] === "email")
+                      ?.message
+                  }
+                  placeholder="Email"
+                  onChange={handleUserInput}
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <InputField
+                  name="password"
+                  type="password"
+                  error={
+                    errors?.errors.find((error) => error.path[0] === "password")
+                      ?.message
+                  }
+                  placeholder="Password"
+                  onChange={handleUserInput}
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <InputField
+                  name="confirmPassword"
+                  type="password"
+                  error={
+                    errors?.errors.find(
+                      (error) => error.path[0] === "confirmPassword"
+                    )?.message
+                  }
+                  placeholder="Confirm Password"
+                  onChange={handleUserInput}
+                />
+              </div>
             </div>
 
-            {/* Middle name */}
-            <div>
-              <InputField
-                name="mname"
-                type="text"
-                error={
-                  errors?.errors.find((error) => error.path[0] === "mname")
-                    ?.message
-                }
-                placeholder="Middle Name"
-                onChange={handleUserInput}
+            <div className="w-full flex flex-col gap-3">
+              <Button
+                action="signUp"
+                type="submit"
+                style="blue"
+                disabled={isLoading}
+                text={isLoading ? "PROCESSING" : "CREATE ACCOUNT"}
+                onClick={() => {}}
+              />
+
+              <Button
+                action="signIn"
+                style="blue-alt"
+                type="button"
+                disabled={isLoading}
+                text="SIGN IN"
+                onClick={() => {
+                  navigate("/sign-in");
+                }}
               />
             </div>
+          </form>
+        )}
 
-            {/* Last name */}
-            <div>
-              <InputField
-                name="lname"
-                type="text"
-                error={
-                  errors?.errors.find((error) => error.path[0] === "lname")
-                    ?.message
-                }
-                placeholder="Last Name"
-                onChange={handleUserInput}
-              />
+        {successfulSignUp !== null &&
+          (successfulSignUp ? (
+            ""
+          ) : (
+            <div className="h-fit max-h-[39rem] w-full max-w-[20rem] rounded-lg shadow-md bg-base127 flex flex-col p-9 items-center justify-center gap-6">
+              <span
+                className="bg-base127 text-blue127b p-2 rounded-full size-10 flex items-center justify-center cursor-pointer active:scale-95 transition-all active:bg-base127b"
+                onClick={() => navigate("/")}
+              >
+                <PiHouse size={24} />
+              </span>
+
+              <div className="w-full flex flex-col items-center text-red127 overflow-y-auto px-1 gap-3">
+                <span className="flex font-medium text-xl flex-col justify-center items-center">
+                  <PiWarningCircle size={24} />
+                  UH-OH!
+                </span>
+                <span className="text-center text-sm">
+                  There was a problem encountered while creating your account.
+                  <br></br>
+                  Please try again
+                </span>
+              </div>
+
+              <div className="w-full flex flex-col gap-3">
+                <Button
+                  action="signUp"
+                  type="button"
+                  style="blue"
+                  text="TRY AGAIN"
+                  onClick={() => {
+                    window.location.reload();
+                  }}
+                />
+              </div>
             </div>
-
-            {/* Email */}
-            <div>
-              <InputField
-                name="email"
-                type="text"
-                error={
-                  errors?.errors.find((error) => error.path[0] === "email")
-                    ?.message
-                }
-                placeholder="Email"
-                onChange={handleUserInput}
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <InputField
-                name="password"
-                type="password"
-                error={
-                  errors?.errors.find((error) => error.path[0] === "password")
-                    ?.message
-                }
-                placeholder="Password"
-                onChange={handleUserInput}
-              />
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <InputField
-                name="confirmPassword"
-                type="password"
-                error={
-                  errors?.errors.find(
-                    (error) => error.path[0] === "confirmPassword"
-                  )?.message
-                }
-                placeholder="Confirm Password"
-                onChange={handleUserInput}
-              />
-            </div>
-          </div>
-
-          <div className="w-full flex flex-col gap-3">
-            <Button
-              action="signUp"
-              type="submit"
-              style="blue"
-              text="CREATE ACCOUNT"
-              onClick={() => {}}
-            />
-
-            <Button
-              action="signIn"
-              style="blue-alt"
-              type="button"
-              text="SIGN IN"
-              onClick={() => {
-                navigate("/sign-in");
-              }}
-            />
-          </div>
-        </form>
+          ))}
       </m.div>
     </div>
   );
