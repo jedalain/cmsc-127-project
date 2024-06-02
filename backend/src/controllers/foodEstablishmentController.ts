@@ -5,11 +5,11 @@ import { checkExistence, convertBigInt } from './helper';
 export const addFoodEstablishment = async (req: Request, res: Response) => {
   try {
 
-    const { name, address, avgRating, userId } = req.body;
-    const sql = 'INSERT INTO foodEstablishments (name, address, avgRating, userId) VALUES (?, ?, ?, ?)';
+    const { name, address, userId } = req.body;
+    const sql = 'INSERT INTO foodEstablishments (name, address, userId) VALUES (?, ?, ?)';
 
-    const result = await query(sql, [name, address, avgRating, userId]);
-    res.status(201).json(convertBigInt({ id: result.insertId, name, address, avgRating, userId }));
+    const result = await query(sql, [name, address, userId]);
+    res.status(201).json(convertBigInt({ id: result.insertId, name, address, userId }));
 
   } 
 
@@ -23,7 +23,7 @@ export const addFoodEstablishment = async (req: Request, res: Response) => {
 export const updateFoodEstablishment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, address, avgRating } = req.body;
+    const { name, address } = req.body;
 
     // check if food estab that we want to update exist
     const exists = await checkExistence('foodEstablishments', 'establishmentId', id);
@@ -31,11 +31,11 @@ export const updateFoodEstablishment = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Food Establishment not found' });
     }
 
-    const sql = 'UPDATE foodEstablishments SET name = ?, address = ?, avgRating = ? WHERE establishmentId = ?';
+    const sql = 'UPDATE foodEstablishments SET name = ?, address = ? WHERE establishmentId = ?';
 
 
-    await query(sql, [name, address, avgRating, id]);
-    res.status(200).json(convertBigInt({ id, name, address, avgRating }));
+    await query(sql, [name, address, id]);
+    res.status(200).json(convertBigInt({ id, name, address }));
   } 
   
   catch (error) {
