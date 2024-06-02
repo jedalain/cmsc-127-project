@@ -61,7 +61,9 @@ export function Button(props: ButtonProps) {
       <button
         type={props.type}
         name={props.action}
-        className={getButtonStyle()}
+        className={
+          getButtonStyle() + " disabled:opacity-60 disabled:pointer-events-none"
+        }
         disabled={props.disabled ? props.disabled : false}
         onClick={props.onClick}
       >

@@ -7,7 +7,7 @@ import { foodItem, mcflurry, review } from "../../models/Models.tsx";
 import { Pagination } from "../Pagination.tsx";
 import ReviewCard from "../ReviewCard.tsx";
 import { ReviewModal } from "./ReviewModal.tsx";
-import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
+import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { MdEdit } from "react-icons/md";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 

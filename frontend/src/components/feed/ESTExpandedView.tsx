@@ -25,7 +25,7 @@ import { MdArrowBack, MdEdit } from "react-icons/md";
 import { InputField } from "../InputField.tsx";
 import { FIFilter } from "./FIFilter.tsx";
 import { ScrollToTop } from "../../utils/helper.ts";
-import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
+import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { PRCreateEstablishment } from "../profile/PRCreateEstablishment.tsx";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 

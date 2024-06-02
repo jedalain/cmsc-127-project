@@ -10,7 +10,7 @@ import {
 import { foodEstablishment, mcdo } from "../../models/Models.tsx";
 import { Button } from "../Button.tsx";
 import { PRCreateEstablishment } from "./PRCreateEstablishment.tsx";
-import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
+import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { ScrollToTop } from "../../utils/helper.ts";
 
 interface PREstablishmentsProps {

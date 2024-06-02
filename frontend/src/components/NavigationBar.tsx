@@ -1,15 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { InputField } from "./InputField.tsx";
 import { PiMagnifyingGlass } from "react-icons/pi";
+import { useContext } from "react";
+import { AuthPageContext } from "../pages/AuthPage.tsx";
 
-interface NavigationBarProps {
-  isLoggedIn: boolean;
-}
-
-export default function NavigationBar(props: NavigationBarProps) {
+export default function NavigationBar() {
   const location = useLocation();
   const path = location.pathname;
 
+  const { isLoggedIn } = useContext(AuthPageContext);
   return (
     <header className=" z-10 flex w-full flex-wrap border-b-2 border-base127b  bg-base127 py-3 text-sm sm:flex-nowrap sm:justify-start sm:py-0">
       <nav
@@ -32,7 +31,7 @@ export default function NavigationBar(props: NavigationBarProps) {
               />
             </span>
           )}
-          {props.isLoggedIn ? (
+          {isLoggedIn ? (
             <Link
               to={"/profile"}
               className="text-black127 hover:text-orange127 transition-all duration-75"
@@ -43,11 +42,7 @@ export default function NavigationBar(props: NavigationBarProps) {
             ""
           )}
           <div className="text-black127 hover:text-orange127 cursor-pointer transition-all duration-75">
-            {props.isLoggedIn ? (
-              "Sign Out"
-            ) : (
-              <Link to={"/sign-in"}>Sign in</Link>
-            )}
+            {isLoggedIn ? "Sign Out" : <Link to={"/sign-in"}>Sign in</Link>}
           </div>
         </div>
       </nav>

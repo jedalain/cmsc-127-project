@@ -1,26 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion as m } from "framer-motion";
 import ESTCard from "../components/feed/ESTCard.tsx";
-import { foodEstablishment, mcdo } from "../models/Models.tsx";
+import { foodEstablishment } from "../models/Models.tsx";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ScrollToTop } from "../utils/helper.ts";
 import { ESTFilter } from "../components/feed/ESTFilter.tsx";
+import api from "../api/api.ts";
+import axios from "axios";
 
 export default function Feed() {
   const navigate = useNavigate();
   const [filterApplied, setFilterApplied] = useState<string>("");
-  const [establishments] = useState<foodEstablishment[]>([
-    mcdo,
-    mcdo,
-    mcdo,
-    mcdo,
-    mcdo,
-  ]);
+  const [establishments, setEstablishments] = useState<foodEstablishment[]>([]);
 
-  // fetches the id from the parameter
+  // parameter/s from url
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const establishmentId = searchParams.get("id") || "";
+  const keyword = searchParams.get("keyword") || ""; // keyword
+  const establishmentId = searchParams.get("id") || ""; // id
+
+  /** API Call - fetch product from database */
+  const fetchEstablishments = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+
+      const response = await api.get("/", {
+        headers: {
+          Authorization: token,
+
+          keyword: keyword,
+          filter: filterApplied,
+        },
+      });
+
+      setEstablishments(response.data.products);
+    } catch (error) {
+      setEstablishments([]);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot fetch products";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
 
   /** Function - updates the state of searchInput  */
   const openEstablishment = (establishmentId: string) => {
@@ -31,6 +57,11 @@ export default function Feed() {
       ScrollToTop();
     }
   };
+
+  useEffect(() => {
+    fetchEstablishments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterApplied, keyword]);
 
   return (
     <m.div
