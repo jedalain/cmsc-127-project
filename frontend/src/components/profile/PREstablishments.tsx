@@ -1,30 +1,24 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { AnimatePresence, motion as m } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import {
   PiArrowsOutSimpleLight,
   PiPlusCircleFill,
   PiStarFill,
 } from "react-icons/pi";
 
-import { foodEstablishment, mcdo } from "../../models/Models.tsx";
+import { foodEstablishment } from "../../models/Models.tsx";
 import { Button } from "../Button.tsx";
 import { PRCreateEstablishment } from "./PRCreateEstablishment.tsx";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { ScrollToTop } from "../../utils/helper.ts";
 
 interface PREstablishmentsProps {
+  establishments: foodEstablishment[];
   setEstablishmentId: Dispatch<SetStateAction<string>>;
 }
 export default function PREstablishments(props: PREstablishmentsProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
-  const navigate = useNavigate();
   const [newEstablishment, setNewEstablishment] = useState<boolean>(false);
-  const [establishments, setEstablishments] = useState<foodEstablishment[]>([
-    mcdo,
-    mcdo,
-    mcdo,
-  ]);
 
   const isOwnerRoute = true;
 
@@ -50,7 +44,7 @@ export default function PREstablishments(props: PREstablishmentsProps) {
         </span>
       </span>
       <div className="h-full w-full gap-3 grid grid-cols-3 grid-rows-1">
-        {establishments.map((establishment, index) => {
+        {props.establishments.map((establishment, index) => {
           return (
             <div key={index} className="w-full h-full flex flex-col gap-3">
               <div className="text-base127d gap-2 bg-base127b2 flex flex-col text-sm rounded-lg p-3 w-full h-[75px]">

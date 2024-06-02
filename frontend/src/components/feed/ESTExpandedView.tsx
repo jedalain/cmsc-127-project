@@ -168,7 +168,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   /** useEffect - fetch establishment details on load */
   useEffect(() => {
-    // fetchEstablishment();
+    fetchEstablishment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

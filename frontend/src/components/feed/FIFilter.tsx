@@ -131,7 +131,12 @@ export function FIPriceFilter(props: FIFilterProps) {
   );
 }
 
-export function FIReviewFilter(props: FIFilterProps) {
+interface FIReviewFilterrProps {
+  filterApplied: string;
+  setFilterApplied: Dispatch<SetStateAction<string>>;
+}
+
+export function FIReviewFilter(props: FIReviewFilterrProps) {
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const monthYearArray = generateFilterByMonthYear();
 
@@ -167,7 +172,7 @@ export function FIReviewFilter(props: FIFilterProps) {
       </span>
 
       <div
-        className={`duration absolute z-10 max-h-[150px] overflow-y-auto mt-7 w-full rounded-lg border border-base127b bg-base127b p-2 shadow-md shadow-base1 transition-all ${
+        className={`duration absolute z-10 max-h-[150px] overflow-y-auto mt-7 w-full max-w-[12rem] rounded-lg border border-base127b bg-base127b p-2 shadow-md shadow-base1 transition-all ${
           filterOpen
             ? "visible top-0 block opacity-100"
             : "pointer-events-none top-[-0.5rem] opacity-0"

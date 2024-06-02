@@ -17,10 +17,7 @@ import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 import api from "../../api/api.ts";
 import axios from "axios";
 import { FIReviewFilter } from "./FIFilter.tsx";
-import {
-  filterReviewsByDate,
-  generateFilterByMonthYear,
-} from "../../utils/helper.ts";
+import { filterReviewsByDate } from "../../utils/helper.ts";
 
 interface FIExpandedViewProps {
   establishmentId: string;
@@ -37,7 +34,6 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
   // filter
   const [foodReviewFilter, setFoodReviewFilter] = useState<string>("");
-  const monthYearArray = generateFilterByMonthYear();
   const filteredReviews = filterReviewsByDate(
     foodReviewFilter,
     foodItemReviews
@@ -89,7 +85,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
   /** useEffect - fetch details of food item */
   useEffect(() => {
-    // fetchFoodItem();
+    fetchFoodItem();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -171,7 +167,6 @@ export function FIExpandedView(props: FIExpandedViewProps) {
               <span className="flex items-center justify-between text-orange127a font-medium">
                 <span>Reviews:</span>
                 <FIReviewFilter
-                  choices={monthYearArray}
                   filterApplied={foodReviewFilter}
                   setFilterApplied={setFoodReviewFilter}
                 />

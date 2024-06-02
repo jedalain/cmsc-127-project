@@ -35,7 +35,7 @@ export interface user {
   role: string;
   email: string;
   fname: string;
-  mname: string;
+  mname?: string;
   lname: string;
   establishments: foodEstablishment[];
   reviews: review[];
@@ -46,6 +46,7 @@ export interface user {
  * SAMPLE DATA
  *
  */
+
 export const foodReview: review = {
   reviewId: "rev123",
   title: "Delicious",
@@ -154,3 +155,28 @@ export const arrayOfReviews: review[] = [
   foodReview,
   foodReview,
 ];
+
+export const sampleUser: user = {
+  userId: "100",
+  role: "owner",
+  email: "test@gmail.com",
+  fname: "John",
+  lname: "Doe",
+  establishments: [mcdo, mcdo, mcdo, mcdo],
+  reviews: [
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+  ],
+};

@@ -6,27 +6,17 @@ import {
   PiStorefrontBold,
 } from "react-icons/pi";
 
-import {
-  establishmentReview,
-  foodReview,
-  review,
-} from "../../models/Models.tsx";
+import { review } from "../../models/Models.tsx";
 import { ReviewModal } from "../feed/ReviewModal.tsx";
 
 interface PRReviewsProps {
-  currentPage: number;
-  reviewsPerPage: number;
-  filter: string;
+  reviews: review[];
   setEstablishmentId: Dispatch<SetStateAction<string>>;
 }
 
 export default function PRReviews(props: PRReviewsProps) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [chosenReview, setChosenReview] = useState<review | null>(null);
-  const [reviews, setReviews] = useState<review[]>([
-    establishmentReview,
-    foodReview,
-  ]);
 
   /** Function - closes the review modal */
   const toggleModal = () => {
@@ -38,9 +28,9 @@ export default function PRReviews(props: PRReviewsProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return reviews.length > 0 ? (
+  return props.reviews.length > 0 ? (
     <div className="h-full w-full gap-3 items-stretch flex flex-col">
-      {reviews.map((review, index) => {
+      {props.reviews.map((review, index) => {
         return (
           <div key={index} className="w-full h-full flex flex-col gap-3">
             <div className="text-base127d bg-base127b2 flex flex-col text-sm rounded-lg p-3 w-full h-[90px]">
