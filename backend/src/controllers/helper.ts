@@ -31,3 +31,32 @@ export const convertBigInt = (data: any): any => {
     return data;
   }
 };
+
+
+//helper function for recalculating average rating for:
+// FOOD ESTABLISHMENTS
+
+export const avgEstab = async (establishmentId: number) => {
+  const sql = 'SELECT AVG(rating) as avgRating FROM reviews WHERE establishmentId = ? AND status != "DELETED"';
+  const result = await query(sql, [establishmentId]);
+
+  const avgRating = result[0]?.avgRating || 0;
+  
+  const updateSql = 'UPDATE foodEstablishments SET avgRating = ? WHERE establishmentId = ?';
+  await query(updateSql, [avgRating, establishmentId]);
+
+};
+
+
+
+//helper function for recalculating average rating for:
+// FOOD ITEMS
+
+export const avgFoodItem = async (foodId: number) => {
+  const sql = 'SELECT AVG(rating) as avgRating FROM reviews WHERE foodId = ? AND status != "DELETED"';
+  const result = await query(sql, [foodId]);
+  const avgRating = result[0]?.avgRating || 0;
+  
+  const updateSql = 'UPDATE foodItems SET avgRating = ? WHERE foodId = ?';
+  await query(updateSql, [avgRating, foodId]);
+};

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { query } from '../config/dbConfig';
-import { checkExistence, convertBigInt } from './helper';
+import { checkExistence, convertBigInt, avgEstab, avgFoodItem } from './helper';
 
 
 export const addReview = async (req: Request, res: Response) => {
   try {
-    const { rating, title, comment, userId, establishmentId, foodId, reviewFor } = req.body;
+    const { rating, title, comment, userId, establishmentId, foodId } = req.body;
     const status = 'CREATED'; // status of newly created review
 
     // Check if userId exists
@@ -13,23 +13,39 @@ export const addReview = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid userId' });
     }
 
-    // Check if establishmentId exists if reviewFor includes 'estab'
-    if ((reviewFor === 'estab' || reviewFor === 'estabFood') && !await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
-      return res.status(400).json({ error: 'Invalid establishmentId' });
+    // Review for food establishment
+    if (establishmentId) {
+      if (!await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
+        return res.status(400).json({ error: 'Invalid establishmentId' });
+      }
     }
 
-    // Check if foodId exists if reviewFor includes 'food'
-    if ((reviewFor === 'food' || reviewFor === 'estabFood') && !await checkExistence('foodItems', 'foodId', foodId)) {
-      return res.status(400).json({ error: 'Invalid foodId' });
+    // Review for food item
+    if (foodId) {
+      if (!await checkExistence('foodItems', 'foodId', foodId)) {
+        return res.status(400).json({ error: 'Invalid foodId' });
+      }
     }
 
-    const sql = 'INSERT INTO reviews (status, reviewFor, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const result = await query(sql, [status, reviewFor, rating, title, comment, userId, establishmentId, foodId]);
-   
-    res.status(201).json(convertBigInt({ id: result.insertId, status, reviewFor, rating, title, comment, userId, establishmentId, foodId }));
-  } 
-  
-  catch (error) {
+    // Ensure at least one of establishmentId or foodId is provided
+    if (!establishmentId && !foodId) {
+      return res.status(400).json({ error: 'Either establishmentId or foodId must be provided' });
+    }
+
+    const sql = 'INSERT INTO reviews (status, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const result = await query(sql, [status, rating, title, comment, userId, establishmentId || null, foodId || null]);
+
+    // Calculate average rating
+    if (establishmentId) {
+      await avgEstab(establishmentId);
+    }
+
+    if (foodId) {
+      await avgFoodItem(foodId);
+    }
+
+    res.status(201).json(convertBigInt({ id: result.insertId, status, rating, title, comment, userId, establishmentId, foodId }));
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
@@ -50,11 +66,24 @@ export const updateReview = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Review not found or has been deleted' });
     }
 
+    const { establishmentId, foodId } = reviewCheckResult[0]; // extract ids from the query
     const dateModified = new Date(); // set date modified as current date and time
 
     const sql = 'UPDATE reviews SET status = ?, reviewFor = ?, rating = ?, title = ?, comment = ?, dateModified = ? WHERE reviewId = ?';
     
     await query(sql, [status, reviewFor, rating, title, comment, dateModified, id]);
+    
+    //update review
+    if (establishmentId) {
+      await avgEstab(establishmentId);
+    }
+
+    
+    if (foodId) {
+      await avgFoodItem(foodId);
+    }
+
+    
     res.status(200).json(convertBigInt({ id, status, reviewFor, rating, title, comment, dateModified }));
   } 
   
@@ -68,9 +97,31 @@ export const deleteReview = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const status = 'DELETED';  // flag as deleted so the record stays in db
+    
+    //check if review that we want to delete exist
+    const reviewCheckSql = 'SELECT establishmentId, foodId, reviewFor FROM reviews WHERE reviewId = ?';
+    const reviewCheckResult = await query(reviewCheckSql, [id]);
+
+    if (reviewCheckResult.length === 0) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+    
+    const { establishmentId, foodId } = reviewCheckResult[0]; // extract id from the query
     const sql = 'UPDATE reviews SET status = ? WHERE reviewId = ?';
 
     await query(sql, [status, id]);
+
+    //UPDATE REVIEW
+
+    if (establishmentId) {
+      await avgEstab(establishmentId);
+    }
+
+    
+    if (foodId) {
+      await avgFoodItem(foodId);
+    }
+
     
     res.status(204).send();
   } 
@@ -100,25 +151,34 @@ export const getReview = async (req: Request, res: Response) => {
   }
 };
 
-//get review for specific review (estab, food, estab and food)
+//get review for specific review (review for estab or for food)
 export const getReviewFor = async (req: Request, res: Response) => {
   try {
-    const { reviewFor } = req.query;
+    const { establishmentId, foodId } = req.query;
 
-    // get only those reviews na hindi deleted
+    // Validate query parameters
+    if (!establishmentId && !foodId) {
+      return res.status(400).json({ error: 'Either establishmentId or foodId must be provided' });
+    }
+
     let sql = 'SELECT * FROM reviews WHERE status != "DELETED"';
     const params = [];
 
-    if (reviewFor) {
-      sql += ' AND reviewFor = ?';
-      params.push(reviewFor);
+    // Add establishmentId to the query if provided
+    if (establishmentId) {
+      sql += ' AND establishmentId = ?';
+      params.push(establishmentId);
+    }
+
+    // Add foodId to the query if provided
+    if (foodId) {
+      sql += ' AND foodId = ?';
+      params.push(foodId);
     }
 
     const result = await query(sql, params);
     res.status(200).json(convertBigInt(result));
-  } 
-  
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
