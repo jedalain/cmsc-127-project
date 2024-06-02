@@ -5,7 +5,8 @@ import {
   deleteReview,
   getReview,  // by id
   getAllReviews, 
-  getReviewFor // // by estab review or by food review
+  getReviewFor, // // by estab review or by food review
+  getAllReviewsWithHighRating
 } from '../controllers/reviewController';
 
 const router = Router();
@@ -24,5 +25,7 @@ router.get('/filtered', getReviewFor);
 
 //get all reviews
 router.get('/all', getAllReviews);
+//get all high rating reviews
+router.get('/allHighRating', getAllReviewsWithHighRating);
 
 export default router;

@@ -198,3 +198,17 @@ export const getAllReviews = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+// get all review except deleted
+export const getAllReviewsWithHighRating = async (req: Request, res: Response) => {
+  try {
+    const sql = 'SELECT * FROM reviews WHERE status != "DELETED" AND rating >= 4 ORDER BY rating';
+    const result = await query(sql);
+    
+    res.status(200).json(convertBigInt(result));
+  } 
+  
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
