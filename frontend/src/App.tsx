@@ -1,18 +1,15 @@
-import { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Landing from "./pages/Landing.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
-import AuthPage from "./pages/LoggedInPage.tsx";
-import LoggedOutPage from "./pages/LoggedOutPage.tsx";
+import AuthPage from "./pages/AuthPage.tsx";
 import Feed from "./pages/Feed.tsx";
 import Profile from "./pages/Profile.tsx";
 import ESTExpandedView from "./components/feed/ESTExpandedView.tsx";
+import { InexistingPage } from "./pages/InexistentPage.tsx";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -51,6 +48,10 @@ function App() {
     {
       path: "/sign-up",
       element: <SignUp />,
+    },
+    {
+      path: "/*",
+      element: <InexistingPage />,
     },
   ]);
 
