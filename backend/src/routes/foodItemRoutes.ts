@@ -8,7 +8,7 @@ import {
   getAllFoodItems,
   getFoodItemsByEstablishment,
   getFoodItemsByTypeAndEstablishment,
-  getFoodItemsByEstablishmentAccordingToPrice,
+  getAllFoodItemsClassification
 } from '../controllers/foodItemController';
 
 const router = Router();
@@ -27,6 +27,6 @@ router.get('/establishment/:establishmentId/:classification', getFoodItemsByType
 // OR
 // http://localhost:8000/food-items/establishment/1000?byPrice=true
 router.get('/establishment/:establishmentId', getFoodItemsByEstablishment);
-// router.get('/establishment/byPrice/:establishmentId', getFoodItemsByEstablishmentAccordingToPrice);
+router.get('/get/classification/', getAllFoodItemsClassification);
 
 export default router;
