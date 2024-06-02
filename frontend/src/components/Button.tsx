@@ -42,6 +42,9 @@ export function Button(props: ButtonProps) {
       case "blue-alt":
         return "font-regular w-full min-w-fit rounded-lg bg-transparent p-3 text-blue127b border-2 border-blue127b shadow-md transition-all hover:text-blue127 hover:border-blue127 active:scale-[0.97]";
 
+      case "modal-blue":
+        return "font-regular w-full min-w-fit rounded-lg bg-blue127b p-2 text-sm text-white shadow-md transition-all hover:bg-blue127 active:scale-[0.97]";
+
       case "red":
         return "font-regular w-full min-w-fit rounded-lg bg-red127 p-3 text-white shadow-md transition-all hover:bg-red127b active:scale-[0.97]";
 

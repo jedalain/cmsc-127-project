@@ -60,6 +60,7 @@ export default function Landing() {
                 name="search"
                 placeholder="Find an establishment or a food item"
                 onChange={handleSearchInput}
+                defaultValue={searchInput}
                 type="text"
               />
             </span>
