@@ -4,17 +4,17 @@ import { checkExistence, convertBigInt } from './helper';
 
 export const addFoodItem = async (req: Request, res: Response) => {
   try {
-    const { classification, name, price, avgRating, establishmentId } = req.body;
+    const { classification, name, price, establishmentId } = req.body;
 
     // Check if establishmentId exists
     if (!await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
       return res.status(400).json({ error: 'Invalid establishmentId' });
     }
 
-    const sql = 'INSERT INTO foodItems (classification, name, price, avgRating, establishmentId) VALUES (?, ?, ?, ?, ?)';
-    const result = await query(sql, [classification, name, price, avgRating, establishmentId]);
+    const sql = 'INSERT INTO foodItems (classification, name, price, establishmentId) VALUES (?, ?, ?, ?)';
+    const result = await query(sql, [classification, name, price, establishmentId]);
     
-    res.status(201).json(convertBigInt({ id: result.insertId, classification, name, price, avgRating, establishmentId }));
+    res.status(201).json(convertBigInt({ id: result.insertId, classification, name, price, establishmentId }));
   } 
   catch (error) {
     console.error(error);
@@ -25,17 +25,17 @@ export const addFoodItem = async (req: Request, res: Response) => {
 export const updateFoodItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { classification, name, price, avgRating } = req.body;
+    const { classification, name, price } = req.body;
 
     // Check if food item exists
     if (!await checkExistence('foodItems', 'foodId', id)) {
       return res.status(404).json({ error: 'Food Item not found' });
     }
 
-    const sql = 'UPDATE foodItems SET classification = ?, name = ?, price = ?, avgRating = ? WHERE foodId = ?';
+    const sql = 'UPDATE foodItems SET classification = ?, name = ?, price = ? WHERE foodId = ?';
 
-    await query(sql, [classification, name, price, avgRating, id]);
-    res.status(200).json(convertBigInt({ id, classification, name, price, avgRating}));
+    await query(sql, [classification, name, price, id]);
+    res.status(200).json(convertBigInt({ id, classification, name, price}));
 
   } catch (error) {
     console.error(error);
@@ -122,6 +122,25 @@ export const getFoodItemsByEstablishment = async (req: Request, res: Response) =
   }
 };
 
+//view all food item from an establishment
+export const getFoodItemsByEstablishmentAccordingToPrice = async (req: Request, res: Response) => {
+  try {
+    const { establishmentId } = req.params;
+
+    // Check if establishmentId exists
+    if (!await checkExistence('foodEstablishments', 'establishmentId', establishmentId)) {
+      return res.status(400).json({ error: 'Invalid establishmentId' });
+    }
+
+    const sql = 'SELECT * FROM foodItems WHERE establishmentId = ? ORDER BY price';
+    const result = await query(sql, [establishmentId]);
+
+    res.status(200).json(convertBigInt(result));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 //view all food item from an estab that belong to a food type
 export const getFoodItemsByTypeAndEstablishment = async (req: Request, res: Response) => {
