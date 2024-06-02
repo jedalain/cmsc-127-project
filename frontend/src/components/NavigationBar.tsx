@@ -1,18 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
-import { InputField } from "./InputField.tsx";
-import { PiMagnifyingGlass } from "react-icons/pi";
+import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthPageContext } from "../pages/AuthPage.tsx";
 
 export default function NavigationBar() {
-  const location = useLocation();
-  const path = location.pathname;
-
   const { isLoggedIn } = useContext(AuthPageContext);
+
   return (
-    <header className=" z-10 flex w-full flex-wrap border-b-2 border-base127b  bg-base127 py-3 text-sm sm:flex-nowrap sm:justify-start sm:py-0">
+    <header className=" z-10 flex w-full flex-wrap border-b-2 border-base127b  bg-base127 py-2 text-sm sm:flex-nowrap sm:justify-start sm:py-0">
       <nav
-        className="a relative text-black127 h-[60px] mx-auto w-full max-w-[1080px] px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8"
+        className="a relative text-black127 h-[60px] mx-auto w-full max-w-[1080px] px-4 flex items-center justify-between sm:px-6 lg:px-8"
         aria-label="Global"
       >
         <Link to={"/"} className="text-lg font-semibold">
@@ -20,17 +16,6 @@ export default function NavigationBar() {
         </Link>
 
         <div className="flex items-center gap-9">
-          {path !== "/" && (
-            <span>
-              <InputField
-                name="search"
-                placeholder="Search"
-                icon={PiMagnifyingGlass}
-                onChange={() => {}}
-                type="text"
-              />
-            </span>
-          )}
           {isLoggedIn ? (
             <Link
               to={"/profile"}
