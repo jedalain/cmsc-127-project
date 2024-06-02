@@ -1,7 +1,7 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion as m } from "framer-motion";
-import { PiMagnifyingGlass } from "react-icons/pi";
+import { PiBowlFood, PiStorefront } from "react-icons/pi";
 
 import { InputField } from "../components/InputField.tsx";
 import { Button } from "../components/Button.tsx";
@@ -17,26 +17,22 @@ export default function Landing() {
   };
 
   /** Function - triggers search function when user hits enter  */
-  const onEnterSearch = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      const searchValue = searchInput.trim();
-      if (searchValue !== "") {
-        navigate(`/establishments?keyword=${encodeURIComponent(searchValue)}`);
-        ScrollToTop();
-      } else {
-        navigate("/establishments");
-      }
-    }
-  };
-
-  /** Function - triggers search function when user hits enter  */
-  const onButtonSearch = () => {
+  const searchEstablishment = () => {
     const searchValue = searchInput.trim();
     if (searchValue !== "") {
       navigate(`/establishments?keyword=${encodeURIComponent(searchValue)}`);
       ScrollToTop();
     } else {
       navigate("/establishments");
+    }
+  };
+  const searchFoodItem = () => {
+    const searchValue = searchInput.trim();
+    if (searchValue !== "") {
+      navigate(`/food-items?keyword=${encodeURIComponent(searchValue)}`);
+      ScrollToTop();
+    } else {
+      navigate("/food-items");
     }
   };
 
@@ -62,30 +58,42 @@ export default function Landing() {
             <span className="flex-1">
               <InputField
                 name="search"
-                placeholder="Find a food establishment"
+                placeholder="Find an establishment or a food item"
                 onChange={handleSearchInput}
                 type="text"
-                onEnter={onEnterSearch}
               />
             </span>
 
-            <span>
+            <span className="flex gap-2">
               <Button
                 type="button"
                 action="search"
                 style="orange"
-                icon={PiMagnifyingGlass}
-                onClick={onButtonSearch}
+                icon={PiStorefront}
+                onClick={searchEstablishment}
+              />
+              <Button
+                type="button"
+                action="search"
+                style="blue"
+                icon={PiBowlFood}
+                onClick={searchFoodItem}
               />
             </span>
           </div>
 
-          <div>
+          <div className="flex gap-6">
             <Link
               to={"/establishments"}
-              className="text-base127d cursor-pointer font-normal hover:text-green127 transition-all duration-75 text-md"
+              className="text-base127d cursor-pointer font-normal hover:text-green127 transition-all duration-75 text-sm"
             >
               See all establishments
+            </Link>
+            <Link
+              to={"/food-items"}
+              className="text-base127d cursor-pointer font-normal hover:text-green127 transition-all duration-75 text-sm"
+            >
+              See all food items
             </Link>
           </div>
         </div>

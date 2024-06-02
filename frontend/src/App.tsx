@@ -4,7 +4,7 @@ import Landing from "./pages/Landing.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
-import Feed from "./pages/Feed.tsx";
+import EstablishmentFeed from "./pages/EstablishmentFeed.tsx";
 import Profile from "./pages/Profile.tsx";
 import ESTExpandedView from "./components/feed/ESTExpandedView.tsx";
 import { InexistingPage } from "./pages/InexistentPage.tsx";
@@ -24,7 +24,7 @@ function App() {
       path: "/establishments",
       element: (
         <AuthPage>
-          <Feed />
+          <EstablishmentFeed />
         </AuthPage>
       ),
       children: [
