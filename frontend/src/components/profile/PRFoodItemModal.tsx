@@ -2,7 +2,6 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { ZodError } from "zod";
 
 import {
-  establishmentSchema,
   foodItemData,
   foodItemErrors,
   foodItemSchema,
@@ -10,6 +9,8 @@ import {
 import { InputField } from "../InputField.tsx";
 import { Button } from "../Button.tsx";
 import { foodItem } from "../../models/Models.tsx";
+import api from "../../api/api.ts";
+import axios from "axios";
 
 interface PRFoodItemModalProps {
   action: string;
@@ -34,13 +35,101 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
       [name]: value,
     }));
   };
+
+  /** API Call - create new establishment */
+  const createFoodItem = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.post(
+        "/",
+        { foodItem: newFoodItem },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot create food item";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - edit existing establishment */
+  const editFoodItem = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.patch(
+        "/",
+        { foodItem: newFoodItem },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot edit food item";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - delete existing establishment */
+  const deleteFoodItem = async (foodItemId: string) => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.delete("/", {
+        headers: {
+          Authorization: token,
+        },
+
+        data: {
+          foodItemId: foodItemId,
+        },
+      });
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot delete food item";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
   /** Function - validates inputs in the form. Returns error messages if input is invalid */
   const saveChanges = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     newFoodItem.price = parseFloat(newFoodItem.price);
+
     try {
       foodItemSchema.parse(newFoodItem);
       setErrors(null);
+      if (props.foodItem) {
+        if (
+          props.foodItem.name === newFoodItem.name &&
+          props.foodItem.classification === newFoodItem.classification &&
+          props.foodItem.price === newFoodItem.price
+        )
+          props.closeModal();
+        else editFoodItem();
+      } else {
+        createFoodItem();
+      }
       props.closeModal();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -70,7 +159,7 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
       document.body.style.overflow = "unset";
     };
   }, []);
-  console.log(errors?.errors);
+
   return (
     <form onSubmit={saveChanges}>
       <div className="pointer-events-none fixed start-0 top-0 z-[20] size-full overflow-y-auto overflow-x-hidden">
@@ -164,7 +253,14 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
                       action="button"
                       style="red"
                       text="DELETE"
-                      onClick={discardChanges}
+                      onClick={() => {
+                        if (props.foodItem !== undefined) {
+                          deleteFoodItem(props.foodItem.foodItemId);
+                          props.closeModal();
+                        } else {
+                          props.closeModal();
+                        }
+                      }}
                     />
                   </span>
                 </button>
@@ -178,7 +274,16 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
                   <Button
                     action="submit"
                     style="blue"
-                    text="SUBMIT"
+                    text={
+                      props.foodItem
+                        ? props.foodItem.name === newFoodItem.name &&
+                          props.foodItem.classification ===
+                            newFoodItem.classification &&
+                          props.foodItem.price === newFoodItem.price
+                          ? "CLOSE"
+                          : "SAVE CHANGES"
+                        : "SUBMIT"
+                    }
                     onClick={() => {}}
                   />
                 </span>

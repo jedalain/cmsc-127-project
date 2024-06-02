@@ -384,6 +384,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
               </AnimatePresence>
             )}
 
+            {/* modal for food item details */}
             {isLoggedIn && isOwnerRoute && newFoodItem && (
               <AnimatePresence mode="wait">
                 <m.span
