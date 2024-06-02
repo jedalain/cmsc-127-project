@@ -1,8 +1,8 @@
 import { ChangeEvent } from "react";
 
-import { ESTStarRating } from "./ESTStarRating";
-import { InputField } from "../InputField";
-import { Button } from "../Button";
+import { ESTStarRating } from "./ESTStarRating.tsx";
+import { InputField } from "../InputField.tsx";
+import { Button } from "../Button.tsx";
 
 interface ESTFilterProps {
   filterApplied: { keyword: string; rating: number };

@@ -1,40 +1,31 @@
-import { useContext, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { AnimatePresence, motion as m } from "framer-motion";
 import { foodItem, fries, mcflurry } from "../models/Models.tsx";
 import { useLocation } from "react-router-dom";
-import { ScrollToTop, filterFoodItems } from "../utils/helper.ts";
 import api from "../api/api.ts";
 import axios from "axios";
 import { EmptyFoodItems } from "../components/EmptyResults.tsx";
 import FoodCard from "../components/feed/ESTFoodCard.tsx";
-import { FIPriceFilter, FITypeFilter } from "../components/feed/FIFilter.tsx";
+import { FIFilter } from "../components/feed/FIFilter.tsx";
 import { FIExpandedView } from "../components/feed/FIExpandedView.tsx";
-import { AuthPageContext } from "./AuthPage.tsx";
+import { filterFoodItems } from "../utils/helper.ts";
 
 export default function FoodItemFeed() {
-  const { isLoggedIn } = useContext(AuthPageContext);
   // for checking if the owner is the viewer
   const isOwnerRoute = false;
-
-  const [foodTypeFilter, setFoodTypeFilter] = useState<string>("");
-  const [foodPriceFilter, setFoodPriceFilter] = useState<string>("");
-  const [foodTypes, setFoodTypes] = useState<string[]>(["Dessert", "Fried"]);
-  const [foodItems, setFoodItems] = useState<foodItem[]>([mcflurry, fries]);
-  const [filteredFoodItems, setFilteredFoodItems] = useState<foodItem[]>([]);
 
   // parameter/s from url
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const keyword = searchParams.get("keyword") || ""; // keyword
 
-  // food item opened in detailed view
-  const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
-  const [expandedFoodItemId, setExpandedFoodItemId] = useState<string>("");
-  /** Function - closes the expanded food item modal */
-  const toggleFoodItemModal = () => {
-    setExpandedFoodItem(!expandedFoodItem);
-    setExpandedFoodItemId("");
-  };
+  const [foodItems, setFoodItems] = useState<foodItem[]>([mcflurry, fries]);
+  const [filteredFoodItems, setFilteredFoodItems] = useState<foodItem[]>([]);
+  const [filterApplied, setFilterApplied] = useState<{
+    keyword: string;
+    classification: string;
+    priceSort: string;
+  }>({ keyword: keyword, classification: "", priceSort: "" });
 
   /** API Call - fetch food items from database */
   const fetchFoodItems = async () => {
@@ -44,8 +35,6 @@ export default function FoodItemFeed() {
       const response = await api.get("/", {
         headers: {
           Authorization: token,
-
-          keyword: keyword,
         },
       });
 
@@ -65,21 +54,70 @@ export default function FoodItemFeed() {
     }
   };
 
-  useEffect(() => {
-    // fetchEstablishments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword]);
+  /** Function - updates the state filterApplied */
+  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFilterApplied((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  /** Function - updates the price in state filterApplied */
+  const changePriceFilter = (price: string) => {
+    setFilterApplied((prev) => ({
+      ...prev,
+      priceSort: prev.priceSort !== price ? price : "",
+    }));
+  };
+  /** Function - updates the classification in state filterApplied */
+  const changeClassificationFilter = (classification: string) => {
+    setFilterApplied((prev) => ({
+      ...prev,
+      classification:
+        prev.classification !== classification ? classification : "",
+    }));
+  };
+
+  /** Function - clear applied filter */
+  const clearFilter = () => {
+    setFilterApplied(() => ({
+      keyword: "",
+      classification: "",
+      priceSort: "",
+    }));
+
+    const filteredFoods = filterFoodItems("", "", foodItems, "");
+    setFilteredFoodItems(filteredFoods);
+  };
+
+  /** Function - apply filter */
+  const applyFilter = () => {
+    const { keyword, classification, priceSort } = filterApplied;
+    const filteredFoods = filterFoodItems(
+      keyword,
+      classification,
+      foodItems,
+      priceSort
+    );
+
+    setFilteredFoodItems(filteredFoods);
+  };
+
+  // food item opened in detailed view
+  const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
+  const [expandedFoodItemId, setExpandedFoodItemId] = useState<string>("");
+  /** Function - closes the expanded food item modal */
+  const toggleFoodItemModal = () => {
+    setExpandedFoodItem(!expandedFoodItem);
+    setExpandedFoodItemId("");
+  };
 
   useEffect(() => {
-    const filteredItems = filterFoodItems(
-      "",
-      foodTypeFilter,
-      foodItems,
-      foodPriceFilter
-    );
-    setFilteredFoodItems(filteredItems);
+    // fetchFoodItems();
+    applyFilter();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [foodTypeFilter, foodPriceFilter, foodItems]);
+  }, []);
 
   return (
     <m.div
@@ -93,45 +131,48 @@ export default function FoodItemFeed() {
       className="flex h-full w-full flex-col items-center justify-center"
     >
       <div className="flex h-full w-full max-w-[1080px] flex-col gap-3 p-6">
-        <div className="flex h-full gap-9 min-h-screen flex-col">
-          <span className="flex gap-2">
-            <FIPriceFilter
-              choices={["Price (Low to High)", "Price (High to Low)"]}
-              filterApplied={foodPriceFilter}
-              setFilterApplied={setFoodPriceFilter}
-            />
-            <FITypeFilter
-              choices={foodTypes}
-              filterApplied={foodTypeFilter}
-              setFilterApplied={setFoodTypeFilter}
+        <div className="flex h-full gap-9 min-h-screen flex-col-reverse md:flex-row">
+          <div className="flex-1">
+            {filteredFoodItems.length > 0 ? (
+              <div className="flex-[3] w-full h-full gap-6 grid grid-cols-1 auto-rows-min xs:grid-cols-2 sm:grid-cols-3">
+                {filteredFoodItems.map((food, key) => {
+                  return (
+                    <div className="h-full w-full" onClick={() => {}}>
+                      <span key={key}>
+                        <FoodCard
+                          name={food.name}
+                          price={food.price}
+                          classification={food.classification}
+                          avgRating={food.avgRating}
+                          openDetailed={() => {
+                            setExpandedFoodItem(true);
+                            setExpandedFoodItemId(food.foodItemId);
+                          }}
+                        />
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="h-screen">
+                <EmptyFoodItems />
+              </div>
+            )}
+          </div>
+
+          <span className="md:sticky md:top-6 flex flex-col gap-3 bg-base127b2 h-fit p-3 rounded-lg">
+            <span className="text-blue127b">FILTER</span>
+            <FIFilter
+              choices={["Vegetable", "Dessert"]}
+              filterApplied={filterApplied}
+              changePriceFilter={changePriceFilter}
+              changeClassificationFilter={changeClassificationFilter}
+              onChange={handleFilterChange}
+              onApply={applyFilter}
+              onClear={clearFilter}
             />
           </span>
-          {filteredFoodItems.length > 0 ? (
-            <div className="flex-[3] w-full h-full gap-6 grid grid-cols-1 auto-rows-min xs:grid-cols-2 sm:grid-cols-3">
-              {filteredFoodItems.map((food, key) => {
-                return (
-                  <div className="h-full w-full" onClick={() => {}}>
-                    <span key={key}>
-                      <FoodCard
-                        name={food.name}
-                        price={food.price}
-                        classification={food.classification}
-                        avgRating={food.avgRating}
-                        openDetailed={() => {
-                          setExpandedFoodItem(true);
-                          setExpandedFoodItemId(food.foodItemId);
-                        }}
-                      />
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="h-screen">
-              <EmptyFoodItems />
-            </div>
-          )}
         </div>
       </div>
 
