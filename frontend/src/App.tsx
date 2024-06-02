@@ -8,6 +8,7 @@ import Feed from "./pages/Feed.tsx";
 import Profile from "./pages/Profile.tsx";
 import ESTExpandedView from "./components/feed/ESTExpandedView.tsx";
 import { InexistingPage } from "./pages/InexistentPage.tsx";
+import FoodItemFeed from "./pages/FoodItemFeed.tsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -32,6 +33,14 @@ function App() {
           element: <ESTExpandedView />,
         },
       ],
+    },
+    {
+      path: "/food-items",
+      element: (
+        <AuthPage>
+          <FoodItemFeed />
+        </AuthPage>
+      ),
     },
     {
       path: "/profile",
