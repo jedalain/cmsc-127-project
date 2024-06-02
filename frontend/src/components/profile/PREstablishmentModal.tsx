@@ -61,12 +61,12 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
   };
 
   /** API Call - edit existing establishment */
-  const editEstablishment = async () => {
+  const editEstablishment = async (establishmentId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.patch(
         "/",
-        { establishment: newEstablishment },
+        { establishment: newEstablishment, establishmentId: establishmentId },
         {
           headers: {
             Authorization: token,
@@ -123,7 +123,7 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
           props.establishment.address === newEstablishment.address
         )
           props.closeModal();
-        else editEstablishment();
+        else editEstablishment(props.establishment.establishmentId);
       } else {
         createEstablishment();
       }

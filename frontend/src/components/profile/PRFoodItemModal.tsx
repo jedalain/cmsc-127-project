@@ -36,7 +36,7 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
     }));
   };
 
-  /** API Call - create new establishment */
+  /** API Call - create new food item */
   const createFoodItem = async () => {
     try {
       const token = sessionStorage.getItem("tt_token");
@@ -61,13 +61,13 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
     }
   };
 
-  /** API Call - edit existing establishment */
-  const editFoodItem = async () => {
+  /** API Call - edit existing food item */
+  const editFoodItem = async (foodItemId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.patch(
         "/",
-        { foodItem: newFoodItem },
+        { foodItem: newFoodItem, foodItemId: foodItemId },
         {
           headers: {
             Authorization: token,
@@ -86,7 +86,7 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
     }
   };
 
-  /** API Call - delete existing establishment */
+  /** API Call - delete existing food item */
   const deleteFoodItem = async (foodItemId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
@@ -126,7 +126,7 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
           props.foodItem.price === newFoodItem.price
         )
           props.closeModal();
-        else editFoodItem();
+        else editFoodItem(props.foodItem.foodItemId);
       } else {
         createFoodItem();
       }

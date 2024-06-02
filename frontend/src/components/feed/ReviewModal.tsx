@@ -81,12 +81,12 @@ export function ReviewModal(props: ReviewModalProps) {
   };
 
   /** API Call - edit existing review */
-  const editReview = async () => {
+  const editReview = async (reviewId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.patch(
         "/",
-        { review: review },
+        { review: review, reviewId: reviewId },
         {
           headers: {
             Authorization: token,
@@ -144,7 +144,7 @@ export function ReviewModal(props: ReviewModalProps) {
           props.review.rating === review.rating
         )
           props.closeModal();
-        else editReview();
+        else editReview(props.review.reviewId);
       } else {
         createReview();
       }
