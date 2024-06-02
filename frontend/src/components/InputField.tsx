@@ -148,6 +148,7 @@ export function InputField(props: InputFieldProps) {
             placeholder={props.placeholder ? props.placeholder : ""}
             disabled={props.disabled ? props.disabled : false}
             defaultValue={props.defaultValue ? props.defaultValue : ""}
+            step={props.type === "number" ? 0.01 : undefined}
             onChange={props.onChange}
             onKeyDown={props.onEnter ? props.onEnter : undefined}
           />

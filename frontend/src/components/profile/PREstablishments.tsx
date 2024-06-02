@@ -11,6 +11,7 @@ import { foodEstablishment, mcdo } from "../../models/Models.tsx";
 import { Button } from "../Button.tsx";
 import { PRCreateEstablishment } from "./PRCreateEstablishment.tsx";
 import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
+import { ScrollToTop } from "../../utils/helper.ts";
 
 interface PREstablishmentsProps {
   setEstablishmentId: Dispatch<SetStateAction<string>>;
@@ -43,7 +44,7 @@ export default function PREstablishments(props: PREstablishmentsProps) {
             icon={PiPlusCircleFill}
             onClick={() => {
               setNewEstablishment(true);
-              console.log(isLoggedIn && isOwnerRoute && newEstablishment);
+              ScrollToTop();
             }}
           />
         </span>

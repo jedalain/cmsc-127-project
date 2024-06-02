@@ -1,41 +1,35 @@
-import {
-  ChangeEvent,
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { ZodError } from "zod";
 
 import {
-  establishmentData,
-  establishmentErrors,
   establishmentSchema,
+  foodItemData,
+  foodItemErrors,
+  foodItemSchema,
 } from "../../utils/schema.ts";
 import { InputField } from "../InputField.tsx";
 import { Button } from "../Button.tsx";
-import { foodEstablishment } from "../../models/Models.tsx";
+import { foodItem } from "../../models/Models.tsx";
 
-interface PRCreateEstablishmentProps {
+interface PRFoodItemModalProps {
   action: string;
-  establishment?: foodEstablishment;
-  setAlertBubble: Dispatch<SetStateAction<JSX.Element | null>>;
+  foodItem?: foodItem;
   closeModal: () => void;
 }
 
-export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
-  const [newEstablishment, setNewEstablishment] = useState<establishmentData>({
-    name: props.establishment ? props.establishment.name : "",
-    address: props.establishment ? props.establishment.address : "",
+export function PRFoodItemModal(props: PRFoodItemModalProps) {
+  const [newFoodItem, setNewFoodItem] = useState<foodItemData>({
+    name: props.foodItem ? props.foodItem.name : "",
+    classification: props.foodItem ? props.foodItem.classification : "",
+    price: props.foodItem ? props.foodItem.price : 0,
   });
-  const [errors, setErrors] = useState<establishmentErrors | null>(null);
+  const [errors, setErrors] = useState<foodItemErrors | null>(null);
 
   /** Function - updates the user's details with the values entered */
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setNewEstablishment((prevState) => ({
+    setNewFoodItem((prevState) => ({
       ...prevState,
       [name]: value,
     }));
@@ -43,9 +37,9 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
   /** Function - validates inputs in the form. Returns error messages if input is invalid */
   const saveChanges = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    newFoodItem.price = parseFloat(newFoodItem.price);
     try {
-      establishmentSchema.parse(newEstablishment);
+      foodItemSchema.parse(newFoodItem);
       setErrors(null);
       props.closeModal();
     } catch (error) {
@@ -61,9 +55,10 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
 
     // reset inputs
     setErrors(null);
-    setNewEstablishment({
+    setNewFoodItem({
       name: "",
-      address: "",
+      classification: "",
+      price: 0,
     });
   };
 
@@ -75,7 +70,7 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
       document.body.style.overflow = "unset";
     };
   }, []);
-
+  console.log(errors?.errors);
   return (
     <form onSubmit={saveChanges}>
       <div className="pointer-events-none fixed start-0 top-0 z-[20] size-full overflow-y-auto overflow-x-hidden">
@@ -83,8 +78,8 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
           <div className="pointer-events-auto flex h-full w-full flex-col rounded-xl border border-base127c bg-base127 shadow-md">
             <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
               <h3 className="flex w-full justify-center text-xl font-semibold text-green0">
-                {props.action === "edit" && "Edit establishment"}
-                {props.action === "add" && "Create new establishment"}
+                {props.action === "edit" && "Edit food item"}
+                {props.action === "add" && "Create new food item"}
               </h3>
 
               <button
@@ -119,10 +114,8 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
                 type="text"
                 name="name"
                 label="Name"
-                placeholder="Enter name of your establishment"
-                defaultValue={
-                  props.establishment ? props.establishment.name : ""
-                }
+                placeholder="Enter name of your food item"
+                defaultValue={props.foodItem ? props.foodItem.name : ""}
                 error={
                   errors?.errors.find((error) => error.path[0] === "name")
                     ?.message
@@ -132,14 +125,28 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
 
               <InputField
                 type="text"
-                name="address"
-                label="Address"
-                placeholder="Enter where your establishment is located"
+                name="classification"
+                label="Type"
+                placeholder="Enter type of food item"
                 defaultValue={
-                  props.establishment ? props.establishment.address : ""
+                  props.foodItem ? props.foodItem.classification : ""
                 }
                 error={
-                  errors?.errors.find((error) => error.path[0] === "address")
+                  errors?.errors.find(
+                    (error) => error.path[0] === "classification"
+                  )?.message
+                }
+                onChange={handleUserInput}
+              />
+
+              <InputField
+                type="number"
+                name="price"
+                label="Price"
+                placeholder="Enter price of food item"
+                defaultValue={props.foodItem ? props.foodItem.price : 0}
+                error={
+                  errors?.errors.find((error) => error.path[0] === "price")
                     ?.message
                 }
                 onChange={handleUserInput}
@@ -147,7 +154,7 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
             </div>
 
             <div className="flex items-center justify-end gap-x-2 overflow-auto border-t border-base127c px-4 py-3 text-sm italic text-grey0">
-              {props.establishment && (
+              {props.foodItem && (
                 <button
                   type="button"
                   className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50"

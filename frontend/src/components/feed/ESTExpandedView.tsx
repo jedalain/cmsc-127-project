@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { PiBowlFood, PiPlusCircleFill } from "react-icons/pi";
+import { PiBowlFood, PiPlusCircle, PiPlusCircleFill } from "react-icons/pi";
 import { AnimatePresence, motion as m } from "framer-motion";
 
 import {
@@ -21,11 +21,13 @@ import { Button } from "../Button.tsx";
 import { ReviewModal } from "./ReviewModal.tsx";
 import { FIExpandedView } from "./FIExpandedView.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdEdit } from "react-icons/md";
 import { InputField } from "../InputField.tsx";
 import { FIFilter } from "./FIFilter.tsx";
 import { ScrollToTop } from "../../utils/helper.ts";
 import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
+import { PRCreateEstablishment } from "../profile/PRCreateEstablishment.tsx";
+import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 
 interface ESTExpandedViewProps {
   establishmentId?: string;
@@ -45,6 +47,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const isOwnerRoute = true;
 
   const [establishment, setEstablishment] = useState<foodEstablishment>(mcdo);
+  const [foodItem, setFoodItem] = useState<foodEstablishment>(mcdo);
   const [currentPageFood, setCurrentPageFood] = useState<number>(1);
   const [currentPageReview, setCurrentPageReview] = useState<number>(1);
   const [currentFoodItems, setCurrentFoodItems] = useState<foodItem[]>([]);
@@ -60,11 +63,23 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const reviewPerPage = 6;
 
   const [newReview, setNewReview] = useState<boolean>(false);
+  const [newFoodItem, setNewFoodItem] = useState<boolean>(false);
+  const [editEstablishment, setEditEstablishment] = useState<boolean>(false);
   const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
 
   /** Function - closes the review modal */
   const toggleReviewModal = () => {
     setNewReview(!newReview);
+  };
+
+  /** Function - closes the edit establishment modal */
+  const toggleEstablishmentModal = () => {
+    setEditEstablishment(!editEstablishment);
+  };
+
+  /** Function - closes the food item modal */
+  const toggleEditFoodItemModal = () => {
+    setNewFoodItem(!newFoodItem);
   };
 
   /** Function - closes the food item modal */
@@ -137,6 +152,14 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
             <MdArrowBack /> Back to feed
           </span>
         )}
+        {isOwnerRoute && (
+          <span
+            className="flex items-center gap-1 text-sm text-blue127b hover:text-blue127 transition-all cursor-pointer"
+            onClick={() => setEditEstablishment(!editEstablishment)}
+          >
+            <MdEdit /> Edit establishment
+          </span>
+        )}
 
         <div className="text-black127 h-full w-full flex flex-col gap-6">
           <div className="flex flex-col">
@@ -149,7 +172,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
           <div className="flex flex-1 flex-col">
             <span className="text-orange127a flex justify-between items-center py-2 font-medium">
               <span>Food items:</span>
-              <span className="flex items-center gap-6">
+              <span className="z-[0] flex items-center gap-6">
                 <FIFilter
                   choices={foodTypes}
                   filterApplied={filterApplied}
@@ -167,6 +190,16 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
             </span>
 
             <div className="h-fit w-full gap-3 py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">
+              {/* add new item */}
+              {isOwnerRoute && isLoggedIn && (
+                <div
+                  className="bg-base127b text-base127d h-[150px] w-full cursor-pointer justify-center items-center p-3 rounded-lg flex flex-col transition-all hover:bg-base127b2 active:scale-[0.95]"
+                  onClick={() => setNewFoodItem(!newFoodItem)}
+                >
+                  <PiPlusCircle size={30} />
+                </div>
+              )}
+
               {currentFoodItems.map((food, key) => {
                 return (
                   <div className="w-full h-fit" key={key}>
@@ -178,8 +211,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                         classification={food.classification}
                         openDetailed={() => {
                           setExpandedFoodItem(true);
-                          console.log(expandedFoodItem);
-                          console.log(food.foodItemId);
                         }}
                       />
                     </span>
@@ -249,6 +280,44 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   action="add"
                   closeModal={toggleReviewModal}
                   setAlertBubble={() => {}}
+                />
+              </m.span>
+            </AnimatePresence>
+          )}
+
+          {isLoggedIn && isOwnerRoute && editEstablishment && (
+            <AnimatePresence mode="wait">
+              <m.span
+                key={String(editEstablishment)}
+                className="absolute z-[30] flex h-full max-w-full items-center justify-center bg-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15, ease: "easeInOut" }}
+              >
+                <PRCreateEstablishment
+                  action="edit"
+                  closeModal={toggleEstablishmentModal}
+                  establishment={establishment}
+                  setAlertBubble={() => {}}
+                />
+              </m.span>
+            </AnimatePresence>
+          )}
+
+          {isLoggedIn && isOwnerRoute && newFoodItem && (
+            <AnimatePresence mode="wait">
+              <m.span
+                key={String(newFoodItem)}
+                className="absolute z-[30] flex h-full max-w-full items-center justify-center bg-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15, ease: "easeInOut" }}
+              >
+                <PRFoodItemModal
+                  action="edit"
+                  closeModal={toggleEditFoodItemModal}
                 />
               </m.span>
             </AnimatePresence>

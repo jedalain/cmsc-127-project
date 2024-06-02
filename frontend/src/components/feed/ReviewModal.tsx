@@ -83,20 +83,6 @@ export function ReviewModal(props: ReviewModalProps) {
       comment: "",
       rating: 0,
     });
-
-    // set alert bubble
-    // const alert = (
-    //   <AlertBubble
-    //     type="warning"
-    //     message={`Changes to profile were not saved.`}
-    //     setAlertBubble={props.setAlertBubble}
-    //   />
-    // );
-
-    // props.setAlertBubble(alert); // show alert message
-    // setTimeout(() => {
-    //   props.setAlertBubble(null); // hide the alert after 5 seconds
-    // }, 5000);
   };
 
   // Disables scroll when modal is opened

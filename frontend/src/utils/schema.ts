@@ -45,3 +45,16 @@ export const establishmentSchema = z.object({
 })
 export type establishmentData = z.infer<typeof establishmentSchema>;
 export type establishmentErrors = ZodError<FormData>;
+
+export const foodItemSchema = z.object({
+  name: z.string().min(1, "Name of food is required"),
+  classification: z.string().min(1, "Indicate the type of food"),
+  price: z.number()
+        .min(1, "Indicate price of food")
+        .positive("Invalid price")
+        .refine(value => Number.isFinite(value) && value >= 0, {
+          message: "Price must be a non-negative number"
+        }),
+})
+export type foodItemData = z.infer<typeof foodItemSchema>;
+export type foodItemErrors = ZodError<FormData>;

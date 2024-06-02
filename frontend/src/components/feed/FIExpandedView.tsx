@@ -8,6 +8,8 @@ import { Pagination } from "../Pagination.tsx";
 import ReviewCard from "../ReviewCard.tsx";
 import { ReviewModal } from "./ReviewModal.tsx";
 import { AuthPageContext } from "../../pages/LoggedInPage.tsx";
+import { MdEdit } from "react-icons/md";
+import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 
 interface FIExpandedViewProps {
   foodItemId: string;
@@ -26,6 +28,7 @@ interface FIExpandedViewProps {
 export function FIExpandedView(props: FIExpandedViewProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
   const [foodItem] = useState<foodItem | null>(mcflurry);
+  const [editFoodItem, setEditFoodItem] = useState<boolean>(false);
   const [currentPageReview, setCurrentPageReview] = useState<number>(1);
   const [currentReviews, setCurrentReviews] = useState<review[]>([]);
 
@@ -69,12 +72,24 @@ export function FIExpandedView(props: FIExpandedViewProps) {
     setNewReview(!newReview);
   };
 
+  /** Function - closes the edit food modal */
+  const toggleEditFoodModal = () => {
+    setEditFoodItem(!editFoodItem);
+  };
+
   return (
     <div className="pointer-events-auto overflow-y-hidden fixed start-0 top-0 z-20 size-full overflow-x-hidden">
       <div className="m-3 mt-0 flex min-h-screen items-center transition-all ease-out sm:mx-auto sm:w-full sm:max-w-lg">
         {foodItem && (
           <div className="pointer-events-auto flex h-fit rounded-xl w-full flex-col border border-base127c bg-base127">
             <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
+              <span
+                className="cursor-pointer"
+                onClick={() => setEditFoodItem(!editFoodItem)}
+              >
+                <MdEdit />
+              </span>
+
               <h3 className="flex w-full justify-center text-xl font-semibold text-green0">
                 {foodItem.name}
               </h3>
@@ -181,6 +196,24 @@ export function FIExpandedView(props: FIExpandedViewProps) {
         }}
       ></div>
 
+      {isLoggedIn && props.isOwnerRoute && editFoodItem && foodItem && (
+        <AnimatePresence mode="wait">
+          <m.span
+            key={String(editFoodItem)}
+            className="absolute z-[30] flex h-full max-w-full items-center justify-center bg-transparent"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+          >
+            <PRFoodItemModal
+              action="add"
+              closeModal={toggleEditFoodModal}
+              foodItem={foodItem}
+            />
+          </m.span>
+        </AnimatePresence>
+      )}
       {isLoggedIn && !props.isOwnerRoute && newReview && (
         <AnimatePresence mode="wait">
           <m.span
