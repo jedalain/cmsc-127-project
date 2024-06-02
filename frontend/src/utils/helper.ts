@@ -101,3 +101,38 @@ export const filterReviewsByDate = (
     );
   });
 };
+
+export const generateFilterByMonthYear = () => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const monthYearArray = [];
+
+  for (let year = 2020; year <= currentYear; year++) {
+    const startMonth = year === 2020 ? 1 : 0; // start from January 2020
+    const endMonth = year === currentYear ? currentMonth : 12; // ends at current month if it's the current year, otherwise end at December
+
+    for (let month = startMonth; month < endMonth; month++) {
+      const monthName = monthNames[month];
+      monthYearArray.push(`${monthName} ${year}`);
+    }
+  }
+  monthYearArray.reverse();
+
+  return monthYearArray;
+};

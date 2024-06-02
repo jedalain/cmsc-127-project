@@ -3,67 +3,77 @@ import { AnimatePresence, motion as m } from "framer-motion";
 import { PiPlusCircleFill, PiStarFill } from "react-icons/pi";
 
 import { Button } from "../Button.tsx";
-import { foodItem, mcflurry, review } from "../../models/Models.tsx";
-import { Pagination } from "../Pagination.tsx";
+import {
+  arrayOfReviews,
+  foodItem,
+  mcflurry,
+  review,
+} from "../../models/Models.tsx";
 import ReviewCard from "../ReviewCard.tsx";
 import { ReviewModal } from "./ReviewModal.tsx";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { MdEdit } from "react-icons/md";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
+import api from "../../api/api.ts";
+import axios from "axios";
+import { FIReviewFilter } from "./FIFilter.tsx";
+import {
+  filterReviewsByDate,
+  generateFilterByMonthYear,
+} from "../../utils/helper.ts";
 
 interface FIExpandedViewProps {
+  establishmentId: string;
   foodItemId: string;
   isOwnerRoute: boolean;
   closeModal: () => void;
 }
 
-/**
- * CPEditProfile
- *
- * @param foodItemId the id of the chosen food item
- * @param closeModal closes edit profile modal
- *
- * @returns modal for editing profile
- */
 export function FIExpandedView(props: FIExpandedViewProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
-  const [foodItem] = useState<foodItem | null>(mcflurry);
+  const [foodItem, setFoodItem] = useState<foodItem | null>(mcflurry);
+  const [foodItemReviews, setFoodItemReviews] =
+    useState<review[]>(arrayOfReviews);
+
+  // filter
+  const [foodReviewFilter, setFoodReviewFilter] = useState<string>("");
+  const monthYearArray = generateFilterByMonthYear();
+  const filteredReviews = filterReviewsByDate(
+    foodReviewFilter,
+    foodItemReviews
+  );
+
   const [editFoodItem, setEditFoodItem] = useState<boolean>(false);
-  const [currentPageReview, setCurrentPageReview] = useState<number>(1);
-  const [currentReviews, setCurrentReviews] = useState<review[]>([]);
 
-  // for checking if the owner is the viewer
-  const isOwnerRoute = location.pathname.startsWith("/profile");
+  /** API Call - fetch details of establishment */
+  const fetchFoodItem = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      const response = await api.get("/", {
+        headers: {
+          Authorization: token,
 
-  const totalReviews = foodItem?.reviews.length;
-  const reviewPerPage = 9;
+          establishmentId: props.establishmentId,
+          foodItemId: props.foodItemId,
+        },
+      });
 
-  /** Function - gets the total available pages depending on the items displayed per page and total amount of items */
-  const getTotalPages = (maxQtyPerPage: number, totalQty: number) => {
-    return Math.ceil(totalQty / maxQtyPerPage);
-  };
+      setFoodItem(response.data);
+      setFoodItemReviews(response.data.reviews);
+    } catch (error) {
+      setFoodItem(null);
 
-  /** useEffect - updates the content of currentFoodItems state depending on the current page */
-  useEffect(() => {
-    if (foodItem) {
-      setCurrentReviews(
-        foodItem.reviews.slice(
-          (currentPageReview - 1) * reviewPerPage,
-          currentPageReview * reviewPerPage
-        )
-      );
+      let message;
+      if (axios.isAxiosError(error)) {
+        message =
+          error.response?.data?.message || "Cannot fetch establishments";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPageReview]);
-
-  // Disables scroll when modal is opened
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, []);
+  };
 
   const [newReview, setNewReview] = useState<boolean>(false);
 
@@ -77,18 +87,35 @@ export function FIExpandedView(props: FIExpandedViewProps) {
     setEditFoodItem(!editFoodItem);
   };
 
+  /** useEffect - fetch details of food item */
+  useEffect(() => {
+    // fetchFoodItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Disables scroll when modal is opened
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
+
   return (
     <div className="pointer-events-auto overflow-y-hidden fixed start-0 top-0 z-20 size-full overflow-x-hidden">
       <div className="m-3 mt-0 flex min-h-screen items-center transition-all ease-out sm:mx-auto sm:w-full sm:max-w-lg">
         {foodItem && (
           <div className="pointer-events-auto flex h-fit rounded-xl w-full flex-col border border-base127c bg-base127">
             <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
-              <span
-                className="cursor-pointer"
-                onClick={() => setEditFoodItem(!editFoodItem)}
-              >
-                <MdEdit />
-              </span>
+              {props.isOwnerRoute && (
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setEditFoodItem(!editFoodItem)}
+                >
+                  <MdEdit />
+                </span>
+              )}
 
               <h3 className="flex w-full justify-center text-xl font-semibold text-green0">
                 {foodItem.name}
@@ -143,6 +170,11 @@ export function FIExpandedView(props: FIExpandedViewProps) {
             <div className="flex-1 h-full p-4">
               <span className="flex items-center justify-between text-orange127a font-medium">
                 <span>Reviews:</span>
+                <FIReviewFilter
+                  choices={monthYearArray}
+                  filterApplied={foodReviewFilter}
+                  setFilterApplied={setFoodReviewFilter}
+                />
                 {isLoggedIn && !props.isOwnerRoute && (
                   <span>
                     <Button
@@ -156,12 +188,12 @@ export function FIExpandedView(props: FIExpandedViewProps) {
                 )}
               </span>
               <div className="bg-base127b h-full max-h-[390px] w-full gap-3 mt-2 p-3 flex-col flex justify-between overflow-y-scroll rounded-lg">
-                {foodItem.reviews.map((review, key) => {
+                {filteredReviews.map((review, key) => {
                   return (
                     <div
                       key={key}
                       className={`w-full h-fit py-2  ${
-                        key + 1 === currentReviews.length
+                        key + 1 === foodItemReviews.length
                           ? ""
                           : "border-b border-base127c"
                       }`}
@@ -172,17 +204,6 @@ export function FIExpandedView(props: FIExpandedViewProps) {
                     </div>
                   );
                 })}
-
-                <span className="sticky bottom-[-0.75rem] p-1 bg-base127b">
-                  <Pagination
-                    currentPage={currentPageReview}
-                    totalPages={getTotalPages(
-                      reviewPerPage,
-                      totalReviews ? totalReviews : 0
-                    )}
-                    setCurrentPage={setCurrentPageReview}
-                  />
-                </span>
               </div>
             </div>
           </div>

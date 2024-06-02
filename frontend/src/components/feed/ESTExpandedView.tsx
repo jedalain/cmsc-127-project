@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { PiBowlFood, PiPlusCircle, PiPlusCircleFill } from "react-icons/pi";
 import { AnimatePresence, motion as m } from "framer-motion";
 
@@ -28,11 +22,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { MdArrowBack, MdEdit } from "react-icons/md";
 import { InputField } from "../InputField.tsx";
 import { FIPriceFilter, FITypeFilter } from "./FIFilter.tsx";
-import {
-  ScrollToTop,
-  filterFoodItems,
-  filterReviewsByDate,
-} from "../../utils/helper.ts";
+import { filterFoodItems, filterReviewsByDate } from "../../utils/helper.ts";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { PRCreateEstablishment } from "../profile/PRCreateEstablishment.tsx";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
@@ -356,6 +346,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                     isOwnerRoute={isOwnerRoute}
                     closeModal={toggleFoodItemModal}
                     foodItemId={expandedFoodItemId}
+                    establishmentId={establishment.establishmentId}
                   />
                 </m.span>
               </AnimatePresence>

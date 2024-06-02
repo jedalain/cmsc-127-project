@@ -136,3 +136,21 @@ export const mcdo: foodEstablishment = {
   address: "UPLB Vega Arcade, Los Banos, Laguna 4200",
   userId: "aab12",
 };
+
+export const arrayOfReviews: review[] = [
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+];
