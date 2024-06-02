@@ -9,7 +9,7 @@ import api from "../api/api.ts";
 import axios from "axios";
 import { EmptyEstablishments } from "../components/EmptyResults.tsx";
 
-export default function Feed() {
+export default function EstablishmentFeed() {
   const navigate = useNavigate();
   const [filterApplied, setFilterApplied] = useState<string>("");
   const [establishments, setEstablishments] = useState<foodEstablishment[]>([
