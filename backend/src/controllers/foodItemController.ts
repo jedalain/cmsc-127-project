@@ -105,6 +105,7 @@ export const getAllFoodItems = async (req: Request, res: Response) => {
 //view all food item from an establishment
 export const getFoodItemsByEstablishment = async (req: Request, res: Response) => {
   try {
+    const byPrice = req.query.byPrice;
     const { establishmentId } = req.params;
 
     // Check if establishmentId exists
@@ -112,7 +113,15 @@ export const getFoodItemsByEstablishment = async (req: Request, res: Response) =
       return res.status(400).json({ error: 'Invalid establishmentId' });
     }
 
-    const sql = 'SELECT * FROM foodItems WHERE establishmentId = ?';
+    let sql;
+
+    if (byPrice == 'true') {
+      sql = 'SELECT * FROM foodItems WHERE establishmentId = ? ORDER BY price';
+    } else {
+      sql = 'SELECT * FROM foodItems WHERE establishmentId = ?';
+    }
+
+
     const result = await query(sql, [establishmentId]);
 
     res.status(200).json(convertBigInt(result));
@@ -122,7 +131,7 @@ export const getFoodItemsByEstablishment = async (req: Request, res: Response) =
   }
 };
 
-//view all food item from an establishment
+//view all food item from an establishment by price ascending
 export const getFoodItemsByEstablishmentAccordingToPrice = async (req: Request, res: Response) => {
   try {
     const { establishmentId } = req.params;
@@ -134,6 +143,11 @@ export const getFoodItemsByEstablishmentAccordingToPrice = async (req: Request, 
 
     const sql = 'SELECT * FROM foodItems WHERE establishmentId = ? ORDER BY price';
     const result = await query(sql, [establishmentId]);
+
+     // Check if any food items were found
+     if (result.length === 0) {
+      return res.status(404).json({ error: 'No food items found for the given establishment' });
+    }
 
     res.status(200).json(convertBigInt(result));
   } catch (error) {
