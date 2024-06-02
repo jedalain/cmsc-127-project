@@ -7,7 +7,12 @@ import { Pagination } from "../components/Pagination.tsx";
 import PREstablishments from "../components/profile/PREstablishments.tsx";
 import ESTExpandedView from "../components/feed/ESTExpandedView.tsx";
 import api from "../api/api.ts";
-import { foodEstablishment, review, user } from "../models/Models.tsx";
+import {
+  foodEstablishment,
+  review,
+  sampleUser,
+  user,
+} from "../models/Models.tsx";
 import { filterReviewsByDate } from "../utils/helper.ts";
 import { FIReviewFilter } from "../components/feed/FIFilter.tsx";
 import {
@@ -17,8 +22,8 @@ import {
 import { PREmpty } from "../components/profile/PREmpty.tsx";
 
 export default function Profile() {
-  const [userProfile, setUserProfile] = useState<user | null>();
-  const [userReviews, setUserReviews] = useState<review[]>([]);
+  const [userProfile, setUserProfile] = useState<user | null>(sampleUser);
+  const [userReviews, setUserReviews] = useState<review[]>(sampleUser.reviews);
   const [userEstablishments, setUserEstablishments] = useState<
     foodEstablishment[]
   >([]);
@@ -61,7 +66,7 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    fetchProfileData();
+    // fetchProfileData();
   }, []);
 
   useEffect(() => {

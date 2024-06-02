@@ -24,12 +24,16 @@ import { InputField } from "../InputField.tsx";
 import { FIPriceFilter, FITypeFilter } from "./FIFilter.tsx";
 import { filterFoodItems, filterReviewsByDate } from "../../utils/helper.ts";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
-import { PRCreateEstablishment } from "../profile/PRCreateEstablishment.tsx";
+import { PREstablishmentModal } from "../profile/PREstablishmentModal.tsx";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 import api from "../../api/api.ts";
 import axios from "axios";
 import { ESTReviewFilter } from "./ESTReviewFilter.tsx";
-import { EmptyFoodItems, EstablishmentNotFound } from "../EmptyResults.tsx";
+import {
+  EmptyFoodItems,
+  EmptyReviews,
+  EstablishmentNotFound,
+} from "../EmptyResults.tsx";
 
 interface ESTExpandedViewProps {
   establishmentId?: string;
@@ -169,7 +173,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   /** useEffect - fetch establishment details on load */
   useEffect(() => {
-    fetchEstablishment();
+    // fetchEstablishment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -237,19 +241,18 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                 </span>
               </span>
 
-              <div className="h-fit w-full gap-3 py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">
-                {/* add new item */}
-                {isOwnerRoute && isLoggedIn && (
-                  <div
-                    className="bg-base127b text-base127d h-[150px] w-full cursor-pointer justify-center items-center p-3 rounded-lg flex flex-col transition-all hover:bg-base127b2 active:scale-[0.95]"
-                    onClick={() => setNewFoodItem(!newFoodItem)}
-                  >
-                    <PiPlusCircle size={30} />
-                  </div>
-                )}
-
-                {currentFoodItems.length > 0 ? (
-                  currentFoodItems.map((food, key) => {
+              {currentFoodItems.length > 0 ? (
+                <div className="h-fit w-full gap-3 min-h-[300px] py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">
+                  {/* add new item */}
+                  {isOwnerRoute && isLoggedIn && (
+                    <div
+                      className="bg-base127b text-base127d h-[150px] w-full cursor-pointer justify-center items-center p-3 rounded-lg flex flex-col transition-all hover:bg-base127b2 active:scale-[0.95]"
+                      onClick={() => setNewFoodItem(!newFoodItem)}
+                    >
+                      <PiPlusCircle size={30} />
+                    </div>
+                  )}
+                  {currentFoodItems.map((food, key) => {
                     return (
                       <div className="w-full h-fit" key={key}>
                         <span key={key}>
@@ -266,11 +269,12 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                         </span>
                       </div>
                     );
-                  })
-                ) : (
-                  <EmptyFoodItems />
-                )}
-              </div>
+                  })}
+                </div>
+              ) : (
+                <EmptyFoodItems />
+              )}
+
               <Pagination
                 currentPage={currentPageFood}
                 totalPages={getTotalPages(foodPerPage, totalFoodItems)}
@@ -281,39 +285,45 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
             <div className="flex flex-[2] flex-col">
               <span className="flex items-center justify-between text-orange127a font-medium">
                 <span>Reviews:</span>
-                <ESTReviewFilter
-                  filterApplied={reviewFilterApplied}
-                  setFilterApplied={setReviewFilterApplied}
-                />
-                {isLoggedIn && !isOwnerRoute && (
-                  <span>
-                    <Button
-                      type="button"
-                      action="addComment"
-                      style="blue"
-                      icon={PiPlusCircleFill}
-                      onClick={() => setNewReview(true)}
-                    />
-                  </span>
-                )}
+                <span className="flex gap-1">
+                  <ESTReviewFilter
+                    filterApplied={reviewFilterApplied}
+                    setFilterApplied={setReviewFilterApplied}
+                  />
+                  {isLoggedIn && !isOwnerRoute && (
+                    <span>
+                      <Button
+                        type="button"
+                        action="addComment"
+                        style="blue"
+                        icon={PiPlusCircleFill}
+                        onClick={() => setNewReview(true)}
+                      />
+                    </span>
+                  )}
+                </span>
               </span>
-              <div className="bg-base127b h-full w-full gap-3 mt-2 p-3 flex-col flex justify-between rounded-lg">
-                {filteredReviews.map((review, key) => {
-                  return (
-                    <div
-                      key={key}
-                      className={`w-full h-fit py-2  ${
-                        key + 1 === estReviews.length
-                          ? ""
-                          : "border-b border-base127c"
-                      }`}
-                    >
-                      <span key={key}>
-                        <ReviewCard review={review} />
-                      </span>
-                    </div>
-                  );
-                })}
+              <div className="bg-base127b h-full max-h-[500px] overflow-y-auto min-h-[300px] w-full gap-3 mt-2 p-5 flex-col flex justify-start rounded-lg">
+                {filteredReviews.length > 0 ? (
+                  filteredReviews.map((review, key) => {
+                    return (
+                      <div
+                        key={key}
+                        className={`w-full h-fit py-2  ${
+                          key + 1 === filteredReviews.length
+                            ? ""
+                            : "border-b border-base127c"
+                        }`}
+                      >
+                        <span key={key}>
+                          <ReviewCard review={review} />
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <EmptyReviews />
+                )}
               </div>
             </div>
 
@@ -328,15 +338,12 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15, ease: "easeInOut" }}
                 >
-                  <ReviewModal
-                    action="add"
-                    closeModal={toggleReviewModal}
-                    setAlertBubble={() => {}}
-                  />
+                  <ReviewModal action="add" closeModal={toggleReviewModal} />
                 </m.span>
               </AnimatePresence>
             )}
 
+            {/* detailed view of food */}
             {expandedFoodItem && expandedFoodItemId !== "" && (
               <AnimatePresence mode="wait">
                 <m.span
@@ -357,6 +364,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
               </AnimatePresence>
             )}
 
+            {/* modal for establishment details */}
             {isLoggedIn && isOwnerRoute && editEstablishment && (
               <AnimatePresence mode="wait">
                 <m.span
@@ -367,11 +375,10 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15, ease: "easeInOut" }}
                 >
-                  <PRCreateEstablishment
+                  <PREstablishmentModal
                     action="edit"
                     closeModal={toggleEstablishmentModal}
                     establishment={establishment}
-                    setAlertBubble={() => {}}
                   />
                 </m.span>
               </AnimatePresence>

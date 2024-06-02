@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion as m } from "framer-motion";
 import ESTCard from "../components/feed/ESTCard.tsx";
-import { foodEstablishment } from "../models/Models.tsx";
+import { foodEstablishment, mcdo } from "../models/Models.tsx";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ScrollToTop } from "../utils/helper.ts";
 import { ESTFilter } from "../components/feed/ESTFilter.tsx";
@@ -12,7 +12,9 @@ import { EmptyEstablishments } from "../components/EmptyResults.tsx";
 export default function Feed() {
   const navigate = useNavigate();
   const [filterApplied, setFilterApplied] = useState<string>("");
-  const [establishments, setEstablishments] = useState<foodEstablishment[]>([]);
+  const [establishments, setEstablishments] = useState<foodEstablishment[]>([
+    mcdo,
+  ]);
 
   // parameter/s from url
   const location = useLocation();
@@ -61,7 +63,7 @@ export default function Feed() {
   };
 
   useEffect(() => {
-    fetchEstablishments();
+    // fetchEstablishments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterApplied, keyword]);
 

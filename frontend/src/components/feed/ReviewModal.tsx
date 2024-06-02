@@ -14,23 +14,15 @@ import { Button } from "../Button.tsx";
 import { TextAreaField } from "../TextAreaField.tsx";
 import { ESTStarRating } from "./ESTStarRating.tsx";
 import { review } from "../../models/Models.tsx";
+import api from "../../api/api.ts";
+import axios from "axios";
 
 interface ReviewModalProps {
   action: string;
   review?: review;
-  setAlertBubble: Dispatch<SetStateAction<JSX.Element | null>>;
   closeModal: () => void;
 }
 
-/**
- * ReviewModal
- *
- * @param userDetails details of an instance of the User class
- * @param editProfile updates user profile data, when changes were saved, from the server
- * @param closeModal closes edit profile modal
- *
- * @returns modal for editing profile
- */
 export function ReviewModal(props: ReviewModalProps) {
   const [review, setReview] = useState<reviewData>({
     title: props.review ? props.review.title : "",
@@ -57,21 +49,6 @@ export function ReviewModal(props: ReviewModalProps) {
     }));
   };
 
-  /** Function - validates inputs in the form. Returns error messages if input is invalid */
-  const saveChanges = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      reviewSchema.parse(review);
-      setErrors(null);
-      props.closeModal();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        setErrors(error);
-      }
-    }
-  };
-
   /** Function - discards the changes made by user */
   const discardChanges = () => {
     props.closeModal();
@@ -85,6 +62,107 @@ export function ReviewModal(props: ReviewModalProps) {
     });
   };
 
+  /** API Call - create new review */
+  const createReview = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.post(
+        "/",
+        { review: review },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot create review";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - edit existing review */
+  const editReview = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.patch(
+        "/",
+        { review: review },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot create review";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - delete existing review */
+  const deleteReview = async (reviewId: string) => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.delete("/", {
+        headers: {
+          Authorization: token,
+        },
+
+        data: {
+          reviewId: reviewId,
+        },
+      });
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot delete review";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** Function - validates inputs in the form. Returns error messages if input is invalid */
+  const saveChanges = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      reviewSchema.parse(review);
+      setErrors(null);
+      if (props.review) {
+        if (
+          props.review.comment === review.comment &&
+          props.review.title === review.title &&
+          props.review.rating === review.rating
+        )
+          props.closeModal();
+        else editReview();
+      } else {
+        createReview();
+      }
+      props.closeModal();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        setErrors(error);
+      }
+    }
+  };
+
   // Disables scroll when modal is opened
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -94,6 +172,9 @@ export function ReviewModal(props: ReviewModalProps) {
     };
   }, []);
 
+  console.log(props.review);
+  console.log("SEPARATION");
+  console.log(review);
   return (
     <form onSubmit={saveChanges}>
       <div className="pointer-events-none fixed start-0 top-0 z-20 size-full overflow-y-auto overflow-x-hidden">
@@ -170,20 +251,24 @@ export function ReviewModal(props: ReviewModalProps) {
             </div>
 
             <div className="flex items-center justify-end gap-x-2 overflow-auto border-t border-base127c px-4 py-3 text-sm italic text-grey0">
-              {props.review && (
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50"
-                >
+              {props.review !== undefined && (
+                <span className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50">
                   <span className="">
                     <Button
                       action="button"
                       style="red"
                       text="DELETE"
-                      onClick={discardChanges}
+                      onClick={() => {
+                        if (props.review !== undefined) {
+                          deleteReview(props.review.reviewId);
+                          props.closeModal();
+                        } else {
+                          props.closeModal();
+                        }
+                      }}
                     />
                   </span>
-                </button>
+                </span>
               )}
 
               <button
@@ -194,7 +279,15 @@ export function ReviewModal(props: ReviewModalProps) {
                   <Button
                     action="submit"
                     style="blue"
-                    text="SUBMIT"
+                    text={
+                      props.review
+                        ? props.review.comment === review.comment &&
+                          props.review.title === review.title &&
+                          props.review.rating === review.rating
+                          ? "CLOSE"
+                          : "SAVE CHANGES"
+                        : "SUBMIT"
+                    }
                     onClick={() => {}}
                   />
                 </span>

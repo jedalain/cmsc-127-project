@@ -8,7 +8,7 @@ import {
 
 import { foodEstablishment } from "../../models/Models.tsx";
 import { Button } from "../Button.tsx";
-import { PRCreateEstablishment } from "./PRCreateEstablishment.tsx";
+import { PREstablishmentModal } from "./PREstablishmentModal.tsx";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { ScrollToTop } from "../../utils/helper.ts";
 
@@ -80,7 +80,7 @@ export default function PREstablishments(props: PREstablishmentsProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeInOut" }}
           >
-            <PRCreateEstablishment
+            <PREstablishmentModal
               action="add"
               closeModal={toggleModal}
               setAlertBubble={() => {}}

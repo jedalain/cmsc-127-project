@@ -16,15 +16,16 @@ import {
 import { InputField } from "../InputField.tsx";
 import { Button } from "../Button.tsx";
 import { foodEstablishment } from "../../models/Models.tsx";
+import api from "../../api/api.ts";
+import axios from "axios";
 
-interface PRCreateEstablishmentProps {
+interface PREstablishmentModalProps {
   action: string;
   establishment?: foodEstablishment;
-  setAlertBubble: Dispatch<SetStateAction<JSX.Element | null>>;
   closeModal: () => void;
 }
 
-export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
+export function PREstablishmentModal(props: PREstablishmentModalProps) {
   const [newEstablishment, setNewEstablishment] = useState<establishmentData>({
     name: props.establishment ? props.establishment.name : "",
     address: props.establishment ? props.establishment.address : "",
@@ -40,6 +41,82 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
       [name]: value,
     }));
   };
+
+  /** API Call - create new establishment */
+  const createEstablishment = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.post(
+        "/",
+        { establishment: newEstablishment },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot create review";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - edit existing establishment */
+  const editEstablishment = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.patch(
+        "/",
+        { establishment: newEstablishment },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot create review";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - delete existing establishment */
+  const deleteEstablishment = async (establishmentId: string) => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      await api.delete("/", {
+        headers: {
+          Authorization: token,
+        },
+
+        data: {
+          establishmentId: establishmentId,
+        },
+      });
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot delete review";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
   /** Function - validates inputs in the form. Returns error messages if input is invalid */
   const saveChanges = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,6 +124,16 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
     try {
       establishmentSchema.parse(newEstablishment);
       setErrors(null);
+      if (props.establishment) {
+        if (
+          props.establishment.name === newEstablishment.name &&
+          props.establishment.address === newEstablishment.address
+        )
+          props.closeModal();
+        else editEstablishment();
+      } else {
+        createEstablishment();
+      }
       props.closeModal();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -157,7 +244,16 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
                       action="button"
                       style="red"
                       text="DELETE"
-                      onClick={discardChanges}
+                      onClick={() => {
+                        if (props.establishment !== undefined) {
+                          deleteEstablishment(
+                            props.establishment.establishmentId
+                          );
+                          props.closeModal();
+                        } else {
+                          props.closeModal();
+                        }
+                      }}
                     />
                   </span>
                 </button>
@@ -171,7 +267,15 @@ export function PRCreateEstablishment(props: PRCreateEstablishmentProps) {
                   <Button
                     action="submit"
                     style="blue"
-                    text="SUBMIT"
+                    text={
+                      props.establishment
+                        ? props.establishment.name === newEstablishment.name &&
+                          props.establishment.address ===
+                            newEstablishment.address
+                          ? "CLOSE"
+                          : "SAVE CHANGES"
+                        : "CREATE"
+                    }
                     onClick={() => {}}
                   />
                 </span>

@@ -165,7 +165,7 @@ export function FIReviewFilter(props: FIReviewFilterrProps) {
         >
           <path d="m6 9 6 6 6-6"></path>
         </svg>
-        Sort by{props.filterApplied !== "" ? " :" : ""}
+        Date{props.filterApplied !== "" ? " :" : ""}
         <span className="opacity-75">
           {props.filterApplied !== "" ? `${props.filterApplied}` : ""}
         </span>
