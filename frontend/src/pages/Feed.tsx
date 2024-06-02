@@ -19,7 +19,7 @@ export default function Feed() {
   const keyword = searchParams.get("keyword") || ""; // keyword
   const establishmentId = searchParams.get("id") || ""; // id
 
-  /** API Call - fetch product from database */
+  /** API Call - fetch establishments from database */
   const fetchEstablishments = async () => {
     try {
       const token = sessionStorage.getItem("tt_token");
@@ -33,13 +33,14 @@ export default function Feed() {
         },
       });
 
-      setEstablishments(response.data.products);
+      setEstablishments(response.data.establishments);
     } catch (error) {
       setEstablishments([]);
 
       let message;
       if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || "Cannot fetch products";
+        message =
+          error.response?.data?.message || "Cannot fetch establishments";
       } else {
         message = (error as Error).message;
       }

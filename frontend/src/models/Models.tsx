@@ -69,6 +69,18 @@ export const establishmentReview: review = {
   establishmentId: "1000",
 };
 
+export const establishmentReview2: review = {
+  reviewId: "rev123",
+  title: "Great place",
+  rating: 5,
+  comment:
+    "The ambiance of the place is really nice. The staff were also kind and approachable",
+  dateCreated: new Date("03/26/2024"),
+  dateModified: new Date("04/26/2024"),
+  userId: "aab12",
+  establishmentId: "1000",
+};
+
 export const fries: foodItem = {
   foodItemId: "5000",
   name: "French Fries",
