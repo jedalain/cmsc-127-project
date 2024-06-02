@@ -30,14 +30,15 @@ export default function EstablishmentFeed() {
   /** API Call - fetch establishments from database */
   const fetchEstablishments = async () => {
     try {
-      const token = sessionStorage.getItem("tt_token");
+      const { keyword, rating } = filterApplied;
 
+      const token = sessionStorage.getItem("tt_token");
       const response = await api.get("/", {
         headers: {
           Authorization: token,
 
-          keyword: filterApplied.keyword,
-          filter: filterApplied.rating,
+          keyword: keyword,
+          filter: rating,
         },
       });
 
@@ -68,8 +69,6 @@ export default function EstablishmentFeed() {
       keyword: "",
       rating: 0,
     });
-
-    fetchEstablishments();
   };
 
   /** Function - updates the state filterApplied */

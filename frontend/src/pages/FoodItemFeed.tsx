@@ -8,7 +8,6 @@ import { EmptyFoodItems } from "../components/EmptyResults.tsx";
 import FoodCard from "../components/feed/ESTFoodCard.tsx";
 import { FIFilter } from "../components/feed/FIFilter.tsx";
 import { FIExpandedView } from "../components/feed/FIExpandedView.tsx";
-import { filterFoodItems } from "../utils/helper.ts";
 
 export default function FoodItemFeed() {
   // for checking if the owner is the viewer
@@ -20,7 +19,6 @@ export default function FoodItemFeed() {
   const keyword = searchParams.get("keyword") || ""; // keyword
 
   const [foodItems, setFoodItems] = useState<foodItem[]>([mcflurry, fries]);
-  const [filteredFoodItems, setFilteredFoodItems] = useState<foodItem[]>([]);
   const [filterApplied, setFilterApplied] = useState<{
     keyword: string;
     classification: string;
@@ -30,18 +28,21 @@ export default function FoodItemFeed() {
   /** API Call - fetch food items from database */
   const fetchFoodItems = async () => {
     try {
-      const token = sessionStorage.getItem("tt_token");
+      const { keyword, classification, priceSort } = filterApplied;
 
+      const token = sessionStorage.getItem("tt_token");
       const response = await api.get("/", {
         headers: {
           Authorization: token,
+
+          keyword: keyword,
+          classification: classification,
+          priceSort: priceSort,
         },
       });
-
       setFoodItems(response.data.foodItems);
     } catch (error) {
       setFoodItems([]);
-
       let message;
       if (axios.isAxiosError(error)) {
         message =
@@ -49,7 +50,6 @@ export default function FoodItemFeed() {
       } else {
         message = (error as Error).message;
       }
-
       console.log(message);
     }
   };
@@ -86,22 +86,11 @@ export default function FoodItemFeed() {
       classification: "",
       priceSort: "",
     }));
-
-    const filteredFoods = filterFoodItems("", "", foodItems, "");
-    setFilteredFoodItems(filteredFoods);
   };
 
   /** Function - apply filter */
   const applyFilter = () => {
-    const { keyword, classification, priceSort } = filterApplied;
-    const filteredFoods = filterFoodItems(
-      keyword,
-      classification,
-      foodItems,
-      priceSort
-    );
-
-    setFilteredFoodItems(filteredFoods);
+    fetchFoodItems();
   };
 
   // food item opened in detailed view
@@ -115,7 +104,6 @@ export default function FoodItemFeed() {
 
   useEffect(() => {
     // fetchFoodItems();
-    applyFilter();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -133,9 +121,9 @@ export default function FoodItemFeed() {
       <div className="flex h-full w-full max-w-[1080px] flex-col gap-3 p-6">
         <div className="flex h-full gap-9 min-h-screen flex-col-reverse md:flex-row">
           <div className="flex-1">
-            {filteredFoodItems.length > 0 ? (
+            {foodItems.length > 0 ? (
               <div className="flex-[3] w-full h-full gap-6 grid grid-cols-1 auto-rows-min xs:grid-cols-2 sm:grid-cols-3">
-                {filteredFoodItems.map((food, key) => {
+                {foodItems.map((food, key) => {
                   return (
                     <div className="h-full w-full" onClick={() => {}}>
                       <span key={key}>
