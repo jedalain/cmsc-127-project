@@ -29,6 +29,7 @@ import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 import api from "../../api/api.ts";
 import axios from "axios";
 import { ESTReviewFilter } from "./ESTReviewFilter.tsx";
+import { EmptyFoodItems, EstablishmentNotFound } from "../EmptyResults.tsx";
 
 interface ESTExpandedViewProps {
   establishmentId?: string;
@@ -247,24 +248,28 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   </div>
                 )}
 
-                {currentFoodItems.map((food, key) => {
-                  return (
-                    <div className="w-full h-fit" key={key}>
-                      <span key={key}>
-                        <FoodCard
-                          name={food.name}
-                          avgRating={food.avgRating}
-                          price={food.price}
-                          classification={food.classification}
-                          openDetailed={() => {
-                            setExpandedFoodItem(true);
-                            setExpandedFoodItemId(food.foodItemId);
-                          }}
-                        />
-                      </span>
-                    </div>
-                  );
-                })}
+                {currentFoodItems.length > 0 ? (
+                  currentFoodItems.map((food, key) => {
+                    return (
+                      <div className="w-full h-fit" key={key}>
+                        <span key={key}>
+                          <FoodCard
+                            name={food.name}
+                            avgRating={food.avgRating}
+                            price={food.price}
+                            classification={food.classification}
+                            openDetailed={() => {
+                              setExpandedFoodItem(true);
+                              setExpandedFoodItemId(food.foodItemId);
+                            }}
+                          />
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <EmptyFoodItems />
+                )}
               </div>
               <Pagination
                 currentPage={currentPageFood}
@@ -392,6 +397,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
           </div>
         </div>
       )}
+
+      {establishment === null && <EstablishmentNotFound />}
     </m.div>
   );
 }

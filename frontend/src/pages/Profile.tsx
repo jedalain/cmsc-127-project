@@ -7,21 +7,21 @@ import { Pagination } from "../components/Pagination.tsx";
 import PREstablishments from "../components/profile/PREstablishments.tsx";
 import ESTExpandedView from "../components/feed/ESTExpandedView.tsx";
 import api from "../api/api.ts";
-import {
-  foodEstablishment,
-  review,
-  sampleUser,
-  user,
-} from "../models/Models.tsx";
+import { foodEstablishment, review, user } from "../models/Models.tsx";
 import { filterReviewsByDate } from "../utils/helper.ts";
 import { FIReviewFilter } from "../components/feed/FIFilter.tsx";
+import {
+  EmptyEstablishments,
+  EmptyReviews,
+} from "../components/EmptyResults.tsx";
+import { PREmpty } from "../components/profile/PREmpty.tsx";
 
 export default function Profile() {
-  const [userProfile, setUserProfile] = useState<user | null>(sampleUser);
-  const [userReviews, setUserReviews] = useState<review[]>(sampleUser.reviews);
+  const [userProfile, setUserProfile] = useState<user | null>();
+  const [userReviews, setUserReviews] = useState<review[]>([]);
   const [userEstablishments, setUserEstablishments] = useState<
     foodEstablishment[]
-  >(sampleUser.establishments);
+  >([]);
   const [activeTab, setActiveTab] = useState<string>("reviews");
   const [establishmentId, setEstablishmentId] = useState<string>("");
 
@@ -29,7 +29,7 @@ export default function Profile() {
   const [reviewFilterApplied, setReviewFilterApplied] = useState<string>("");
   const filteredReviews = filterReviewsByDate(reviewFilterApplied, userReviews);
 
-  // pagination
+  // pagination for review & establishments
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [currentReviews, setCurrentReviews] = useState<review[]>([]);
@@ -61,13 +61,14 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    // fetchProfileData();
+    fetchProfileData();
   }, []);
 
   useEffect(() => {
     setCurrentPage(1);
+    setEstablishmentId("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, reviewFilterApplied]);
 
   useEffect(() => {
     setCurrentReviews(
@@ -116,7 +117,7 @@ export default function Profile() {
               </div>
 
               <div
-                className={`z-0 h-full items-center flex flex-col justify-between w-full min-w-[600px] rounded-lg bg-base127b p-10 ${
+                className={`z-0 h-full items-center flex flex-col min-h-[300px] justify-between w-full min-w-[600px] rounded-lg bg-base127b p-10 ${
                   activeTab === "reviews"
                     ? "rounded-tl-none"
                     : "rounded-tr-none"
@@ -137,19 +138,26 @@ export default function Profile() {
                           filterApplied={reviewFilterApplied}
                           setFilterApplied={setReviewFilterApplied}
                         />
-                        <PRReviews
-                          reviews={currentReviews}
-                          setEstablishmentId={setEstablishmentId}
-                        />
+                        {filteredReviews.length > 0 ? (
+                          <PRReviews
+                            reviews={currentReviews}
+                            setEstablishmentId={setEstablishmentId}
+                          />
+                        ) : (
+                          <EmptyReviews />
+                        )}
                       </div>
                     )}
 
-                    {activeTab === "establishments" && (
-                      <PREstablishments
-                        establishments={currentEstablishments}
-                        setEstablishmentId={setEstablishmentId}
-                      />
-                    )}
+                    {activeTab === "establishments" &&
+                      (userEstablishments.length > 0 ? (
+                        <PREstablishments
+                          establishments={currentEstablishments}
+                          setEstablishmentId={setEstablishmentId}
+                        />
+                      ) : (
+                        <EmptyEstablishments />
+                      ))}
                   </m.div>
                 </AnimatePresence>
                 <div className="flex items-center">
@@ -157,7 +165,7 @@ export default function Profile() {
                     currentPage={currentPage}
                     totalPages={
                       activeTab === "reviews"
-                        ? Math.ceil(userReviews.length / reviewPerPage)
+                        ? Math.ceil(filteredReviews.length / reviewPerPage)
                         : Math.ceil(
                             userEstablishments.length / establishmentPerPage
                           )
@@ -176,7 +184,7 @@ export default function Profile() {
           </div>
         </div>
       ) : (
-        ""
+        <PREmpty />
       )}
     </m.div>
   );

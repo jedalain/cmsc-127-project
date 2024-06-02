@@ -18,6 +18,7 @@ import api from "../../api/api.ts";
 import axios from "axios";
 import { FIReviewFilter } from "./FIFilter.tsx";
 import { filterReviewsByDate } from "../../utils/helper.ts";
+import { FoodItemNotFound } from "../EmptyResults.tsx";
 
 interface FIExpandedViewProps {
   establishmentId: string;
@@ -203,6 +204,8 @@ export function FIExpandedView(props: FIExpandedViewProps) {
             </div>
           </div>
         )}
+
+        {foodItem === null && <FoodItemNotFound />}
       </div>
 
       <div

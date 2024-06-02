@@ -7,6 +7,7 @@ import { ScrollToTop } from "../utils/helper.ts";
 import { ESTFilter } from "../components/feed/ESTFilter.tsx";
 import api from "../api/api.ts";
 import axios from "axios";
+import { EmptyEstablishments } from "../components/EmptyResults.tsx";
 
 export default function Feed() {
   const navigate = useNavigate();
@@ -85,24 +86,30 @@ export default function Feed() {
                 sortEstablishments={() => {}}
               />
             </span>
-            <div className="flex-[3] w-full h-full gap-6 grid grid-cols-1 auto-rows-min xs:grid-cols-2 sm:grid-cols-3">
-              {establishments.map((establishment, key) => {
-                return (
-                  <div className="h-full w-full" onClick={() => {}}>
-                    <span key={key}>
-                      <ESTCard
-                        name={establishment.name}
-                        avgRating={establishment.avgRating}
-                        address={establishment.address}
-                        openDetailed={() => {
-                          openEstablishment(establishment.establishmentId);
-                        }}
-                      />
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            {establishments.length > 0 ? (
+              <div className="flex-[3] w-full h-full gap-6 grid grid-cols-1 auto-rows-min xs:grid-cols-2 sm:grid-cols-3">
+                {establishments.map((establishment, key) => {
+                  return (
+                    <div className="h-full w-full" onClick={() => {}}>
+                      <span key={key}>
+                        <ESTCard
+                          name={establishment.name}
+                          avgRating={establishment.avgRating}
+                          address={establishment.address}
+                          openDetailed={() => {
+                            openEstablishment(establishment.establishmentId);
+                          }}
+                        />
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="h-screen">
+                <EmptyEstablishments />
+              </div>
+            )}
           </div>
         </div>
       ) : (
