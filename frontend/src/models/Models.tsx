@@ -11,7 +11,7 @@ export interface review {
 }
 
 export interface foodItem {
-  foodItemId: string;
+  foodId: string;
   name: string;
   classification: string;
   price: number;
@@ -83,7 +83,7 @@ export const establishmentReview2: review = {
 };
 
 export const fries: foodItem = {
-  foodItemId: "5000",
+  foodId: "5000",
   name: "French Fries",
   avgRating: 4.89,
   price: 140,
@@ -93,7 +93,7 @@ export const fries: foodItem = {
 };
 
 export const mcflurry: foodItem = {
-  foodItemId: "5001",
+  foodId: "5001",
   name: "McFlurry",
   avgRating: 4.3,
   price: 50,
@@ -119,7 +119,7 @@ export const mcflurry: foodItem = {
 };
 
 export const chicken: foodItem = {
-  foodItemId: "5002",
+  foodId: "5002",
   name: "Fried Chicken",
   avgRating: 4.1,
   price: 150,
