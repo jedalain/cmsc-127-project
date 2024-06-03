@@ -19,40 +19,11 @@ export default function FoodItemFeed() {
   const keyword = searchParams.get("keyword") || ""; // keyword
 
   const [foodItems, setFoodItems] = useState<foodItem[]>([]);
-  const [foodClassifications, setFoodClassifications] = useState<string[]>([]);
   const [filterApplied, setFilterApplied] = useState<{
     keyword: string;
     classification: string;
     priceSort: string;
   }>({ keyword: keyword, classification: "", priceSort: "" });
-
-  /** API Call - fetch food items from database */
-  const fetchClassifications = async () => {
-    try {
-      const response = await api.get("/food-items/get/classifications");
-      const classifications = response.data;
-      const classificationArray: string[] = [];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      classifications.forEach((object: any) =>
-        classificationArray.push(object.classification)
-      );
-
-      setFoodClassifications(classificationArray);
-
-      console.log(response);
-    } catch (error) {
-      setFoodItems([]);
-      let message;
-      if (axios.isAxiosError(error)) {
-        message =
-          error.response?.data?.message || "Cannot fetch classifications";
-      } else {
-        message = (error as Error).message;
-      }
-      console.log(message);
-      console.log(error);
-    }
-  };
 
   /** API Call - fetch food items from database */
   const fetchFoodItems = async () => {
@@ -133,7 +104,6 @@ export default function FoodItemFeed() {
   };
 
   useEffect(() => {
-    fetchClassifications();
     fetchFoodItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -183,7 +153,6 @@ export default function FoodItemFeed() {
           <span className="md:sticky md:top-6 flex flex-col gap-3 bg-base127b2 h-fit p-3 rounded-lg">
             <span className="text-blue127b">FILTER</span>
             <FIFilter
-              choices={foodClassifications}
               filterApplied={filterApplied}
               changePriceFilter={changePriceFilter}
               changeClassificationFilter={changeClassificationFilter}

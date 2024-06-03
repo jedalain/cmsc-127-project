@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   convertToTitleCase,
   generateFilterByMonthYear,
@@ -76,9 +76,10 @@ import { ChangeEvent } from "react";
 
 import { InputField } from "../InputField.tsx";
 import { Button } from "../Button.tsx";
+import api from "../../api/api.ts";
+import axios from "axios";
 
 interface FIFilterProps {
-  choices: string[];
   filterApplied: { keyword: string; classification: string; priceSort: string };
   changePriceFilter: (price: string) => void;
   changeClassificationFilter: (classification: string) => void;
@@ -89,11 +90,41 @@ interface FIFilterProps {
 
 export function FIFilter(props: FIFilterProps) {
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const [foodClassifications, setFoodClassifications] = useState<string[]>([]);
 
   const handleClassificationFilter = (classification: string) => {
     props.changeClassificationFilter(classification);
     setFilterOpen(false);
   };
+
+  /** API Call - fetch food items from database */
+  const fetchClassifications = async () => {
+    try {
+      const response = await api.get("/food-items/get/classifications");
+      const classifications = response.data;
+      const classificationArray: string[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      classifications.forEach((object: any) =>
+        classificationArray.push(object.classification)
+      );
+
+      setFoodClassifications(classificationArray);
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message =
+          error.response?.data?.message || "Cannot fetch classifications";
+      } else {
+        message = (error as Error).message;
+      }
+      console.log(message);
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchClassifications();
+  }, []);
 
   return (
     <div className="flex gap-3 flex-col ">
@@ -150,7 +181,7 @@ export function FIFilter(props: FIFilterProps) {
                 : "pointer-events-none top-[-0.5rem] opacity-0"
             }`}
           >
-            {props.choices.map((option, index) => (
+            {foodClassifications.map((option, index) => (
               <span
                 key={index}
                 className={`flex font-normal cursor-pointer items-center gap-x-3.5 rounded-lg px-3 py-2 text-sm hover:bg-base1 focus:bg-base1 focus:outline-none ${

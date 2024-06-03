@@ -141,7 +141,6 @@ export const getFoodItemsByEstablishment = async (
   res: Response
 ) => {
   try {
-    const byPrice = req.query.byPrice; //query for sorting
     const { establishmentId } = req.params;
 
     // Check if establishmentId exists
@@ -155,15 +154,29 @@ export const getFoodItemsByEstablishment = async (
       return res.status(400).json({ error: "Invalid establishmentId" });
     }
 
-    let sql;
+    const { keyword, classification, priceSort } = req.query;
+    const params: any[] = [];
 
-    if (byPrice == "true") {
-      sql = "SELECT * FROM foodItems WHERE establishmentId = ? ORDER BY price";
-    } else {
-      sql = "SELECT * FROM foodItems WHERE establishmentId = ?";
+    let sql = "SELECT * FROM foodItems WHERE establishmentId = ?";
+    params.push(establishmentId);
+
+    if (keyword) {
+      sql = sql + " AND name LIKE ?";
+      params.push(`%${keyword}%`);
     }
 
-    const result = await query(sql, [establishmentId]);
+    if (classification) {
+      sql = sql + " AND classification = ?";
+      params.push(`${classification}`);
+    }
+
+    if (priceSort) {
+      if (priceSort === "Price (Low to High)") sql = sql + " ORDER BY price";
+      if (priceSort === "Price (High to Low)")
+        sql = sql + " ORDER BY price DESC";
+    }
+
+    const result = await query(sql, params);
 
     res.status(200).json(convertBigInt(result));
   } catch (error) {

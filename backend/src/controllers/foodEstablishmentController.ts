@@ -80,9 +80,10 @@ export const getFoodEstablishment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
+    console.log(id);
     const sql = "SELECT * FROM foodEstablishments WHERE establishmentId = ?";
     const result = await query(sql, [id]);
-
+    console.log(result);
     //check if estab exist
     if (result.length > 0) {
       res.status(200).json(convertBigInt(result[0]));

@@ -1,5 +1,5 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { PiPlusCircle, PiPlusCircleFill } from "react-icons/pi";
+import { PiPlusCircle, PiPlusCircleFill, PiStarFill } from "react-icons/pi";
 import { AnimatePresence, motion as m } from "framer-motion";
 
 import { foodEstablishment, foodItem, review } from "../../models/Models.tsx";
@@ -39,13 +39,12 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   // for getting establishment id
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const establishmentId =
-    searchParams.get("establishmentId") || props.establishmentId || "";
-
+  const establishmentId = searchParams.get("id") || props.establishmentId || "";
+  console.log(establishmentId);
   const [establishment, setEstablishment] =
     useState<foodEstablishment | null>();
   const [foodItems, setFoodItems] = useState<foodItem[]>([]);
-  const [foodTypes, setFoodTypes] = useState<string[]>([]);
+  const [foodClassifications, setFoodClassifications] = useState<string[]>([]);
   const [estReviews, setEstReviews] = useState<review[]>([]);
 
   // for filtering food items in the establishment
@@ -54,6 +53,71 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     classification: string;
     priceSort: string;
   }>({ keyword: "", classification: "", priceSort: "" });
+
+  /** API Call - fetch details of establishment */
+  const fetchEstablishment = async () => {
+    const { keyword, classification, priceSort } = foodFilterApplied;
+
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      const response = await api.get(
+        `/food-establishments/${establishmentId}`,
+        {
+          headers: {
+            Authorization: token,
+
+            establishmentId: establishmentId,
+            keyword: keyword,
+            classification: classification,
+            priceSort: priceSort,
+          },
+        }
+      );
+      setEstablishment(response.data);
+    } catch (error) {
+      setEstablishment(null);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message =
+          error.response?.data?.message || "Cannot fetch establishments";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - fetch food items of establishment */
+  const fetchFoodItems = async () => {
+    const { keyword, classification, priceSort } = foodFilterApplied;
+    console.log(foodFilterApplied);
+    try {
+      const response = await api.get(
+        `/food-items/establishment/${establishmentId}`,
+        {
+          params: {
+            keyword: keyword,
+            classification: classification,
+            priceSort: priceSort,
+          },
+        }
+      );
+      setFoodItems(response.data);
+    } catch (error) {
+      setEstablishment(null);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot fetch food items";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
 
   /** Function - updates the state filterApplied */
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +155,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   /** Function - apply filter */
   const applyFilter = () => {
-    fetchEstablishment();
+    fetchFoodItems();
   };
 
   // for pagination of food items
@@ -120,7 +184,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   // for filtering reviews
   const [reviewFilterApplied, setReviewFilterApplied] = useState<string>("");
-  const filteredReviews = filterReviewsByDate(reviewFilterApplied, estReviews);
+  // const filteredReviews = filterReviewsByDate(reviewFilterApplied, estReviews);
+  const filteredReviews = [];
 
   // food item opened in detailed view
   const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
@@ -135,42 +200,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const [newReview, setNewReview] = useState<boolean>(false);
   const [newFoodItem, setNewFoodItem] = useState<boolean>(false);
   const [editEstablishment, setEditEstablishment] = useState<boolean>(false);
-
-  /** API Call - fetch details of establishment */
-  const fetchEstablishment = async () => {
-    const { keyword, classification, priceSort } = foodFilterApplied;
-
-    try {
-      const token = sessionStorage.getItem("tt_token");
-      const response = await api.get("/", {
-        headers: {
-          Authorization: token,
-
-          establishmentId: establishmentId,
-          keyword: keyword,
-          classification: classification,
-          priceSort: priceSort,
-        },
-      });
-
-      setEstablishment(response.data.establishment);
-      setFoodItems(response.data.foodItems);
-      setFoodTypes(response.data.establishment.foodTypes);
-      setEstReviews(response.data.reviews);
-    } catch (error) {
-      setEstablishment(null);
-
-      let message;
-      if (axios.isAxiosError(error)) {
-        message =
-          error.response?.data?.message || "Cannot fetch establishments";
-      } else {
-        message = (error as Error).message;
-      }
-
-      console.log(message);
-    }
-  };
 
   /** Function - closes the review modal */
   const toggleReviewModal = () => {
@@ -189,7 +218,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   /** useEffect - fetch establishment details on load */
   useEffect(() => {
-    // fetchEstablishment();
+    fetchEstablishment();
+    fetchFoodItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -226,6 +256,9 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
           <div className="text-black127 h-full w-full flex flex-col gap-6">
             <div className="flex flex-col">
+              <span className="flex gap-2 items-center font-semibold text-xl">
+                <PiStarFill color="#FDE767" /> {establishment.avgRating}
+              </span>
               <span className="text-3xl font-semibold">
                 {establishment.name}
               </span>
@@ -289,7 +322,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   onChange={handleFilterChange}
                   onApply={applyFilter}
                   onClear={clearFilter}
-                  choices={foodTypes}
                 />
               </span>
             </div>
