@@ -63,14 +63,13 @@ export function ReviewModal(props: ReviewModalProps) {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.post(
-        "/reviews",
+        "/reviews/",
         {
           rating: review.rating,
           title: review.title,
           comment: review.comment,
           userId: "",
           establishmentId: props.establishmentId ? props.establishmentId : "",
-          foodItemId: props.foodItemId ? props.foodItemId : "",
         },
         {
           headers: {

@@ -354,7 +354,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
             <div className="flex flex-[2] flex-col">
               <span className="flex items-center justify-between text-orange127a font-medium">
                 <span>Reviews:</span>
-                <span className="flex gap-1">
+                <span className="flex gap-2">
                   <ESTReviewFilter
                     filterApplied={reviewFilterApplied}
                     setFilterApplied={setReviewFilterApplied}
@@ -407,7 +407,11 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15, ease: "easeInOut" }}
                 >
-                  <ReviewModal action="add" closeModal={toggleReviewModal} />
+                  <ReviewModal
+                    establishmentId={establishment.establishmentId}
+                    action="add"
+                    closeModal={toggleReviewModal}
+                  />
                 </m.span>
               </AnimatePresence>
             )}
