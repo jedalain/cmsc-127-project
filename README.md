@@ -52,7 +52,7 @@ To run this project, open MariaDB and connect to the database: 127project.
 
 After that, open your terminal make sure that you are in the right directory, navigate to the backend and frontend folder, and type in the following commands:
 
-in the cmsc-127-project folder
+in the cmsc-127-project folder:
 
 ```
 npm i 
