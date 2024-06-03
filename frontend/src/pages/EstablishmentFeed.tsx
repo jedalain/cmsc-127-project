@@ -25,9 +25,7 @@ export default function EstablishmentFeed() {
     keyword: keyword,
     rating: 0,
   });
-  const [establishments, setEstablishments] = useState<foodEstablishment[]>([
-    mcdo,
-  ]);
+  const [establishments, setEstablishments] = useState<foodEstablishment[]>([]);
 
   /** API Call - fetch establishments from database */
   const fetchEstablishments = async () => {
@@ -35,16 +33,17 @@ export default function EstablishmentFeed() {
       const { keyword, rating } = filterApplied;
 
       const token = sessionStorage.getItem("tt_token");
-      const response = await api.get("/", {
+      const response = await api.get("/food-establishments/", {
         headers: {
           Authorization: token,
-
+        },
+        params: {
           keyword: keyword,
-          filter: rating,
+          rating: rating,
         },
       });
 
-      setEstablishments(response.data.establishments);
+      setEstablishments(response.data);
     } catch (error) {
       setEstablishments([]);
 
@@ -93,7 +92,7 @@ export default function EstablishmentFeed() {
   };
 
   useEffect(() => {
-    // fetchEstablishments();
+    fetchEstablishments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -98,9 +98,23 @@ export const getFoodEstablishment = async (req: Request, res: Response) => {
 // get all food estab
 export const getAllFoodEstablishments = async (req: Request, res: Response) => {
   try {
-    const sql = "SELECT * FROM foodEstablishments";
+    const { keyword, rating } = req.query;
 
-    const result = await query(sql);
+    let sql =
+      "SELECT * FROM foodEstablishments WHERE establishmentId IS NOT NULL";
+    const params: any[] = [];
+
+    if (keyword) {
+      sql = sql + " AND name LIKE ?";
+      params.push(`%${keyword}%`);
+    }
+
+    if (rating) {
+      sql = sql + " AND avgRating >= ?";
+      params.push(rating);
+    }
+
+    const result = await query(sql, params);
     res.status(200).json(convertBigInt(result));
   } catch (error) {
     console.error(error);
