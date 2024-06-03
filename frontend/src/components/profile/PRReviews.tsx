@@ -8,6 +8,7 @@ import {
 
 import { review } from "../../models/Models.tsx";
 import { ReviewModal } from "../feed/ReviewModal.tsx";
+import { format, parseISO } from "date-fns";
 
 interface PRReviewsProps {
   reviews: review[];
@@ -36,7 +37,7 @@ export default function PRReviews(props: PRReviewsProps) {
             <div className="text-base127d bg-base127b2 flex flex-col text-sm rounded-lg p-3 w-full h-[90px]">
               <span className="flex items-center justify-between font-medium">
                 <span className="flex gap-1 items-center">
-                  {review.foodItemId ? (
+                  {review.foodId ? (
                     <PiBowlFoodBold size={18} />
                   ) : (
                     <PiStorefrontBold size={18} />
@@ -59,7 +60,10 @@ export default function PRReviews(props: PRReviewsProps) {
 
               <div className="text-justify line-clamp-1">{review.comment}</div>
               <div className="text-justify mt-2 text-xs line-clamp-1">
-                {review.dateCreated.toDateString()}
+                {format(
+                  parseISO(review.dateModified),
+                  "MMM d, yyyy HH:mm:ss a"
+                )}
               </div>
             </div>
           </div>
@@ -71,7 +75,6 @@ export default function PRReviews(props: PRReviewsProps) {
           action="edit"
           review={chosenReview}
           closeModal={toggleModal}
-          setAlertBubble={() => {}}
         />
       )}
     </div>

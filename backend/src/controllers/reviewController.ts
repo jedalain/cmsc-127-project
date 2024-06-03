@@ -22,7 +22,13 @@ export const addReview = async (req: CustomRequest, res: Response) => {
     // Check establishment existence
     if (establishmentId) {
       console.log("Checking establishment existence...");
-      if (!(await checkExistence("foodEstablishments", "establishmentId", establishmentId))) {
+      if (
+        !(await checkExistence(
+          "foodEstablishments",
+          "establishmentId",
+          establishmentId
+        ))
+      ) {
         console.error("Invalid establishmentId:", establishmentId);
         return res.status(400).json({ error: "Invalid establishmentId" });
       }
@@ -40,14 +46,33 @@ export const addReview = async (req: CustomRequest, res: Response) => {
     }
 
     if (!establishmentId && !foodId) {
-      return res.status(400).json({ error: "Either establishmentId or foodId must be provided" });
+      return res
+        .status(400)
+        .json({ error: "Either establishmentId or foodId must be provided" });
     }
 
-    const sql = "INSERT INTO reviews (status, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const sql =
+      "INSERT INTO reviews (status, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?)";
     console.log("SQL:", sql);
-    console.log("Parameters:", [status, rating, title, comment, userId, establishmentId || null, foodId || null]);
+    console.log("Parameters:", [
+      status,
+      rating,
+      title,
+      comment,
+      userId,
+      establishmentId || null,
+      foodId || null,
+    ]);
 
-    const result = await query(sql, [status, rating, title, comment, userId, establishmentId || null, foodId || null]);
+    const result = await query(sql, [
+      status,
+      rating,
+      title,
+      comment,
+      userId,
+      establishmentId || null,
+      foodId || null,
+    ]);
     console.log("Insert result:", result);
 
     if (establishmentId) {
@@ -58,28 +83,28 @@ export const addReview = async (req: CustomRequest, res: Response) => {
       await avgFoodItem(foodId);
     }
 
-    res.status(201).json(convertBigInt({
-      id: result.insertId,
-      status,
-      rating,
-      title,
-      comment,
-      userId,
-      establishmentId,
-      foodId,
-    }));
+    res.status(201).json(
+      convertBigInt({
+        id: result.insertId,
+        status,
+        rating,
+        title,
+        comment,
+        userId,
+        establishmentId,
+        foodId,
+      })
+    );
   } catch (error) {
     console.error("Error adding review:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-
-
 export const updateReview = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { rating, title, comment, reviewFor } = req.body;
+    const { rating, title, comment } = req.body;
     const status = "UPDATED"; // set status as updated
 
     // check if the review exists and is not flagged as deleted
@@ -100,17 +125,9 @@ export const updateReview = async (req: Request, res: Response) => {
     const dateModified = new Date(); // set date modified as current date and time
 
     const sql =
-      "UPDATE reviews SET status = ?, reviewFor = ?, rating = ?, title = ?, comment = ?, dateModified = ? WHERE reviewId = ?";
+      "UPDATE reviews SET status = ?, rating = ?, title = ?, comment = ?, dateModified = ? WHERE reviewId = ?";
 
-    await query(sql, [
-      status,
-      reviewFor,
-      rating,
-      title,
-      comment,
-      dateModified,
-      id,
-    ]);
+    await query(sql, [status, rating, title, comment, dateModified, id]);
 
     //update review
     if (establishmentId) {
@@ -125,7 +142,6 @@ export const updateReview = async (req: Request, res: Response) => {
       convertBigInt({
         id,
         status,
-        reviewFor,
         rating,
         title,
         comment,
@@ -145,7 +161,7 @@ export const deleteReview = async (req: Request, res: Response) => {
 
     //check if review that we want to delete exist
     const reviewCheckSql =
-      "SELECT establishmentId, foodId, reviewFor FROM reviews WHERE reviewId = ?";
+      "SELECT establishmentId, foodId, reviewId FROM reviews WHERE reviewId = ?";
     const reviewCheckResult = await query(reviewCheckSql, [id]);
 
     if (reviewCheckResult.length === 0) {

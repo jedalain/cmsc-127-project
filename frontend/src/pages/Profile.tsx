@@ -9,7 +9,6 @@ import PREstablishments from "../components/profile/PREstablishments.tsx";
 import ESTExpandedView from "../components/feed/ESTExpandedView.tsx";
 import api from "../api/api.ts";
 import { foodEstablishment, review, user } from "../models/Models.tsx";
-import { filterReviewsByDate } from "../utils/helper.ts";
 import { FIReviewFilter } from "../components/feed/FIFilter.tsx";
 import { EmptyReviews } from "../components/EmptyResults.tsx";
 import { PREmpty } from "../components/profile/PREmpty.tsx";
@@ -25,14 +24,11 @@ export default function Profile() {
 
   // filter for review
   const [reviewFilterApplied, setReviewFilterApplied] = useState<string>("");
-  const filteredReviews = filterReviewsByDate(reviewFilterApplied, userReviews);
 
   // pagination for review & establishments
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const [currentReviews, setCurrentReviews] = useState<review[]>([]);
-  const reviewPerPage = 10;
-
+  const reviewPerPage = 5;
   const [currentEstablishments, setCurrentEstablishments] = useState<
     foodEstablishment[]
   >([]);
@@ -41,14 +37,18 @@ export default function Profile() {
   /** API Call - fetch user data */
   const fetchProfileData = async () => {
     try {
-      const token = sessionStorage.getItem("pb_token");
-      const userData = await api.get("/", {
+      const token = sessionStorage.getItem("tt_token");
+
+      const userData = await api.get("/users/profile", {
         headers: {
           Authorization: token,
         },
+        params: {
+          monthYear: reviewFilterApplied,
+        },
       });
 
-      setUserProfile(userData.data);
+      setUserProfile(userData.data.profile);
       setUserReviews(userData.data.reviews);
       setUserEstablishments(userData.data.establishments);
     } catch (error) {
@@ -60,7 +60,13 @@ export default function Profile() {
 
   useEffect(() => {
     fetchProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    fetchProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reviewFilterApplied]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -70,13 +76,13 @@ export default function Profile() {
 
   useEffect(() => {
     setCurrentReviews(
-      filteredReviews.slice(
+      userReviews.slice(
         (currentPage - 1) * reviewPerPage,
         currentPage * reviewPerPage
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, reviewFilterApplied]);
+  }, [currentPage, userReviews, reviewFilterApplied]);
 
   useEffect(() => {
     setCurrentEstablishments(
@@ -86,7 +92,7 @@ export default function Profile() {
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  }, [currentPage, userEstablishments]);
 
   return (
     <m.div
@@ -136,7 +142,7 @@ export default function Profile() {
                           filterApplied={reviewFilterApplied}
                           setFilterApplied={setReviewFilterApplied}
                         />
-                        {filteredReviews.length > 0 ? (
+                        {userReviews.length > 0 ? (
                           <PRReviews
                             reviews={currentReviews}
                             setEstablishmentId={setEstablishmentId}
@@ -161,7 +167,7 @@ export default function Profile() {
                     currentPage={currentPage}
                     totalPages={
                       activeTab === "reviews"
-                        ? Math.ceil(filteredReviews.length / reviewPerPage)
+                        ? Math.ceil(userReviews.length / reviewPerPage)
                         : Math.ceil(
                             userEstablishments.length / establishmentPerPage
                           )

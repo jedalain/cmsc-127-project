@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { query } from "../config/dbConfig";
-import { convertBigInt } from "./helper";
+import { CustomRequest } from "../middleware/authToken";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { checkExistence } from "./helper";
 
 const SECRET_KEY = "secretkey";
 
@@ -28,15 +29,13 @@ export const addUser = async (req: Request, res: Response) => {
     ]);
 
     // generate token
-    const userId = result.insertId; 
+    const userId = result.insertId;
     console.log(userId);
 
     // Generate token
-    const token = jwt.sign(
-      { id: userId, email, role },
-      SECRET_KEY,
-      { expiresIn: "3h" }
-    );
+    const token = jwt.sign({ id: userId, email, role }, SECRET_KEY, {
+      expiresIn: "3h",
+    });
 
     res.status(201).json({ token: token });
   } catch (error) {
@@ -83,4 +82,52 @@ export const loginUser = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+};
+
+export const fetchProfile = async (req: CustomRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    console.log("Authenticated userId:", userId);
+
+    // Check user existence
+    console.log("Checking user existence...");
+    if (!(await checkExistence("users", "userId", userId))) {
+      console.error("Invalid userId:", userId);
+      return res.status(400).json({ error: "Invalid userId" });
+    }
+    console.log("User exists.");
+
+    const { monthYear } = req.query;
+    const reviewParams = [];
+
+    const profile = "SELECT fname, mname, lname FROM users WHERE userId = ?";
+    let reviews =
+      "SELECT * FROM reviews WHERE userId = ? AND status != 'DELETED'";
+    const establishments = "SELECT * FROM foodEstablishments WHERE userId = ?";
+
+    reviewParams.push(userId);
+
+    if (monthYear) {
+      const [month, year] = (monthYear as string).split(" ");
+
+      const startDate = new Date(`${year}-${month}-01`);
+      const endDate = new Date(startDate);
+      console.log(endDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+
+      reviews += " AND (dateModified >= ? AND dateModified < ?)";
+      reviewParams.push(startDate.toISOString());
+      reviewParams.push(endDate.toISOString());
+    }
+
+    const profileResult = await query(profile, [userId]);
+    const reviewsResult = await query(reviews, reviewParams);
+    const establishmentsResult = await query(establishments, [userId]);
+
+    res.status(201).json({
+      profile: profileResult[0],
+      reviews: reviewsResult,
+      establishments: establishmentsResult,
+    });
+  } catch (error) {}
 };

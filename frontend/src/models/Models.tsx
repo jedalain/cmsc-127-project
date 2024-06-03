@@ -7,7 +7,7 @@ export interface review {
   dateModified: Date;
   userId: string;
   establishmentId?: string;
-  foodItemId?: string;
+  foodId?: string;
 }
 
 export interface foodItem {
@@ -55,7 +55,7 @@ export const foodReview: review = {
   dateCreated: new Date("05/26/2024"),
   dateModified: new Date("05/26/2024"),
   userId: "aab12",
-  foodItemId: "5000",
+  foodId: "5000",
 };
 
 export const establishmentReview: review = {

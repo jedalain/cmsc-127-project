@@ -91,24 +91,26 @@ export function ReviewModal(props: ReviewModalProps) {
       console.log(message);
     }
   };
-
+  console.log(review);
   /** API Call - edit existing review */
   const editReview = async (reviewId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
-      await api.patch(
-        "/",
-        { review: review, reviewId: reviewId },
+      await api.put(
+        `/reviews/${reviewId}`,
+        { title: review.title, rating: review.rating, comment: review.comment },
         {
           headers: {
             Authorization: token,
           },
         }
       );
+
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || "Cannot create review";
+        message = error.response?.data?.message || "Cannot edit review";
       } else {
         message = (error as Error).message;
       }
@@ -121,15 +123,12 @@ export function ReviewModal(props: ReviewModalProps) {
   const deleteReview = async (reviewId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
-      await api.delete("/", {
+      await api.delete(`/reviews/${reviewId}`, {
         headers: {
           Authorization: token,
         },
-
-        data: {
-          reviewId: reviewId,
-        },
       });
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
