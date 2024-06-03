@@ -3,7 +3,7 @@ import { query } from "../config/dbConfig";
 import { CustomRequest } from "../middleware/authToken";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { checkExistence } from "./helper";
+import { checkExistence, convertBigInt } from "./helper";
 
 const SECRET_KEY = "secretkey";
 
@@ -185,5 +185,16 @@ export const checkOwnership = async (req: CustomRequest, res: Response) => {
     return res.status(200).json({ isOwner: true });
   } catch (error) {
     res.status(401).json({ error: "Invalid token" });
+  }
+};
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const sql = 'SELECT * FROM users WHERE role != "admin"';
+    const result = await query(sql);
+
+    res.status(200).json(convertBigInt(result));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
