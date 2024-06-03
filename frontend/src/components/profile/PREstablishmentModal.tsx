@@ -40,14 +40,16 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.post(
-        "/",
-        { establishment: newEstablishment },
+        "/food-establishments/",
+        { name: newEstablishment.name, address: newEstablishment.address },
         {
           headers: {
             Authorization: token,
           },
         }
       );
+
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
@@ -64,15 +66,17 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
   const editEstablishment = async (establishmentId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
-      await api.patch(
-        "/",
-        { establishment: newEstablishment, establishmentId: establishmentId },
+      await api.put(
+        `food-establishments/${establishmentId}`,
+        { name: newEstablishment.name, address: newEstablishment.address },
         {
           headers: {
             Authorization: token,
           },
         }
       );
+
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
@@ -89,15 +93,13 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
   const deleteEstablishment = async (establishmentId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
-      await api.delete("/", {
+      await api.delete(`food-establishments/${establishmentId}`, {
         headers: {
           Authorization: token,
         },
-
-        data: {
-          establishmentId: establishmentId,
-        },
       });
+
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
@@ -201,7 +203,9 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
                 label="Name"
                 placeholder="Enter name of your establishment"
                 defaultValue={
-                  props.establishment ? props.establishment.name : ""
+                  props.establishment
+                    ? props.establishment.name
+                    : newEstablishment.name
                 }
                 error={
                   errors?.errors.find((error) => error.path[0] === "name")
@@ -216,7 +220,9 @@ export function PREstablishmentModal(props: PREstablishmentModalProps) {
                 label="Address"
                 placeholder="Enter where your establishment is located"
                 defaultValue={
-                  props.establishment ? props.establishment.address : ""
+                  props.establishment
+                    ? props.establishment.address
+                    : newEstablishment.address
                 }
                 error={
                   errors?.errors.find((error) => error.path[0] === "address")

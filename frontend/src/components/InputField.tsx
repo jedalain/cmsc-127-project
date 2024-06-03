@@ -12,6 +12,7 @@ interface InputFieldProps {
   id?: string;
   disabled?: boolean;
   defaultValue?: string | number;
+  hasClearBtn?: boolean;
   type: string;
   name: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -104,27 +105,53 @@ export function InputField(props: InputFieldProps) {
             <props.icon />
           </span>
 
-          <input
-            type={props.type === "password" ? passwordVisible : props.type}
-            name={props.name}
-            id={props.id}
-            className={`block w-full rounded-lg bg-base127b outline-none py-2 pe-11 pl-9 ${
-              props.type === "password" ? "pr-9" : "pr-3"
-            } text-sm placeholder:text-base127d text-black127 placeholder:font-light shadow-sm transition-all disabled:pointer-events-none disabled:opacity-50 ${borderColor}`}
-            placeholder={props.placeholder ? props.placeholder : ""}
-            disabled={props.disabled ? props.disabled : false}
-            onFocus={() => {
-              focusedIcon();
-              focusedField();
-            }}
-            onBlur={() => {
-              focusedIcon();
-              focusedField();
-            }}
-            defaultValue={props.defaultValue ? props.defaultValue : ""}
-            onChange={props.onChange}
-            onKeyDown={props.onEnter ? props.onEnter : undefined}
-          />
+          {props.hasClearBtn && (
+            <input
+              type={props.type === "password" ? passwordVisible : props.type}
+              name={props.name}
+              id={props.id}
+              className={`block w-full rounded-lg bg-base127b outline-none py-2 pe-11 pl-9 ${
+                props.type === "password" ? "pr-9" : "pr-3"
+              } text-sm placeholder:text-base127d text-black127 placeholder:font-light shadow-sm transition-all disabled:pointer-events-none disabled:opacity-50 ${borderColor}`}
+              placeholder={props.placeholder ? props.placeholder : ""}
+              disabled={props.disabled ? props.disabled : false}
+              onFocus={() => {
+                focusedIcon();
+                focusedField();
+              }}
+              onBlur={() => {
+                focusedIcon();
+                focusedField();
+              }}
+              defaultValue={props.defaultValue ? props.defaultValue : ""}
+              onChange={props.onChange}
+              onKeyDown={props.onEnter ? props.onEnter : undefined}
+            />
+          )}
+
+          {props.hasClearBtn === undefined && (
+            <input
+              type={props.type === "password" ? passwordVisible : props.type}
+              name={props.name}
+              id={props.id}
+              className={`block w-full rounded-lg bg-base127b outline-none py-2 pe-11 pl-9 ${
+                props.type === "password" ? "pr-9" : "pr-3"
+              } text-sm placeholder:text-base127d text-black127 placeholder:font-light shadow-sm transition-all disabled:pointer-events-none disabled:opacity-50 ${borderColor}`}
+              placeholder={props.placeholder ? props.placeholder : ""}
+              disabled={props.disabled ? props.disabled : false}
+              onFocus={() => {
+                focusedIcon();
+                focusedField();
+              }}
+              onBlur={() => {
+                focusedIcon();
+                focusedField();
+              }}
+              defaultValue={props.defaultValue ? props.defaultValue : ""}
+              onChange={props.onChange}
+              onKeyDown={props.onEnter ? props.onEnter : undefined}
+            />
+          )}
 
           {props.type === "password" && (
             <span
@@ -138,21 +165,40 @@ export function InputField(props: InputFieldProps) {
       ) : (
         // input field w/o icon
         <div className="relative sm:col-span-9">
-          <input
-            type={props.type === "password" ? passwordVisible : props.type}
-            name={props.name}
-            id={props.id ? props.id : undefined}
-            className={`block w-full rounded-lg bg-base127b outline-none border-none pl-3 ${
-              props.type === "password" ? "pr-9" : "pr-3"
-            } py-2 pe-11 placeholder:text-base127d text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
-            placeholder={props.placeholder ? props.placeholder : ""}
-            disabled={props.disabled ? props.disabled : false}
-            defaultValue={props.defaultValue ? props.defaultValue : ""}
-            value={props.defaultValue ? props.defaultValue : ""}
-            step={props.type === "number" ? 0.01 : undefined}
-            onChange={props.onChange}
-            onKeyDown={props.onEnter ? props.onEnter : undefined}
-          />
+          {props.hasClearBtn && (
+            <input
+              type={props.type === "password" ? passwordVisible : props.type}
+              name={props.name}
+              id={props.id ? props.id : undefined}
+              className={`block w-full rounded-lg bg-base127b outline-none border-none pl-3 ${
+                props.type === "password" ? "pr-9" : "pr-3"
+              } py-2 pe-11 placeholder:text-base127d text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
+              placeholder={props.placeholder ? props.placeholder : ""}
+              disabled={props.disabled ? props.disabled : false}
+              defaultValue={props.defaultValue ? props.defaultValue : ""}
+              value={props.defaultValue ? props.defaultValue : ""}
+              step={props.type === "number" ? 0.01 : undefined}
+              onChange={props.onChange}
+              onKeyDown={props.onEnter ? props.onEnter : undefined}
+            />
+          )}
+
+          {props.hasClearBtn === undefined && (
+            <input
+              type={props.type === "password" ? passwordVisible : props.type}
+              name={props.name}
+              id={props.id ? props.id : undefined}
+              className={`block w-full rounded-lg bg-base127b outline-none border-none pl-3 ${
+                props.type === "password" ? "pr-9" : "pr-3"
+              } py-2 pe-11 placeholder:text-base127d text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
+              placeholder={props.placeholder ? props.placeholder : ""}
+              disabled={props.disabled ? props.disabled : false}
+              defaultValue={props.defaultValue ? props.defaultValue : ""}
+              step={props.type === "number" ? 0.01 : undefined}
+              onChange={props.onChange}
+              onKeyDown={props.onEnter ? props.onEnter : undefined}
+            />
+          )}
 
           {props.type === "password" && (
             <span

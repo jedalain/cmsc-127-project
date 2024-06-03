@@ -33,7 +33,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const navigate = useNavigate();
 
   // for checking if the owner is the viewer
-  const isOwnerRoute = false;
+  const isOwnerRoute = true;
 
   // for getting establishment id
   const location = useLocation();

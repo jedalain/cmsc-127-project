@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
 import { query } from "../config/dbConfig";
 import { checkExistence, convertBigInt } from "./helper";
+import { CustomRequest } from "../middleware/authToken";
 
-export const addFoodEstablishment = async (req: Request, res: Response) => {
+export const addFoodEstablishment = async (
+  req: CustomRequest,
+  res: Response
+) => {
   try {
-    const { name, address, userId } = req.body;
+    const { name, address } = req.body;
+    const userId = req.userId;
+
     const sql =
       "INSERT INTO foodEstablishments (name, address, userId) VALUES (?, ?, ?)";
 

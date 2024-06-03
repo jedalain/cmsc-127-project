@@ -22,6 +22,7 @@ export function ESTFilter(props: ESTFilterProps) {
           name="keyword"
           type="text"
           placeholder="Keyword"
+          hasClearBtn={true}
           onChange={props.onChange}
           defaultValue={props.filterApplied.keyword}
         />
