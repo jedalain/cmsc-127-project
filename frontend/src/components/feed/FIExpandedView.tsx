@@ -3,12 +3,7 @@ import { AnimatePresence, motion as m } from "framer-motion";
 import { PiPlusCircleFill, PiStarFill } from "react-icons/pi";
 
 import { Button } from "../Button.tsx";
-import {
-  arrayOfReviews,
-  foodItem,
-  mcflurry,
-  review,
-} from "../../models/Models.tsx";
+import { foodItem, review } from "../../models/Models.tsx";
 import ReviewCard from "../ReviewCard.tsx";
 import { ReviewModal } from "./ReviewModal.tsx";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
@@ -30,9 +25,8 @@ interface FIExpandedViewProps {
 export function FIExpandedView(props: FIExpandedViewProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
 
-  const [foodItem, setFoodItem] = useState<foodItem | null>(mcflurry);
-  const [foodItemReviews, setFoodItemReviews] =
-    useState<review[]>(arrayOfReviews);
+  const [foodItem, setFoodItem] = useState<foodItem | null>(null);
+  const [foodItemReviews, setFoodItemReviews] = useState<review[]>([]);
 
   // filter
   const [foodReviewFilter, setFoodReviewFilter] = useState<string>("");
@@ -87,7 +81,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
   /** useEffect - fetch details of food item */
   useEffect(() => {
-    // fetchFoodItem();
+    fetchFoodItem();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -239,7 +233,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
             transition={{ duration: 0.15, ease: "easeInOut" }}
           >
             <PRFoodItemModal
-              action="add"
+              action="edit"
               closeModal={toggleEditFoodModal}
               foodItem={foodItem}
             />
