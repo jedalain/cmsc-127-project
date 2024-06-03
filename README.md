@@ -34,7 +34,7 @@ and food items from food establishments. The developers built this website using
 - How do I create an account?
     - Select the "Sign In" button located on the top right of the landing page.
     - If you have an account:
-        -  Enter you rcredentials
+        -  Enter you credentials
         - Once done, click the "Sign in" button to proceed.
     - if you don't have an account
         - Click the "Sign up" button and fill up the required field.
