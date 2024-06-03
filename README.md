@@ -1,24 +1,67 @@
-# CMSC 127 Final Project
+### TasteTracker
+This information system allows users to record, in electronic form, data on food reviews and food items from food establishments. It features comprehensive management of food reviews, food establishments, and food items. Users can add, delete, view, and update reviews, establishments, and items. This website was created by a group of undergraduate students for the University of the Philippines - Los Baños CMSC 127 (File Processing and Database Systems) course project.
 
-### Developers
-- TEAM TININIW
-    - Zamora, Aaron
-    - Silva, Jed Alain
-    - Victorio, Jean Nikolai
-    - Aguinaldo, Alexis Danielle
+### Developers (TEAM TININIW)
+- Aguinaldo, Alexis Danielle
+- Silva, Jed Alain
+- Victorio, Jean Nikolai
+- Zamora, Aaron
 
-### Project Title
-TasteTracker
+## Tech Stack
+- MariaDB
+- ExpressJS
+- NodeJS
+- React with Vite
+- Tailwind
+- Typescript
 
-### Project Description
-This information system will allow us to record, in electronic form, data on food reviews
-and food items from food establishments. The developers built this website using MERN (MariaDB instead of Mongoose) stack to create a robust web application mainly using TypeScript.
+### Usage Guidelines
+- Already have an account?
+    - Select the "Sign In" button located on the top right of the landing page.
+    - Enter you rcredentials
+    - Once done, click the "Sign in" button to and explore the website.
+- If you don't have an account
+    - Click the "Sign up" button and fill up the required fields.
+    - double check your input and click "Create Account" Button
+
+### How to Run
+To run this project, open MariaDB and connect to the database: 127project.
+- If you don't have the databse on your device, make sure to Install the 127project database in your MariaDB system.
+    -  Login as root user in MariaDB and run the downloaded projectDB.sql file
+        $ mysql -u root -p
+        Enter password: <password here>
+        MariaDB [(none)]> source projectDB.sql
+
+After that, open your terminal (or any IDE) and make sure that you are in the root directory (CMSC-127-PROJECT). If so, do the following:
+
+1. For the server, go to the directory 'backend' and install the nodeJS packages.
+```bash
+  cd backend
+  npm i
+```
+3. Run the server.
+```bash
+  npm start
+```
+4. Open another terminal and redirect to the frontend folder.
+```bash
+  cd frontend
+  npm i
+```
+5. Run the client.
+```bash
+  npm run dev
+```
+6. Hold the CTRL key and click the link 'http://localhost:5173/' to open the website.
+
 
 ### Project Features
-1. Add, update, and delete a food review (on a food establishment or a food item);
-2. Add, delete, search, and update a food establishment;
-3. Add, delete, search, and update a food item.
-
+1. Add, delete, view, and update a food review (on a food establishment or a food item);
+2. Add, delete, search, view, and update a food establishment;
+3. Add, delete, search, view, and update a food item.
+4. User sign in
+5. User sign up
+6. User authentication
 
 ### Reports to be generated
 1. View all food establishments;
@@ -29,49 +72,3 @@ and food items from food establishments. The developers built this website using
 6. View all establishments with a high average rating (rating >= 4). (ratings from 1-5; highest is 5);
 7. View all food items from an establishment arranged according to price;
 8. Search food items from any establishment based on a given price range and/or food type.
-
-### Usage Guidelines
-- How do I create an account?
-    - Select the "Sign In" button located on the top right of the landing page.
-    - If you have an account:
-        -  Enter you credentials
-        - Once done, click the "Sign in" button to proceed.
-    - if you don't have an account
-        - Click the "Sign up" button and fill up the required field.
-        - double check your input and click "Create Account" Button 
-
-### How to Run
-To run this project, open MariaDB and connect to the database: 127project.
-- If you don't have the database on your device, make sure to Install the 127project database in your MariaDB system.
-    -  Login as root user in MariaDB and run the downloaded projectDB.sql file
-        $ mysql -u root -p
-        Enter password: <password here>
-        MariaDB [(none)]> source projectDB.sql
-    - After installing the database make sure the run the UPDATE query commented at the bottom of the file to count the average rating of the existing reviews used to populate the database.
-
-
-After that, open your terminal make sure that you are in the right directory, navigate to the backend and frontend folder, and type in the following commands:
-
-in the cmsc-127-project folder:
-
-```
-npm i 
-
-```
-
-in the backend folder:
-
-```
-npm start
-
-```
-
-in the frontend folder:
-
-```
-npm run dev
-
-```
-
-This will you redirect you to the landing page of this project.
-
