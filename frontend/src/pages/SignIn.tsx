@@ -34,7 +34,7 @@ export default function SignIn() {
     try {
       setIsLoading(true);
 
-      const response = await api.post("/", signinCredential);
+      const response = await api.post("/users/login", signinCredential);
       sessionStorage.setItem("tt_token", response.data.token);
       navigate("/");
     } catch (error) {

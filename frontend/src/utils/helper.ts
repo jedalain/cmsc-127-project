@@ -13,28 +13,28 @@ export function ScrollToTop() {
 
 export const validateToken = async () => {
   try {
-    const token = sessionStorage.getItem("pb_token");
+    const token = sessionStorage.getItem("tt_token");
     if (!token) {
-      return { isLoggedIn: false, isAdmin: false };
+      return { isLoggedIn: false };
     }
-
+    return { isLoggedIn: true };
     /** API Call - check validity of token && if user is admin */
-    const response = await api.post("/user/validate-token", null, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    // const response = await api.post("/user/validate-token", null, {
+    //   headers: {
+    //     Authorization: token,
+    //   },
+    // });
 
-    if (response.data.tokenValid) {
-      return { isLoggedIn: true, isAdmin: response.data.isAdmin };
-    } else {
-      sessionStorage.removeItem("pb_token");
-      return { isLoggedIn: false, isAdmin: false };
-    }
+    // if (response.data.tokenValid) {
+    //   return { isLoggedIn: true, isAdmin: response.data.isAdmin };
+    // } else {
+    //   sessionStorage.removeItem("tt_token");
+    //   return { isLoggedIn: false };
+    // }
   } catch (error) {
     console.log("ello");
-    sessionStorage.removeItem("pb_token");
-    return { isLoggedIn: false, isAdmin: false };
+    sessionStorage.removeItem("tt_token");
+    return { isLoggedIn: false };
   }
 };
 

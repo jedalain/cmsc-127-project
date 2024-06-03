@@ -31,15 +31,17 @@ export default function SignUp() {
   const signUp = async () => {
     setIsLoading(true);
     try {
-      await api.post("/users/signup", signUpCredential);
+      const response = await api.post("/users/signup", signUpCredential);
       setSuccessfulSignUp(true);
-      navigate("/sign-in");
+      const token = response.data.token;
+      sessionStorage.setItem("tt_token", token);
+      navigate("/");
     } catch (error) {
       setSuccessfulSignUp(false);
 
       let message;
       if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || "Cannot fetch products";
+        message = error.response?.data?.message || "Cannot sign up";
       } else {
         message = (error as Error).message;
       }
@@ -77,7 +79,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-blue127">
+    <div className="bg-blue127 flex items-center h-full min-h-screen">
       <m.div
         initial={{ opacity: 0, scale: 0.75 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -86,7 +88,7 @@ export default function SignUp() {
           delay: 0.05,
           ease: [0, 0.71, 0.2, 1.01],
         }}
-        className="h-screen w-full flex flex-col justify-center items-center"
+        className="h-full w-full flex flex-col justify-center items-center"
       >
         {successfulSignUp === null && (
           <form

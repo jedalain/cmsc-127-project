@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthPageContext } from "../pages/AuthPage.tsx";
 
 export default function NavigationBar() {
+  const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthPageContext);
 
   return (
@@ -27,7 +28,18 @@ export default function NavigationBar() {
             ""
           )}
           <div className="text-black127 hover:text-orange127 cursor-pointer transition-all duration-75">
-            {isLoggedIn ? "Sign Out" : <Link to={"/sign-in"}>Sign in</Link>}
+            {isLoggedIn ? (
+              <div
+                onClick={() => {
+                  sessionStorage.removeItem("tt_token");
+                  navigate("/");
+                }}
+              >
+                Sign Out
+              </div>
+            ) : (
+              <Link to={"/sign-in"}>Sign in</Link>
+            )}
           </div>
         </div>
       </nav>
