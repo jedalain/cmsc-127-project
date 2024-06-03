@@ -2,16 +2,7 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { PiPlusCircle, PiPlusCircleFill } from "react-icons/pi";
 import { AnimatePresence, motion as m } from "framer-motion";
 
-import {
-  establishmentReview,
-  establishmentReview2,
-  foodEstablishment,
-  foodItem,
-  fries,
-  mcdo,
-  mcflurry,
-  review,
-} from "../../models/Models.tsx";
+import { foodEstablishment, foodItem, review } from "../../models/Models.tsx";
 import ReviewCard from "../ReviewCard.tsx";
 import FoodCard from "./ESTFoodCard.tsx";
 import { Pagination } from "../Pagination.tsx";
@@ -51,11 +42,10 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const establishmentId =
     searchParams.get("establishmentId") || props.establishmentId || "";
 
-  const [establishment, setEstablishment] = useState<foodEstablishment | null>(
-    mcdo
-  );
-  const [foodItems, setFoodItems] = useState<foodItem[]>([mcflurry, fries]);
-  const [foodTypes, setFoodTypes] = useState<string[]>(["Dessert", "Fried"]);
+  const [establishment, setEstablishment] =
+    useState<foodEstablishment | null>();
+  const [foodItems, setFoodItems] = useState<foodItem[]>([]);
+  const [foodTypes, setFoodTypes] = useState<string[]>([]);
   const [estReviews, setEstReviews] = useState<review[]>([]);
 
   // for filtering food items in the establishment
