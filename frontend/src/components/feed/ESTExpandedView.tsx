@@ -1,5 +1,10 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { PiPlusCircle, PiPlusCircleFill, PiStarFill } from "react-icons/pi";
+import {
+  PiPlusCircle,
+  PiPlusCircleFill,
+  PiStarFill,
+  PiTrashFill,
+} from "react-icons/pi";
 import { AnimatePresence, motion as m } from "framer-motion";
 
 import { foodEstablishment, foodItem, review } from "../../models/Models.tsx";
@@ -23,13 +28,18 @@ import {
   EmptyReviews,
   EstablishmentNotFound,
 } from "../EmptyResults.tsx";
+import {
+  deleteEstablishment,
+  deleteFoodItem,
+  deleteReview,
+} from "../../utils/admin.ts";
 
 interface ESTExpandedViewProps {
   establishmentId?: string;
 }
 
 export default function ESTExpandedView(props: ESTExpandedViewProps) {
-  const { isLoggedIn } = useContext(AuthPageContext);
+  const { isLoggedIn, isAdmin } = useContext(AuthPageContext);
   const navigate = useNavigate();
 
   // for getting establishment id
@@ -299,17 +309,31 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
           )}
 
           <div className="text-black127 h-full w-full flex flex-col gap-6">
-            <div className="flex flex-col">
-              <span className="flex gap-2 items-center font-semibold text-xl">
-                <PiStarFill color="#FDE767" /> {establishment.avgRating}
-              </span>
-              <span className="text-3xl font-semibold">
-                {establishment.name}
-              </span>
-              <span className="text-xl font-regular">
-                {establishment.address}
-              </span>
-            </div>
+            <span className="flex items-start">
+              <div className="flex flex-1 flex-col">
+                <span className="flex gap-2 items-center font-semibold text-xl">
+                  <PiStarFill color="#FDE767" /> {establishment.avgRating}
+                </span>
+                <span className="text-3xl font-semibold">
+                  {establishment.name}
+                </span>
+                <span className="text-xl font-regular">
+                  {establishment.address}
+                </span>
+              </div>
+
+              {isAdmin && isLoggedIn && (
+                <div
+                  className="text-red127 hover:text-red127b cursor-pointer transition-all"
+                  onClick={() => {
+                    deleteEstablishment(establishmentId);
+                    navigate("../");
+                  }}
+                >
+                  <PiTrashFill size={30} />
+                </div>
+              )}
+            </span>
 
             <span className="text-orange127a flex justify-between md:flex-row flex-col -mb-6 items-start font-medium">
               <span>Food items:</span>
@@ -331,8 +355,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
                     {currentFoodItems.map((food, key) => {
                       return (
-                        <div className="w-full h-fit" key={key}>
-                          <span key={key}>
+                        <div className="w-full relative h-fit" key={key}>
+                          <span className="flex" key={key}>
                             <FoodCard
                               name={food.name}
                               avgRating={food.avgRating}
@@ -344,6 +368,17 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                               }}
                             />
                           </span>
+
+                          {isAdmin && isLoggedIn && (
+                            <div
+                              className="text-red127 w-fit absolute top-3 right-3 hover:text-red127b cursor-pointer transition-all"
+                              onClick={() => {
+                                deleteFoodItem(food.foodId);
+                              }}
+                            >
+                              <PiTrashFill size={24} />
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -407,15 +442,25 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                     return (
                       <div
                         key={key}
-                        className={`w-full h-fit py-2  ${
+                        className={`w-full flex h-fit py-2  ${
                           key + 1 === estReviews.length
                             ? ""
                             : "border-b border-base127c"
                         }`}
                       >
-                        <span key={key}>
+                        <span className="flex-1" key={key}>
                           <ReviewCard review={review} />
                         </span>
+                        {isAdmin && isLoggedIn && (
+                          <div
+                            className="text-red127 hover:text-red127b cursor-pointer transition-all"
+                            onClick={() => {
+                              deleteReview(review.reviewId);
+                            }}
+                          >
+                            <PiTrashFill size={24} />
+                          </div>
+                        )}
                       </div>
                     );
                   })

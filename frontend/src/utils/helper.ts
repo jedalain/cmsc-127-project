@@ -11,28 +11,35 @@ export function ScrollToTop() {
   });
 }
 
-export const validateToken = async () => {
+export const validateToken = () => {
   try {
     const token = sessionStorage.getItem("tt_token");
     if (!token) {
       return { isLoggedIn: false };
     }
     return { isLoggedIn: true };
-    /** API Call - check validity of token && if user is admin */
-    // const response = await api.post("/user/validate-token", null, {
-    //   headers: {
-    //     Authorization: token,
-    //   },
-    // });
-
-    // if (response.data.tokenValid) {
-    //   return { isLoggedIn: true, isAdmin: response.data.isAdmin };
-    // } else {
-    //   sessionStorage.removeItem("tt_token");
-    //   return { isLoggedIn: false };
-    // }
   } catch (error) {
-    console.log("ello");
+    sessionStorage.removeItem("tt_token");
+    return { isLoggedIn: false };
+  }
+};
+
+export const validateTokenForAdmin = async () => {
+  try {
+    const token = sessionStorage.getItem("tt_token");
+    if (!token) {
+      return { isAdmin: false };
+    }
+
+    const response = await api.post("/users/check-admin", null, {
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    console.log(response);
+    return { isAdmin: response.data.isAdmin };
+  } catch (error) {
     sessionStorage.removeItem("tt_token");
     return { isLoggedIn: false };
   }

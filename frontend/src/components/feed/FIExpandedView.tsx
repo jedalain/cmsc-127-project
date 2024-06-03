@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AnimatePresence, motion as m } from "framer-motion";
-import { PiPlusCircleFill, PiStarFill } from "react-icons/pi";
+import { PiPlusCircleFill, PiStarFill, PiTrashFill } from "react-icons/pi";
 
 import { Button } from "../Button.tsx";
 import { foodItem, review } from "../../models/Models.tsx";
@@ -14,6 +14,7 @@ import axios from "axios";
 import { FIReviewFilter } from "./FIFilter.tsx";
 import { EmptyReviews, FoodItemNotFound } from "../EmptyResults.tsx";
 import { useNavigate } from "react-router-dom";
+import { deleteFoodItem, deleteReview } from "../../utils/admin.ts";
 
 interface FIExpandedViewProps {
   establishmentId: string;
@@ -22,7 +23,7 @@ interface FIExpandedViewProps {
 }
 
 export function FIExpandedView(props: FIExpandedViewProps) {
-  const { isLoggedIn } = useContext(AuthPageContext);
+  const { isLoggedIn, isAdmin } = useContext(AuthPageContext);
   const navigate = useNavigate();
 
   const [foodItem, setFoodItem] = useState<foodItem | null>(null);
@@ -173,6 +174,15 @@ export function FIExpandedView(props: FIExpandedViewProps) {
       <div className="m-3 mt-0 flex min-h-screen items-center transition-all ease-out sm:mx-auto sm:w-full sm:max-w-lg">
         <div className="pointer-events-auto flex h-fit rounded-xl w-full flex-col border border-base127c bg-base127">
           <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
+            <div
+              className="text-red127 w-fit hover:text-red127b cursor-pointer transition-all"
+              onClick={() => {
+                deleteFoodItem(props.foodId);
+              }}
+            >
+              <PiTrashFill size={24} />
+            </div>
+
             {isOwnerRoute && (
               <span
                 className="cursor-pointer"
@@ -279,15 +289,26 @@ export function FIExpandedView(props: FIExpandedViewProps) {
                       return (
                         <div
                           key={key}
-                          className={`w-full h-fit py-2  ${
+                          className={`w-full flex h-fit py-2  ${
                             key + 1 === foodItemReviews.length
                               ? ""
                               : "border-b border-base127c"
                           }`}
                         >
-                          <span key={key}>
+                          <span className="flex-1" key={key}>
                             <ReviewCard review={review} />
                           </span>
+
+                          {isAdmin && isLoggedIn && (
+                            <div
+                              className="text-red127 w-fit hover:text-red127b cursor-pointer transition-all"
+                              onClick={() => {
+                                deleteReview(review.reviewId);
+                              }}
+                            >
+                              <PiTrashFill size={24} />
+                            </div>
+                          )}
                         </div>
                       );
                     })

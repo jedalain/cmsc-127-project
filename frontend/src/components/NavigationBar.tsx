@@ -1,9 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthPageContext } from "../pages/AuthPage.tsx";
 
 export default function NavigationBar() {
-  const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthPageContext);
 
   return (
@@ -32,7 +31,7 @@ export default function NavigationBar() {
               <div
                 onClick={() => {
                   sessionStorage.removeItem("tt_token");
-                  navigate("/");
+                  window.location.reload();
                 }}
               >
                 Sign Out

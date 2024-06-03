@@ -187,6 +187,35 @@ export const checkOwnership = async (req: CustomRequest, res: Response) => {
     res.status(401).json({ error: "Invalid token" });
   }
 };
+
+export const checkIfAdmin = async (req: CustomRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    console.log("Authenticated userId:", userId);
+
+    // Check user existence
+    console.log("Checking user existence...");
+    if (!(await checkExistence("users", "userId", userId))) {
+      console.error("Invalid userId:", userId);
+      return res.status(400).json({ error: "Invalid userId" });
+    }
+    console.log("User exists.");
+
+    const sql = "SELECT * FROM users WHERE userId = ? AND role = 'admin'";
+    const params = [userId];
+
+    const result = await query(sql, params);
+
+    if (result.length === 0) {
+      return res.status(200).json({ isLoggedIn: true, isAdmin: false });
+    }
+
+    return res.status(200).json({ isLoggedIn: true, isAdmin: true });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+};
+
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const sql = 'SELECT * FROM users WHERE role != "admin"';
