@@ -18,6 +18,8 @@ export const auth = async (req: CustomRequest, res: Response, next: NextFunction
     }
 
     const decoded = jwt.verify(token, SECRET_KEY) as jwt.JwtPayload;
+    console.log("Decoded token:", decoded);
+    
     req.userId = decoded.id as number; // Log decoded token
     console.log("Decoded ID:", req.userId);
 

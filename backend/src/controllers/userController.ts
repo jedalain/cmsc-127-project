@@ -28,12 +28,14 @@ export const addUser = async (req: Request, res: Response) => {
     ]);
 
     // generate token
+    const userId = result.insertId; // Assuming insertId returns the ID of the inserted user
+    console.log(userId);
+
+    // Generate token
     const token = jwt.sign(
-      { id: result.insertId.toString(), email, role },
+      { id: userId, email, role },
       SECRET_KEY,
-      {
-        expiresIn: "3h",
-      }
+      { expiresIn: "3h" }
     );
 
     res.status(201).json({ token: token });
@@ -62,7 +64,7 @@ export const loginUser = async (req: Request, res: Response) => {
         // passwords match, return user data
         // generate token for the user
         const token = jwt.sign(
-          { id: user.id, email: user.email, role: user.role },
+          { id: user.userId, email: user.email, role: user.role },
           SECRET_KEY,
           { expiresIn: "1h" }
         );

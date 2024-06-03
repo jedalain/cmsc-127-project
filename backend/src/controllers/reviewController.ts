@@ -3,31 +3,40 @@ import { query } from "../config/dbConfig";
 import { checkExistence, convertBigInt, avgEstab, avgFoodItem } from "./helper";
 import { auth, CustomRequest } from "../middleware/authToken";
 
-export const addReview = async (req: Request, res: Response) => {
+export const addReview = async (req: CustomRequest, res: Response) => {
   try {
     const { rating, title, comment, establishmentId, foodId } = req.body;
     const status = "CREATED";
 
-    const userId = (req as CustomRequest).userId;
+    const userId = req.userId;
     console.log("Authenticated userId:", userId);
 
+    // Check user existence
+    console.log("Checking user existence...");
     if (!(await checkExistence("users", "userId", userId))) {
       console.error("Invalid userId:", userId);
       return res.status(400).json({ error: "Invalid userId" });
     }
+    console.log("User exists.");
 
+    // Check establishment existence
     if (establishmentId) {
+      console.log("Checking establishment existence...");
       if (!(await checkExistence("foodEstablishments", "establishmentId", establishmentId))) {
         console.error("Invalid establishmentId:", establishmentId);
         return res.status(400).json({ error: "Invalid establishmentId" });
       }
+      console.log("Establishment exists.");
     }
 
+    // Check food item existence
     if (foodId) {
+      console.log("Checking food item existence...");
       if (!(await checkExistence("foodItems", "foodId", foodId))) {
         console.error("Invalid foodId:", foodId);
         return res.status(400).json({ error: "Invalid foodId" });
       }
+      console.log("Food item exists.");
     }
 
     if (!establishmentId && !foodId) {
@@ -64,6 +73,7 @@ export const addReview = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 export const updateReview = async (req: Request, res: Response) => {
