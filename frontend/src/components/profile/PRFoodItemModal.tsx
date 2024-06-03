@@ -1,67 +1,48 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { ZodError } from "zod";
 
-import { reviewData, reviewErrors, reviewSchema } from "../../utils/schema.ts";
+import {
+  foodItemData,
+  foodItemErrors,
+  foodItemSchema,
+} from "../../utils/schema.ts";
 import { InputField } from "../InputField.tsx";
 import { Button } from "../Button.tsx";
-import { TextAreaField } from "../TextAreaField.tsx";
-import { ESTStarRating } from "./ESTStarRating.tsx";
-import { review } from "../../models/Models.tsx";
+import { foodItem } from "../../models/Models.tsx";
 import api from "../../api/api.ts";
 import axios from "axios";
 
-interface ReviewModalProps {
+interface PRFoodItemModalProps {
   action: string;
-  review?: review;
+  foodItem?: foodItem;
   closeModal: () => void;
 }
 
-export function ReviewModal(props: ReviewModalProps) {
-  const [review, setReview] = useState<reviewData>({
-    title: props.review ? props.review.title : "",
-    comment: props.review ? props.review.comment : "",
-    rating: props.review ? props.review.rating : 0,
+export function PRFoodItemModal(props: PRFoodItemModalProps) {
+  const [newFoodItem, setNewFoodItem] = useState<foodItemData>({
+    name: props.foodItem ? props.foodItem.name : "",
+    classification: props.foodItem ? props.foodItem.classification : "",
+    price: props.foodItem ? props.foodItem.price : 0,
   });
-  const [errors, setErrors] = useState<reviewErrors | null>(null);
+  const [errors, setErrors] = useState<foodItemErrors | null>(null);
 
   /** Function - updates the user's details with the values entered */
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setReview((prevState) => ({
-      ...prevState,
-      [name]: name === "rating" ? parseInt(value) : value,
-    }));
-  };
-
-  const handleTextAreaInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setReview((prevState) => ({
+    setNewFoodItem((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  /** Function - discards the changes made by user */
-  const discardChanges = () => {
-    props.closeModal();
-
-    // reset inputs
-    setErrors(null);
-    setReview({
-      title: "",
-      comment: "",
-      rating: 0,
-    });
-  };
-
-  /** API Call - create new review */
-  const createReview = async () => {
+  /** API Call - create new food item */
+  const createFoodItem = async () => {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.post(
         "/",
-        { review: review },
+        { foodItem: newFoodItem },
         {
           headers: {
             Authorization: token,
@@ -71,7 +52,7 @@ export function ReviewModal(props: ReviewModalProps) {
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || "Cannot create review";
+        message = error.response?.data?.message || "Cannot create food item";
       } else {
         message = (error as Error).message;
       }
@@ -80,13 +61,13 @@ export function ReviewModal(props: ReviewModalProps) {
     }
   };
 
-  /** API Call - edit existing review */
-  const editReview = async (reviewId: string) => {
+  /** API Call - edit existing food item */
+  const editFoodItem = async (foodItemId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.patch(
         "/",
-        { review: review, reviewId: reviewId },
+        { foodItem: newFoodItem, foodItemId: foodItemId },
         {
           headers: {
             Authorization: token,
@@ -96,7 +77,7 @@ export function ReviewModal(props: ReviewModalProps) {
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || "Cannot create review";
+        message = error.response?.data?.message || "Cannot edit food item";
       } else {
         message = (error as Error).message;
       }
@@ -105,8 +86,8 @@ export function ReviewModal(props: ReviewModalProps) {
     }
   };
 
-  /** API Call - delete existing review */
-  const deleteReview = async (reviewId: string) => {
+  /** API Call - delete existing food item */
+  const deleteFoodItem = async (foodItemId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.delete("/", {
@@ -115,13 +96,13 @@ export function ReviewModal(props: ReviewModalProps) {
         },
 
         data: {
-          reviewId: reviewId,
+          foodItemId: foodItemId,
         },
       });
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || "Cannot delete review";
+        message = error.response?.data?.message || "Cannot delete food item";
       } else {
         message = (error as Error).message;
       }
@@ -133,20 +114,21 @@ export function ReviewModal(props: ReviewModalProps) {
   /** Function - validates inputs in the form. Returns error messages if input is invalid */
   const saveChanges = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    newFoodItem.price = parseFloat(newFoodItem.price);
 
     try {
-      reviewSchema.parse(review);
+      foodItemSchema.parse(newFoodItem);
       setErrors(null);
-      if (props.review) {
+      if (props.foodItem) {
         if (
-          props.review.comment === review.comment &&
-          props.review.title === review.title &&
-          props.review.rating === review.rating
+          props.foodItem.name === newFoodItem.name &&
+          props.foodItem.classification === newFoodItem.classification &&
+          props.foodItem.price === newFoodItem.price
         )
           props.closeModal();
-        else editReview(props.review.reviewId);
+        else editFoodItem(props.foodItem.foodItemId);
       } else {
-        createReview();
+        createFoodItem();
       }
       props.closeModal();
     } catch (error) {
@@ -154,6 +136,19 @@ export function ReviewModal(props: ReviewModalProps) {
         setErrors(error);
       }
     }
+  };
+
+  /** Function - discards the changes made by user */
+  const discardChanges = () => {
+    props.closeModal();
+
+    // reset inputs
+    setErrors(null);
+    setNewFoodItem({
+      name: "",
+      classification: "",
+      price: 0,
+    });
   };
 
   // Disables scroll when modal is opened
@@ -165,18 +160,15 @@ export function ReviewModal(props: ReviewModalProps) {
     };
   }, []);
 
-  console.log(props.review);
-  console.log("SEPARATION");
-  console.log(review);
   return (
     <form onSubmit={saveChanges}>
-      <div className="pointer-events-none fixed start-0 top-0 z-20 size-full overflow-y-auto overflow-x-hidden">
+      <div className="pointer-events-none fixed start-0 top-0 z-[20] size-full overflow-y-auto overflow-x-hidden">
         <div className="m-3 mt-0 flex min-h-[calc(100%-3.5rem)] items-center transition-all ease-out sm:mx-auto sm:w-full sm:max-w-lg">
           <div className="pointer-events-auto flex h-full w-full flex-col rounded-xl border border-base127c bg-base127 shadow-md">
             <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
               <h3 className="flex w-full justify-center text-xl font-semibold text-green0">
-                {props.action === "edit" && "Edit review"}
-                {props.action === "add" && "Add a review"}
+                {props.action === "edit" && "Edit food item"}
+                {props.action === "add" && "Create new food item"}
               </h3>
 
               <button
@@ -207,53 +199,63 @@ export function ReviewModal(props: ReviewModalProps) {
             </div>
 
             <div className="overflow-y-auto p-4">
-              <ESTStarRating
+              <InputField
+                type="text"
+                name="name"
+                label="Name"
+                placeholder="Enter name of your food item"
+                defaultValue={props.foodItem ? props.foodItem.name : ""}
                 error={
-                  errors?.errors.find((error) => error.path[0] === "rating")
+                  errors?.errors.find((error) => error.path[0] === "name")
                     ?.message
                 }
-                name="rating"
-                defaultValue={props.review ? props.review.rating : 0}
                 onChange={handleUserInput}
               />
 
               <InputField
                 type="text"
-                name="title"
-                label="Title"
-                placeholder="Enter title"
-                defaultValue={props.review ? props.review.title : ""}
+                name="classification"
+                label="Type"
+                placeholder="Enter type of food item"
+                defaultValue={
+                  props.foodItem ? props.foodItem.classification : ""
+                }
                 error={
-                  errors?.errors.find((error) => error.path[0] === "title")
-                    ?.message
+                  errors?.errors.find(
+                    (error) => error.path[0] === "classification"
+                  )?.message
                 }
                 onChange={handleUserInput}
               />
 
-              <TextAreaField
-                name="comment"
-                label="Comment"
-                placeholder="Enter review"
-                defaultValue={props.review ? props.review.comment : ""}
+              <InputField
+                type="number"
+                name="price"
+                label="Price"
+                placeholder="Enter price of food item"
+                defaultValue={props.foodItem ? props.foodItem.price : 0}
                 error={
-                  errors?.errors.find((error) => error.path[0] === "comment")
+                  errors?.errors.find((error) => error.path[0] === "price")
                     ?.message
                 }
-                onChange={handleTextAreaInput}
+                onChange={handleUserInput}
               />
             </div>
 
             <div className="flex items-center justify-end gap-x-2 overflow-auto border-t border-base127c px-4 py-3 text-sm italic text-grey0">
-              {props.review !== undefined && (
-                <span className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50">
+              {props.foodItem && (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-x-2 rounded-lg text-sm font-medium text-black disabled:pointer-events-none disabled:opacity-50"
+                >
                   <span className="">
                     <Button
                       action="button"
                       style="red"
                       text="DELETE"
                       onClick={() => {
-                        if (props.review !== undefined) {
-                          deleteReview(props.review.reviewId);
+                        if (props.foodItem !== undefined) {
+                          deleteFoodItem(props.foodItem.foodItemId);
                           props.closeModal();
                         } else {
                           props.closeModal();
@@ -261,7 +263,7 @@ export function ReviewModal(props: ReviewModalProps) {
                       }}
                     />
                   </span>
-                </span>
+                </button>
               )}
 
               <button
@@ -273,10 +275,11 @@ export function ReviewModal(props: ReviewModalProps) {
                     action="submit"
                     style="blue"
                     text={
-                      props.review
-                        ? props.review.comment === review.comment &&
-                          props.review.title === review.title &&
-                          props.review.rating === review.rating
+                      props.foodItem
+                        ? props.foodItem.name === newFoodItem.name &&
+                          props.foodItem.classification ===
+                            newFoodItem.classification &&
+                          props.foodItem.price === newFoodItem.price
                           ? "CLOSE"
                           : "SAVE CHANGES"
                         : "SUBMIT"

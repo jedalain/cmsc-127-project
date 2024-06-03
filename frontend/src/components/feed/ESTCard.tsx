@@ -10,7 +10,7 @@ interface ESTCardProps {
 export default function ESTCard(props: ESTCardProps) {
   return (
     <div
-      className="bg-orange127a text-base127b h-[81px] cursor-pointer justify-between p-3 rounded-lg w-full flex flex-col transition-all hover:bg-orange127z active:scale-[0.95]"
+      className="bg-base127b text-base127d h-[100px] cursor-pointer justify-between p-3 rounded-lg w-full flex flex-col transition-all hover:bg-orange127z active:scale-[0.95]"
       onClick={props.openDetailed}
     >
       <div className="flex text-md md:text-sm font-medium justify-between">

@@ -10,6 +10,7 @@ interface TextAreaFieldProps {
   error?: string;
   id?: string;
   disabled?: boolean;
+  defaultValue?: string;
   name: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onEnter?: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
@@ -103,6 +104,7 @@ export function TextAreaField(props: TextAreaFieldProps) {
               focusedIcon();
               focusedField();
             }}
+            defaultValue={props.defaultValue ? props.defaultValue : ""}
             onBlur={() => {
               focusedIcon();
               focusedField();
@@ -120,6 +122,7 @@ export function TextAreaField(props: TextAreaFieldProps) {
             className={`block w-full resize-y max-h-[200px] rounded-lg bg-base127b outline-none border-none pl-3 py-2 pe-11 placeholder:text-base127d text-black127 placeholder:font-light text-sm shadow-sm transition-all ${borderColor} disabled:pointer-events-none disabled:opacity-50`}
             placeholder={props.placeholder ? props.placeholder : ""}
             disabled={props.disabled ? props.disabled : false}
+            defaultValue={props.defaultValue ? props.defaultValue : ""}
             onChange={props.onChange}
             onKeyDown={props.onEnter ? props.onEnter : undefined}
           />

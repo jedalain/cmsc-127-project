@@ -1,39 +1,53 @@
-import { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Landing from "./pages/Landing.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
-import LoggedInPage from "./pages/LoggedInPage.tsx";
-import LoggedOutPage from "./pages/LoggedOutPage.tsx";
-import Feed from "./pages/Feed.tsx";
+import AuthPage from "./pages/AuthPage.tsx";
+import EstablishmentFeed from "./pages/EstablishmentFeed.tsx";
+import Profile from "./pages/Profile.tsx";
+import ESTExpandedView from "./components/feed/ESTExpandedView.tsx";
+import { InexistingPage } from "./pages/InexistentPage.tsx";
+import FoodItemFeed from "./pages/FoodItemFeed.tsx";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
   const router = createBrowserRouter([
     {
       path: "/",
-      element: isLoggedIn ? (
-        <LoggedInPage>
+      element: (
+        <AuthPage>
           <Landing />
-        </LoggedInPage>
-      ) : (
-        <LoggedOutPage>
-          <Landing />
-        </LoggedOutPage>
+        </AuthPage>
       ),
     },
     {
       path: "/establishments",
-      element: isLoggedIn ? (
-        <LoggedInPage>
-          <Feed />
-        </LoggedInPage>
-      ) : (
-        <LoggedOutPage>
-          <Feed />
-        </LoggedOutPage>
+      element: (
+        <AuthPage>
+          <EstablishmentFeed />
+        </AuthPage>
+      ),
+      children: [
+        {
+          path: "detailed",
+          element: <ESTExpandedView />,
+        },
+      ],
+    },
+    {
+      path: "/food-items",
+      element: (
+        <AuthPage>
+          <FoodItemFeed />
+        </AuthPage>
+      ),
+    },
+    {
+      path: "/profile",
+      element: (
+        <AuthPage>
+          <Profile />
+        </AuthPage>
       ),
     },
     {
@@ -43,6 +57,10 @@ function App() {
     {
       path: "/sign-up",
       element: <SignUp />,
+    },
+    {
+      path: "/*",
+      element: <InexistingPage />,
     },
   ]);
 

@@ -30,15 +30,27 @@ export interface foodEstablishment {
   userId: string;
 }
 
+export interface user {
+  userId: string;
+  role: string;
+  email: string;
+  fname: string;
+  mname?: string;
+  lname: string;
+  establishments: foodEstablishment[];
+  reviews: review[];
+}
+
 /**
  *
  * SAMPLE DATA
  *
  */
+
 export const foodReview: review = {
   reviewId: "rev123",
   title: "Delicious",
-  rating: 4.89,
+  rating: 4,
   comment: "Great food! Good value for money and great flavor.",
   dateCreated: new Date("05/26/2024"),
   dateModified: new Date("05/26/2024"),
@@ -49,11 +61,23 @@ export const foodReview: review = {
 export const establishmentReview: review = {
   reviewId: "rev123",
   title: "Great place",
-  rating: 4.9,
+  rating: 5,
   comment:
     "The ambiance of the place is really nice. The staff were also kind and approachable",
   dateCreated: new Date("05/26/2024"),
   dateModified: new Date("05/26/2024"),
+  userId: "aab12",
+  establishmentId: "1000",
+};
+
+export const establishmentReview2: review = {
+  reviewId: "rev123",
+  title: "Great place",
+  rating: 5,
+  comment:
+    "The ambiance of the place is really nice. The staff were also kind and approachable",
+  dateCreated: new Date("03/26/2024"),
+  dateModified: new Date("04/26/2024"),
   userId: "aab12",
   establishmentId: "1000",
 };
@@ -112,4 +136,47 @@ export const mcdo: foodEstablishment = {
   reviews: [establishmentReview],
   address: "UPLB Vega Arcade, Los Banos, Laguna 4200",
   userId: "aab12",
+};
+
+export const arrayOfReviews: review[] = [
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+  foodReview,
+];
+
+export const sampleUser: user = {
+  userId: "100",
+  role: "owner",
+  email: "test@gmail.com",
+  fname: "John",
+  lname: "Doe",
+  establishments: [mcdo, mcdo, mcdo, mcdo],
+  reviews: [
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    foodReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+    establishmentReview,
+  ],
 };
