@@ -1,4 +1,4 @@
-# CMSC 100 Final Project
+# CMSC 127 Final Project
 
 ### Developers
 - TEAM TININIW
