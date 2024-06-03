@@ -297,6 +297,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                         <PiPlusCircle size={30} />
                       </div>
                     )}
+
                     {currentFoodItems.map((food, key) => {
                       return (
                         <div className="w-full h-fit" key={key}>
@@ -315,6 +316,15 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                         </div>
                       );
                     })}
+                  </div>
+                ) : isOwnerRoute && isLoggedIn ? (
+                  <div className="h-fit w-full gap-3 min-h-[300px] py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">
+                    <div
+                      className="bg-base127b text-base127d h-[150px] w-full cursor-pointer justify-center items-center p-3 rounded-lg flex flex-col transition-all hover:bg-base127b2 active:scale-[0.95]"
+                      onClick={() => setNewFoodItem(!newFoodItem)}
+                    >
+                      <PiPlusCircle size={30} />
+                    </div>
                   </div>
                 ) : (
                   <EmptyFoodItems />
@@ -457,7 +467,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   transition={{ duration: 0.15, ease: "easeInOut" }}
                 >
                   <PRFoodItemModal
-                    action="edit"
+                    action="add"
+                    establishmentId={establishment.establishmentId}
                     closeModal={toggleEditFoodItemModal}
                   />
                 </m.span>

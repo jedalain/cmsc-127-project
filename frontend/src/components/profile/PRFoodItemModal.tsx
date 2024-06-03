@@ -15,6 +15,7 @@ import axios from "axios";
 interface PRFoodItemModalProps {
   action: string;
   foodItem?: foodItem;
+  establishmentId?: string;
   closeModal: () => void;
 }
 
@@ -41,14 +42,20 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.post(
-        "/",
-        { foodItem: newFoodItem },
+        "/food-items/",
+        {
+          name: newFoodItem.name,
+          classification: newFoodItem.classification,
+          price: newFoodItem.price,
+          establishmentId: props.establishmentId,
+        },
         {
           headers: {
             Authorization: token,
           },
         }
       );
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
@@ -65,15 +72,20 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
   const editFoodItem = async (foodItemId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
-      await api.patch(
-        "/",
-        { foodItem: newFoodItem, foodItemId: foodItemId },
+      await api.put(
+        `/food-items/${foodItemId}`,
+        {
+          name: newFoodItem.name,
+          classification: newFoodItem.classification,
+          price: newFoodItem.price,
+        },
         {
           headers: {
             Authorization: token,
           },
         }
       );
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
@@ -90,15 +102,12 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
   const deleteFoodItem = async (foodItemId: string) => {
     try {
       const token = sessionStorage.getItem("tt_token");
-      await api.delete("/", {
+      await api.delete(`/food-items/${foodItemId}`, {
         headers: {
           Authorization: token,
         },
-
-        data: {
-          foodItemId: foodItemId,
-        },
       });
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {
