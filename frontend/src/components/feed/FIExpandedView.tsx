@@ -175,14 +175,16 @@ export function FIExpandedView(props: FIExpandedViewProps) {
       <div className="m-3 mt-0 flex min-h-screen items-center transition-all ease-out sm:mx-auto sm:w-full sm:max-w-lg">
         <div className="pointer-events-auto flex h-fit rounded-xl w-full flex-col border border-base127c bg-base127">
           <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
-            <div
-              className="text-red127 w-fit hover:text-red127b cursor-pointer transition-all"
-              onClick={() => {
-                deleteFoodItem(props.foodId);
-              }}
-            >
-              <PiTrashFill size={24} />
-            </div>
+            {isAdmin && isLoggedIn && (
+              <div
+                className="text-red127 w-fit hover:text-red127b cursor-pointer transition-all"
+                onClick={() => {
+                  deleteFoodItem(props.foodId);
+                }}
+              >
+                <PiTrashFill size={24} />
+              </div>
+            )}
 
             {isOwnerRoute && (
               <span
