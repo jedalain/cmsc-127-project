@@ -6,6 +6,7 @@ const SECRET_KEY = "secretkey";
 // typescipt doesn't recognize req.userId hence we need an interface to extend default Request
 export interface CustomRequest extends Request {
   userId?: number;
+  role?: string;
 }
 
 export const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -30,5 +31,13 @@ export const auth = async (req: CustomRequest, res: Response, next: NextFunction
   }
 };
 
+export const adminAuth =(req: CustomRequest, res: Response, next: NextFunction)=>{
+  auth(req, res, ()=>{
+    if (req.role!== "admin") {
+      return res.status(403).json({error: "Access denied. Admins only."});
+    }
+    next();
+  });
+};
 
 // source: https://dev.to/juliecherner/authentication-with-jwt-tokens-in-typescript-with-express-3gb1
