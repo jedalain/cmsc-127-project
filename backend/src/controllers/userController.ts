@@ -28,7 +28,7 @@ export const addUser = async (req: Request, res: Response) => {
     ]);
 
     // generate token
-    const userId = result.insertId; // Assuming insertId returns the ID of the inserted user
+    const userId = result.insertId; 
     console.log(userId);
 
     // Generate token
