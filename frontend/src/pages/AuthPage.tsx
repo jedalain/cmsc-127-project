@@ -3,6 +3,7 @@ import NavigationBar from "../components/NavigationBar.tsx";
 import { validateToken } from "../utils/helper.ts";
 import { InexistingPage } from "./InexistentPage.tsx";
 import api from "../api/api.ts";
+import Footer from "../components/Footer.tsx";
 
 interface AuthPageProps {
   children: JSX.Element;
@@ -67,6 +68,8 @@ export default function AuthPage({ children }: AuthPageProps) {
           return "TasteTracker";
         case "/establishments":
           return "Establishments";
+        case "/food-items":
+          return "Food Items";
         case "/profile":
           return "Profile";
         default:
@@ -78,6 +81,8 @@ export default function AuthPage({ children }: AuthPageProps) {
           return "TasteTracker";
         case "/establishments":
           return "Establishments";
+        case "/food-items":
+          return "Food Items";
         default:
           return "TasteTracker";
       }
@@ -96,7 +101,7 @@ export default function AuthPage({ children }: AuthPageProps) {
       >
         <NavigationBar />
         {children}
-        {/* // <Footer /> */}
+        <Footer />
       </AuthPageContext.Provider>
     ) : (
       <AuthPageContext.Provider
@@ -111,7 +116,7 @@ export default function AuthPage({ children }: AuthPageProps) {
     >
       <NavigationBar />
       {children}
-      {/* // <Footer /> */}
+      <Footer />
     </AuthPageContext.Provider>
   );
 }
