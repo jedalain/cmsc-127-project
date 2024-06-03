@@ -21,7 +21,7 @@ export default function SignUp() {
     mname: "",
     lname: "",
     email: "",
-    role: "User",
+    role: "user",
     password: "",
     confirmPassword: "",
   });
