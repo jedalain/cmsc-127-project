@@ -6,56 +6,41 @@ import { auth, CustomRequest } from "../middleware/authToken";
 export const addReview = async (req: Request, res: Response) => {
   try {
     const { rating, title, comment, establishmentId, foodId } = req.body;
-    const status = "CREATED"; // status of newly created review
+    const status = "CREATED";
 
-    const userId = (req as CustomRequest).userId; // get user id from token
+    const userId = (req as CustomRequest).userId;
     console.log("Authenticated userId:", userId);
 
-    // Check if userId exists
     if (!(await checkExistence("users", "userId", userId))) {
+      console.error("Invalid userId:", userId);
       return res.status(400).json({ error: "Invalid userId" });
     }
 
-    // Review for food establishment
     if (establishmentId) {
-      if (
-        !(await checkExistence(
-          "foodEstablishments",
-          "establishmentId",
-          establishmentId
-        ))
-      ) {
+      if (!(await checkExistence("foodEstablishments", "establishmentId", establishmentId))) {
+        console.error("Invalid establishmentId:", establishmentId);
         return res.status(400).json({ error: "Invalid establishmentId" });
       }
     }
 
-    // Review for food item
     if (foodId) {
       if (!(await checkExistence("foodItems", "foodId", foodId))) {
+        console.error("Invalid foodId:", foodId);
         return res.status(400).json({ error: "Invalid foodId" });
       }
     }
 
-    // Ensure at least one of establishmentId or foodId is provided
     if (!establishmentId && !foodId) {
-      return res
-        .status(400)
-        .json({ error: "Either establishmentId or foodId must be provided" });
+      return res.status(400).json({ error: "Either establishmentId or foodId must be provided" });
     }
 
-    const sql =
-      "INSERT INTO reviews (status, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    const result = await query(sql, [
-      status,
-      rating,
-      title,
-      comment,
-      userId,
-      establishmentId || null,
-      foodId || null,
-    ]);
+    const sql = "INSERT INTO reviews (status, rating, title, comment, userId, establishmentId, foodId) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    console.log("SQL:", sql);
+    console.log("Parameters:", [status, rating, title, comment, userId, establishmentId || null, foodId || null]);
 
-    // Calculate average rating
+    const result = await query(sql, [status, rating, title, comment, userId, establishmentId || null, foodId || null]);
+    console.log("Insert result:", result);
+
     if (establishmentId) {
       await avgEstab(establishmentId);
     }
@@ -64,23 +49,22 @@ export const addReview = async (req: Request, res: Response) => {
       await avgFoodItem(foodId);
     }
 
-    res.status(201).json(
-      convertBigInt({
-        id: result.insertId,
-        status,
-        rating,
-        title,
-        comment,
-        userId,
-        establishmentId,
-        foodId,
-      })
-    );
+    res.status(201).json(convertBigInt({
+      id: result.insertId,
+      status,
+      rating,
+      title,
+      comment,
+      userId,
+      establishmentId,
+      foodId,
+    }));
   } catch (error) {
-    console.error(error);
+    console.error("Error adding review:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const updateReview = async (req: Request, res: Response) => {
   try {
