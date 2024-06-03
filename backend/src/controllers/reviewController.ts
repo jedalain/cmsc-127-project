@@ -8,8 +8,9 @@ export const addReview = async (req: Request, res: Response) => {
   try {
     const { rating, title, comment, establishmentId, foodId } = req.body;
     const status = 'CREATED'; // status of newly created review
-    
+
     const userId = (req as CustomRequest).userId; // get user id from token
+    console.log('Authenticated userId:', userId);
 
     // Check if userId exists
     if (!await checkExistence('users', 'userId', userId)) {

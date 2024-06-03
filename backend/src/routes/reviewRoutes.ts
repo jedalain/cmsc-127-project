@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { auth } from '../middleware/authToken';
 import {
   addReview,
   updateReview,
@@ -11,7 +12,7 @@ import {
 
 const router = Router();
 
-router.post('/', addReview); // http://localhost:8000/reviews
+router.post('/', auth, addReview); // http://localhost:8000/reviews
 router.put('/:id', updateReview);
 router.delete('/:id', deleteReview);
 
