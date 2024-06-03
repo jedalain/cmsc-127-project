@@ -42,7 +42,7 @@ and food items from food establishments. The developers built this website using
 
 ### How to Run
 To run this project, open MariaDB and connect to the database: 127project.
-- If you don't have the databse on your device, make sure to Install the 127project database in your MariaDB system.
+- If you don't have the database on your device, make sure to Install the 127project database in your MariaDB system.
     -  Login as root user in MariaDB and run the downloaded projectDB.sql file
         $ mysql -u root -p
         Enter password: <password here>
