@@ -1,29 +1,22 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion as m } from "framer-motion";
 import { PiUserCircleFill } from "react-icons/pi";
-import { PRTabs } from "../components/profile/PRTabs";
-import PRReviews from "../components/profile/PRReviews";
+
+import { PRTabs } from "../components/profile/PRTabs.tsx";
+import PRReviews from "../components/profile/PRReviews.tsx";
 import { Pagination } from "../components/Pagination.tsx";
 import PREstablishments from "../components/profile/PREstablishments.tsx";
 import ESTExpandedView from "../components/feed/ESTExpandedView.tsx";
 import api from "../api/api.ts";
-import {
-  foodEstablishment,
-  review,
-  sampleUser,
-  user,
-} from "../models/Models.tsx";
+import { foodEstablishment, review, user } from "../models/Models.tsx";
 import { filterReviewsByDate } from "../utils/helper.ts";
 import { FIReviewFilter } from "../components/feed/FIFilter.tsx";
-import {
-  EmptyEstablishments,
-  EmptyReviews,
-} from "../components/EmptyResults.tsx";
+import { EmptyReviews } from "../components/EmptyResults.tsx";
 import { PREmpty } from "../components/profile/PREmpty.tsx";
 
 export default function Profile() {
-  const [userProfile, setUserProfile] = useState<user | null>(sampleUser);
-  const [userReviews, setUserReviews] = useState<review[]>(sampleUser.reviews);
+  const [userProfile, setUserProfile] = useState<user | null>(null);
+  const [userReviews, setUserReviews] = useState<review[]>([]);
   const [userEstablishments, setUserEstablishments] = useState<
     foodEstablishment[]
   >([]);
@@ -66,7 +59,7 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    // fetchProfileData();
+    fetchProfileData();
   }, []);
 
   useEffect(() => {
@@ -138,7 +131,7 @@ export default function Profile() {
                     className="w-full"
                   >
                     {activeTab === "reviews" && (
-                      <div className="flex flex-col gap-3">
+                      <div className="flex items-end flex-col gap-3">
                         <FIReviewFilter
                           filterApplied={reviewFilterApplied}
                           setFilterApplied={setReviewFilterApplied}
@@ -154,17 +147,15 @@ export default function Profile() {
                       </div>
                     )}
 
-                    {activeTab === "establishments" &&
-                      (userEstablishments.length > 0 ? (
-                        <PREstablishments
-                          establishments={currentEstablishments}
-                          setEstablishmentId={setEstablishmentId}
-                        />
-                      ) : (
-                        <EmptyEstablishments />
-                      ))}
+                    {activeTab === "establishments" && (
+                      <PREstablishments
+                        establishments={currentEstablishments}
+                        setEstablishmentId={setEstablishmentId}
+                      />
+                    )}
                   </m.div>
                 </AnimatePresence>
+
                 <div className="flex items-center">
                   <Pagination
                     currentPage={currentPage}
