@@ -31,7 +31,7 @@ export default function SignUp() {
   const signUp = async () => {
     setIsLoading(true);
     try {
-      await api.post("/", signUpCredential);
+      await api.post("/users/signup", signUpCredential);
       setSuccessfulSignUp(true);
       navigate("/sign-in");
     } catch (error) {
@@ -45,6 +45,7 @@ export default function SignUp() {
       }
 
       console.log(message);
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -113,6 +114,7 @@ export default function SignUp() {
                     errors?.errors.find((error) => error.path[0] === "fname")
                       ?.message
                   }
+                  defaultValue={signUpCredential.fname}
                   placeholder="First Name"
                   onChange={handleUserInput}
                 />
@@ -128,6 +130,7 @@ export default function SignUp() {
                       ?.message
                   }
                   placeholder="Middle Name"
+                  defaultValue={signUpCredential.mname}
                   onChange={handleUserInput}
                 />
               </div>
@@ -142,6 +145,7 @@ export default function SignUp() {
                       ?.message
                   }
                   placeholder="Last Name"
+                  defaultValue={signUpCredential.lname}
                   onChange={handleUserInput}
                 />
               </div>
@@ -156,6 +160,7 @@ export default function SignUp() {
                       ?.message
                   }
                   placeholder="Email"
+                  defaultValue={signUpCredential.email}
                   onChange={handleUserInput}
                 />
               </div>
@@ -170,6 +175,7 @@ export default function SignUp() {
                       ?.message
                   }
                   placeholder="Password"
+                  defaultValue={signUpCredential.password}
                   onChange={handleUserInput}
                 />
               </div>
@@ -185,6 +191,7 @@ export default function SignUp() {
                     )?.message
                   }
                   placeholder="Confirm Password"
+                  defaultValue={signUpCredential.confirmPassword}
                   onChange={handleUserInput}
                 />
               </div>

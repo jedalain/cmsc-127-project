@@ -12,23 +12,23 @@ interface AuthPageContext {
 }
 
 export const AuthPageContext = createContext<AuthPageContext>({
-  isLoggedIn: true,
+  isLoggedIn: false,
 });
 
 export default function AuthPage({ children }: AuthPageProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   // for checking if the current route is only for logged in
   const isLoggedInRoute = location.pathname.startsWith("/profile");
 
-  // useEffect(() => {
-  //   const checkLoggedIn = async () => {
-  //     const { isLoggedIn } = await validateToken();
-  //     setIsLoggedIn(isLoggedIn);
-  //   };
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      const { isLoggedIn } = await validateToken();
+      setIsLoggedIn(isLoggedIn);
+    };
 
-  //   checkLoggedIn();
-  // });
+    checkLoggedIn();
+  });
 
   /** Function - Gets current pathname and returns a string value */
   const getPathname = (pathname: string) => {
