@@ -1,26 +1,40 @@
 import { Request, Response } from "express";
 import { query } from "../config/dbConfig";
 import { convertBigInt } from "./helper";
+import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+
+const SECRET_KEY = 'secretkey'
 
 export const addUser = async (req: Request, res: Response) => {
   try {
     const { email, password, fname, mname, lname, role } = req.body;
+    //console.log(password);
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    //console.log("Hashed Password:", hashedPassword);
+
     const sql =
       "INSERT INTO users (email, password, fname, mname, lname, role) VALUES (?, ?, ?, ?, ?, ?)";
 
     const result = await query(sql, [
       email,
-      password,
+      hashedPassword, // insert hashed password
       fname,
       mname,
       lname,
       role,
     ]);
 
+    // generate token
+    const token = jwt.sign({ id: result.insertId, email, role }, SECRET_KEY, { expiresIn: '1h' });
+
     res
       .status(201)
       .json(
-        convertBigInt({ id: result.insertId, email, fname, mname, lname, role })
+        convertBigInt({ id: result.insertId, email, fname, mname, lname, role, token })
       );
   } catch (error) {
     console.error(error);
@@ -28,21 +42,42 @@ export const addUser = async (req: Request, res: Response) => {
   }
 };
 
-//check if user that tries to lof in realy exist
+//check if user that tries to log in realy exist
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+    const sql = "SELECT * FROM users WHERE email = ?";
 
-    const result = await query(sql, [email, password]);
+    const result = await query(sql, [email]);
 
-    if (result.length > 0) {
-      // user exists, return user data
-      res.status(200).json(convertBigInt(result[0]));
-    } else {
-      // user doesn't exist or invalid credentials
+    if (result.length > 0) { // check if user existing
+      const user = result[0];
+
+      // check if password is valid and existing
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (isPasswordValid) {
+        // passwords match, return user data
+
+        // generate token for the user
+        const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+
+        // return user data and token
+        res.status(200).json({ ...convertBigInt(user), token });
+      } 
+      
+      else {
+        // passwords do not match
+        res.status(401).json({ error: "Invalid email or password" });
+      }
+    } 
+    
+    else {
+      // user doesn't exist
       res.status(401).json({ error: "Invalid email or password" });
     }
+
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
