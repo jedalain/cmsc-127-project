@@ -296,7 +296,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
               <span>Food items:</span>
             </span>
 
-            <div className="flex flex-1 md:flex-row flex-col-reverse">
+            <div className="flex flex-1 gap-3 md:flex-row flex-col-reverse">
               <div className="flex-1">
                 {currentFoodItems.length > 0 ? (
                   <div className="h-fit w-full gap-3 min-h-[300px] py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">

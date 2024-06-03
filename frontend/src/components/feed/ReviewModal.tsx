@@ -70,6 +70,7 @@ export function ReviewModal(props: ReviewModalProps) {
           comment: review.comment,
           userId: "",
           establishmentId: props.establishmentId ? props.establishmentId : "",
+          foodId: props.foodItemId ? props.foodItemId : "",
         },
         {
           headers: {
@@ -77,6 +78,8 @@ export function ReviewModal(props: ReviewModalProps) {
           },
         }
       );
+
+      window.location.reload();
     } catch (error) {
       let message;
       if (axios.isAxiosError(error)) {

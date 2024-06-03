@@ -267,7 +267,11 @@ export function FIExpandedView(props: FIExpandedViewProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeInOut" }}
           >
-            <ReviewModal action="add" closeModal={toggleReviewModal} />
+            <ReviewModal
+              foodItemId={props.foodId}
+              action="add"
+              closeModal={toggleReviewModal}
+            />
           </m.span>
         </AnimatePresence>
       )}
