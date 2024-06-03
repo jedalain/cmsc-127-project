@@ -18,7 +18,7 @@ export function ESTReviewFilter(props: ESTReviewFilterProps) {
   return (
     <div className="relative inline-flex z-[1]">
       <span
-        className={`inline-flex min-w-44 cursor-pointer items-center gap-x-2 text-sm font-medium text-blue127 transition-all hover:text-red1 disabled:pointer-events-none disabled:opacity-50`}
+        className={`flex justify-end  min-w-44 cursor-pointer items-center gap-x-2 text-sm font-medium text-blue127 transition-all hover:text-red1 disabled:pointer-events-none disabled:opacity-50`}
         onClick={() => setFilterOpen(!filterOpen)}
       >
         <svg

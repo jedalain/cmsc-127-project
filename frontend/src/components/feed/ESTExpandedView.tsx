@@ -1,5 +1,5 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { PiBowlFood, PiPlusCircle, PiPlusCircleFill } from "react-icons/pi";
+import { PiPlusCircle, PiPlusCircleFill } from "react-icons/pi";
 import { AnimatePresence, motion as m } from "framer-motion";
 
 import {
@@ -20,9 +20,8 @@ import { ReviewModal } from "./ReviewModal.tsx";
 import { FIExpandedView } from "./FIExpandedView.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MdArrowBack, MdEdit } from "react-icons/md";
-import { InputField } from "../InputField.tsx";
-import { FIPriceFilter, FITypeFilter } from "./FIFilter.tsx";
-import { filterFoodItems, filterReviewsByDate } from "../../utils/helper.ts";
+import { FIFilter } from "./FIFilter.tsx";
+import { filterReviewsByDate } from "../../utils/helper.ts";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { PREstablishmentModal } from "../profile/PREstablishmentModal.tsx";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
@@ -57,10 +56,53 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   );
   const [foodItems, setFoodItems] = useState<foodItem[]>([mcflurry, fries]);
   const [foodTypes, setFoodTypes] = useState<string[]>(["Dessert", "Fried"]);
-  const [estReviews, setEstReviews] = useState<review[]>([
-    establishmentReview,
-    establishmentReview2,
-  ]);
+  const [estReviews, setEstReviews] = useState<review[]>([]);
+
+  // for filtering food items in the establishment
+  const [foodFilterApplied, setFoodFilterApplied] = useState<{
+    keyword: string;
+    classification: string;
+    priceSort: string;
+  }>({ keyword: "", classification: "", priceSort: "" });
+
+  /** Function - updates the state filterApplied */
+  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFoodFilterApplied((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  /** Function - updates the price in state filterApplied */
+  const changePriceFilter = (price: string) => {
+    setFoodFilterApplied((prev) => ({
+      ...prev,
+      priceSort: prev.priceSort !== price ? price : "",
+    }));
+  };
+  /** Function - updates the classification in state filterApplied */
+  const changeClassificationFilter = (classification: string) => {
+    setFoodFilterApplied((prev) => ({
+      ...prev,
+      classification:
+        prev.classification !== classification ? classification : "",
+    }));
+  };
+
+  /** Function - clear applied filter */
+  const clearFilter = () => {
+    setFoodFilterApplied(() => ({
+      keyword: "",
+      classification: "",
+      priceSort: "",
+    }));
+  };
+
+  /** Function - apply filter */
+  const applyFilter = () => {
+    fetchEstablishment();
+  };
 
   // for pagination of food items
   const [currentPageFood, setCurrentPageFood] = useState<number>(1);
@@ -68,10 +110,23 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const totalFoodItems = foodItems.length;
   const foodPerPage = 8;
 
-  // for filtering food items in the establishment
-  const [searchInput, setSearchInput] = useState<string>("");
-  const [foodTypeFilter, setFoodTypeFilter] = useState<string>("");
-  const [foodPriceFilter, setFoodPriceFilter] = useState<string>("");
+  /** Function - handles pagination of food items */
+  const paginateFoodItems = (filteredItems: foodItem[]) => {
+    const startIndex = (currentPageFood - 1) * foodPerPage;
+    const endIndex = startIndex + foodPerPage;
+    return filteredItems.slice(startIndex, endIndex);
+  };
+
+  /** Function - gets the total available pages depending on the items displayed per page and total amount of items */
+  const getTotalPages = (maxQtyPerPage: number, totalQty: number) => {
+    return Math.ceil(totalQty / maxQtyPerPage);
+  };
+
+  /** useEffect - updates the displayed food items on the current page */
+  useEffect(() => {
+    setCurrentFoodItems(paginateFoodItems(foodItems));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPageFood, foodItems]);
 
   // for filtering reviews
   const [reviewFilterApplied, setReviewFilterApplied] = useState<string>("");
@@ -80,6 +135,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   // food item opened in detailed view
   const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
   const [expandedFoodItemId, setExpandedFoodItemId] = useState<string>("");
+
   /** Function - closes the expanded food item modal */
   const toggleFoodItemModal = () => {
     setExpandedFoodItem(!expandedFoodItem);
@@ -92,6 +148,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   /** API Call - fetch details of establishment */
   const fetchEstablishment = async () => {
+    const { keyword, classification, priceSort } = foodFilterApplied;
+
     try {
       const token = sessionStorage.getItem("tt_token");
       const response = await api.get("/", {
@@ -99,6 +157,9 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
           Authorization: token,
 
           establishmentId: establishmentId,
+          keyword: keyword,
+          classification: classification,
+          priceSort: priceSort,
         },
       });
 
@@ -121,18 +182,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     }
   };
 
-  /** Function - updates the searchInput state with current value entered in search bar */
-  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-  };
-
-  /** Function - handles pagination of food items */
-  const paginateFoodItems = (filteredItems: foodItem[]) => {
-    const startIndex = (currentPageFood - 1) * foodPerPage;
-    const endIndex = startIndex + foodPerPage;
-    return filteredItems.slice(startIndex, endIndex);
-  };
-
   /** Function - closes the review modal */
   const toggleReviewModal = () => {
     setNewReview(!newReview);
@@ -147,29 +196,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const toggleEditFoodItemModal = () => {
     setNewFoodItem(!newFoodItem);
   };
-
-  /** Function - gets the total available pages depending on the items displayed per page and total amount of items */
-  const getTotalPages = (maxQtyPerPage: number, totalQty: number) => {
-    return Math.ceil(totalQty / maxQtyPerPage);
-  };
-
-  /** useEffect - updates the displayed food items on the current page */
-  useEffect(() => {
-    const filteredItems = filterFoodItems(
-      searchInput,
-      foodTypeFilter,
-      foodItems,
-      foodPriceFilter
-    );
-    setCurrentFoodItems(paginateFoodItems(filteredItems));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    foodTypeFilter,
-    foodPriceFilter,
-    searchInput,
-    currentPageFood,
-    foodItems,
-  ]);
 
   /** useEffect - fetch establishment details on load */
   useEffect(() => {
@@ -198,6 +224,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
               <MdArrowBack /> Back to feed
             </span>
           )}
+
           {isOwnerRoute && (
             <span
               className="flex items-center gap-1 text-sm text-blue127b hover:text-blue127 transition-all cursor-pointer"
@@ -217,69 +244,64 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
               </span>
             </div>
 
-            <div className="flex flex-1 flex-col">
-              <span className="text-orange127a flex justify-between md:flex-row flex-col items-center py-2 font-medium">
-                <span>Food items:</span>
-                <span className="z-[0] flex items-center gap-6">
-                  <FIPriceFilter
-                    choices={["Price (Low to High)", "Price (High to Low)"]}
-                    filterApplied={foodPriceFilter}
-                    setFilterApplied={setFoodPriceFilter}
-                  />
-                  <FITypeFilter
-                    choices={foodTypes}
-                    filterApplied={foodTypeFilter}
-                    setFilterApplied={setFoodTypeFilter}
-                  />
-                  <InputField
-                    name="search"
-                    icon={PiBowlFood}
-                    placeholder="Find a food"
-                    onChange={handleSearchInput}
-                    type="text"
-                  />
-                </span>
-              </span>
+            <span className="text-orange127a flex justify-between md:flex-row flex-col -mb-6 items-start font-medium">
+              <span>Food items:</span>
+            </span>
 
-              {currentFoodItems.length > 0 ? (
-                <div className="h-fit w-full gap-3 min-h-[300px] py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">
-                  {/* add new item */}
-                  {isOwnerRoute && isLoggedIn && (
-                    <div
-                      className="bg-base127b text-base127d h-[150px] w-full cursor-pointer justify-center items-center p-3 rounded-lg flex flex-col transition-all hover:bg-base127b2 active:scale-[0.95]"
-                      onClick={() => setNewFoodItem(!newFoodItem)}
-                    >
-                      <PiPlusCircle size={30} />
-                    </div>
-                  )}
-                  {currentFoodItems.map((food, key) => {
-                    return (
-                      <div className="w-full h-fit" key={key}>
-                        <span key={key}>
-                          <FoodCard
-                            name={food.name}
-                            avgRating={food.avgRating}
-                            price={food.price}
-                            classification={food.classification}
-                            openDetailed={() => {
-                              setExpandedFoodItem(true);
-                              setExpandedFoodItemId(food.foodItemId);
-                            }}
-                          />
-                        </span>
+            <div className="flex flex-1 md:flex-row flex-col-reverse">
+              <div className="flex-1">
+                {currentFoodItems.length > 0 ? (
+                  <div className="h-fit w-full gap-3 min-h-[300px] py-2 items-start justify-center grid-cols-1 grid xs:grid-cols-2 md:grid-cols-4 rounded-lg">
+                    {/* add new item */}
+                    {isOwnerRoute && isLoggedIn && (
+                      <div
+                        className="bg-base127b text-base127d h-[150px] w-full cursor-pointer justify-center items-center p-3 rounded-lg flex flex-col transition-all hover:bg-base127b2 active:scale-[0.95]"
+                        onClick={() => setNewFoodItem(!newFoodItem)}
+                      >
+                        <PiPlusCircle size={30} />
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <EmptyFoodItems />
-              )}
+                    )}
+                    {currentFoodItems.map((food, key) => {
+                      return (
+                        <div className="w-full h-fit" key={key}>
+                          <span key={key}>
+                            <FoodCard
+                              name={food.name}
+                              avgRating={food.avgRating}
+                              price={food.price}
+                              classification={food.classification}
+                              openDetailed={() => {
+                                setExpandedFoodItem(true);
+                                setExpandedFoodItemId(food.foodItemId);
+                              }}
+                            />
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <EmptyFoodItems />
+                )}
 
-              <Pagination
-                currentPage={currentPageFood}
-                totalPages={getTotalPages(foodPerPage, totalFoodItems)}
-                setCurrentPage={setCurrentPageFood}
-              />
+                <Pagination
+                  currentPage={currentPageFood}
+                  totalPages={getTotalPages(foodPerPage, totalFoodItems)}
+                  setCurrentPage={setCurrentPageFood}
+                />
+              </div>
+
+              <span className="z-[0] bg-base127b2 p-3 h-full rounded-lg shadow-md items-center gap-6">
+                <FIFilter
+                  filterApplied={foodFilterApplied}
+                  changeClassificationFilter={changeClassificationFilter}
+                  changePriceFilter={changePriceFilter}
+                  onChange={handleFilterChange}
+                  onApply={applyFilter}
+                  onClear={clearFilter}
+                  choices={foodTypes}
+                />
+              </span>
             </div>
 
             <div className="flex flex-[2] flex-col">

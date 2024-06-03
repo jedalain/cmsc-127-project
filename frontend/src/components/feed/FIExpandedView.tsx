@@ -29,6 +29,7 @@ interface FIExpandedViewProps {
 
 export function FIExpandedView(props: FIExpandedViewProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
+
   const [foodItem, setFoodItem] = useState<foodItem | null>(mcflurry);
   const [foodItemReviews, setFoodItemReviews] =
     useState<review[]>(arrayOfReviews);
@@ -245,6 +246,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
           </m.span>
         </AnimatePresence>
       )}
+
       {isLoggedIn && !props.isOwnerRoute && newReview && (
         <AnimatePresence mode="wait">
           <m.span

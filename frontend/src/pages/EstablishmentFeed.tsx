@@ -5,7 +5,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import api from "../api/api.ts";
 import ESTCard from "../components/feed/ESTCard.tsx";
-import { foodEstablishment } from "../models/Models.tsx";
+import { foodEstablishment, mcdo } from "../models/Models.tsx";
 import { ScrollToTop } from "../utils/helper.ts";
 import { ESTFilter } from "../components/feed/ESTFilter.tsx";
 import { EmptyEstablishments } from "../components/EmptyResults.tsx";
@@ -25,7 +25,9 @@ export default function EstablishmentFeed() {
     keyword: keyword,
     rating: 0,
   });
-  const [establishments, setEstablishments] = useState<foodEstablishment[]>([]);
+  const [establishments, setEstablishments] = useState<foodEstablishment[]>([
+    mcdo,
+  ]);
 
   /** API Call - fetch establishments from database */
   const fetchEstablishments = async () => {
@@ -91,7 +93,7 @@ export default function EstablishmentFeed() {
   };
 
   useEffect(() => {
-    fetchEstablishments();
+    // fetchEstablishments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
