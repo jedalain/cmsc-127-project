@@ -1,12 +1,15 @@
 import { Request, Response } from 'express';
 import { query } from '../config/dbConfig';
 import { checkExistence, convertBigInt, avgEstab, avgFoodItem } from './helper';
+import { auth, CustomRequest } from '../middleware/authToken';
 
 
 export const addReview = async (req: Request, res: Response) => {
   try {
-    const { rating, title, comment, userId, establishmentId, foodId } = req.body;
+    const { rating, title, comment, establishmentId, foodId } = req.body;
     const status = 'CREATED'; // status of newly created review
+    
+    const userId = (req as CustomRequest).userId; // get user id from token
 
     // Check if userId exists
     if (!await checkExistence('users', 'userId', userId)) {
