@@ -57,20 +57,8 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
 
   /** API Call - fetch details of establishment */
   const fetchEstablishment = async () => {
-    const { keyword, classification, priceSort } = foodFilterApplied;
-
     try {
-      const response = await api.get(
-        `/food-establishments/${establishmentId}`,
-        {
-          headers: {
-            establishmentId: establishmentId,
-            keyword: keyword,
-            classification: classification,
-            priceSort: priceSort,
-          },
-        }
-      );
+      const response = await api.get(`/food-establishments/${establishmentId}`);
       setEstablishment(response.data);
     } catch (error) {
       setEstablishment(null);

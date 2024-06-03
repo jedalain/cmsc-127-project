@@ -13,6 +13,7 @@ import api from "../../api/api.ts";
 import axios from "axios";
 import { FIReviewFilter } from "./FIFilter.tsx";
 import { EmptyReviews, FoodItemNotFound } from "../EmptyResults.tsx";
+import { useNavigate } from "react-router-dom";
 
 interface FIExpandedViewProps {
   establishmentId: string;
@@ -23,8 +24,11 @@ interface FIExpandedViewProps {
 
 export function FIExpandedView(props: FIExpandedViewProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
+  const navigate = useNavigate();
 
   const [foodItem, setFoodItem] = useState<foodItem | null>(null);
+  const [estName, setEstName] = useState<string>("");
+  const [estId, setEstId] = useState<string>("");
   const [foodItemReviews, setFoodItemReviews] = useState<review[]>([]);
 
   // filter
@@ -76,6 +80,27 @@ export function FIExpandedView(props: FIExpandedViewProps) {
     }
   };
 
+  /** API Call - fetch name of establishment that sells the food item */
+  const fetchSellerName = async () => {
+    try {
+      const response = await api.get(
+        `/food-establishments/${foodItem?.establishmentId}`
+      );
+      setEstName(response.data.name);
+      setEstId(response.data.establishmentId);
+    } catch (error) {
+      let message;
+      if (axios.isAxiosError(error)) {
+        message =
+          error.response?.data?.message || "Cannot fetch establishments";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
   const [newReview, setNewReview] = useState<boolean>(false);
 
   /** Function - closes the review modal */
@@ -94,6 +119,11 @@ export function FIExpandedView(props: FIExpandedViewProps) {
     fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    fetchSellerName();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [foodItem]);
 
   /** useEffect - fetch details of food item */
   useEffect(() => {
@@ -126,7 +156,21 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
             <h3 className="flex w-full justify-center text-xl font-semibold text-green0">
               {foodItem ? (
-                foodItem.name
+                <div className="flex justify-center items-center flex-col">
+                  <span>{foodItem.name}</span>
+                  <span
+                    className="text-xs cursor-pointer hover:text-orange127 transition-all font-normal"
+                    onClick={() => {
+                      navigate(
+                        `/establishments/detailed?id=${encodeURIComponent(
+                          estId
+                        )}`
+                      );
+                    }}
+                  >
+                    by {estName}
+                  </span>
+                </div>
               ) : (
                 <span className="text-red127">Food item not found</span>
               )}
