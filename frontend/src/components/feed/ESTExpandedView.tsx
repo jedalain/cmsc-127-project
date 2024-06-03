@@ -32,9 +32,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const { isLoggedIn } = useContext(AuthPageContext);
   const navigate = useNavigate();
 
-  // for checking if the owner is the viewer
-  const isOwnerRoute = true;
-
   // for getting establishment id
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -54,6 +51,35 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     classification: string;
     priceSort: string;
   }>({ keyword: "", classification: "", priceSort: "" });
+
+  // for checking if the owner is the viewer
+  const [isOwnerRoute, setIsOwnerRoute] = useState<boolean>(false);
+
+  /** API Call - check if establishment is owned by user */
+  const checkOwnership = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      const idToCheck = { establishmentId: establishmentId };
+
+      const response = await api.post("/users/check-owner", idToCheck, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setIsOwnerRoute(response.data.isOwner);
+    } catch (error) {
+      setIsOwnerRoute(false);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot perform action";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
 
   /** API Call - fetch details of establishment */
   const fetchEstablishment = async () => {
@@ -78,7 +104,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   /** API Call - fetch food items of establishment */
   const fetchFoodItems = async () => {
     const { keyword, classification, priceSort } = foodFilterApplied;
-    console.log(foodFilterApplied);
+
     try {
       const response = await api.get(
         `/food-items/establishment/${establishmentId}`,
@@ -190,7 +216,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   // food item opened in detailed view
   const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
   const [expandedFoodItemId, setExpandedFoodItemId] = useState<string>("");
-  console.log(expandedFoodItemId);
+
   /** Function - closes the expanded food item modal */
   const toggleFoodItemModal = () => {
     setExpandedFoodItem(!expandedFoodItem);
@@ -229,6 +255,11 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    checkOwnership();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [establishment]);
 
   /** useEffect - fetch establishment details on load */
   useEffect(() => {
@@ -426,7 +457,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   transition={{ duration: 0.15, ease: "easeInOut" }}
                 >
                   <FIExpandedView
-                    isOwnerRoute={isOwnerRoute}
                     closeModal={toggleFoodItemModal}
                     foodId={expandedFoodItemId}
                     establishmentId={establishment.establishmentId}

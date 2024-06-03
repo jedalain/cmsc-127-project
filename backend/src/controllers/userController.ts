@@ -131,3 +131,59 @@ export const fetchProfile = async (req: CustomRequest, res: Response) => {
     });
   } catch (error) {}
 };
+
+export const checkOwnership = async (req: CustomRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    console.log("Authenticated userId:", userId);
+
+    // Check user existence
+    console.log("Checking user existence...");
+    if (!(await checkExistence("users", "userId", userId))) {
+      console.error("Invalid userId:", userId);
+      return res.status(400).json({ error: "Invalid userId" });
+    }
+    console.log("User exists.");
+
+    const { establishmentId, foodId } = req.body;
+
+    if (!establishmentId && !foodId) {
+      return res
+        .status(400)
+        .json({ error: "Either establishmentId or foodId must be provided" });
+    }
+
+    let sql = "";
+    let params;
+    if (establishmentId) {
+      sql =
+        "SELECT userId FROM foodEstablishments WHERE userId = ? AND establishmentId = ?";
+      params = [userId, establishmentId];
+    } else if (foodId) {
+      //query with establishments first to get ref to userId
+      sql = "SELECT establishmentId FROM foodItems WHERE foodId = ?";
+      params = [foodId];
+      const establishmentResult = await query(sql, params);
+
+      if (establishmentResult.length === 0) {
+        return res.status(200).json({ isOwner: false });
+      }
+
+      const establishmentIdFromFood = establishmentResult[0].establishmentId;
+
+      sql =
+        "SELECT userId FROM foodEstablishments WHERE userId = ? AND establishmentId = ?";
+      params = [userId, establishmentIdFromFood];
+    }
+
+    const result = await query(sql, params);
+
+    if (result.length === 0) {
+      return res.status(200).json({ isOwner: false });
+    }
+
+    return res.status(200).json({ isOwner: true });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+};

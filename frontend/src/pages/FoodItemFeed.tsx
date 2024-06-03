@@ -10,9 +10,6 @@ import { FIFilter } from "../components/feed/FIFilter.tsx";
 import { FIExpandedView } from "../components/feed/FIExpandedView.tsx";
 
 export default function FoodItemFeed() {
-  // for checking if the owner is the viewer
-  const isOwnerRoute = false;
-
   // parameter/s from url
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -175,7 +172,6 @@ export default function FoodItemFeed() {
             transition={{ duration: 0.15, ease: "easeInOut" }}
           >
             <FIExpandedView
-              isOwnerRoute={isOwnerRoute}
               closeModal={toggleFoodItemModal}
               foodId={expandedFoodItemId}
               establishmentId={""}

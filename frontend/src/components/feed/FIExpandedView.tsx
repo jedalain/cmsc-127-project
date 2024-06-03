@@ -18,7 +18,6 @@ import { useNavigate } from "react-router-dom";
 interface FIExpandedViewProps {
   establishmentId: string;
   foodId: string;
-  isOwnerRoute: boolean;
   closeModal: () => void;
 }
 
@@ -33,8 +32,36 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
   // filter
   const [foodReviewFilter, setFoodReviewFilter] = useState<string>("");
-
   const [editFoodItem, setEditFoodItem] = useState<boolean>(false);
+
+  // for checking if the owner is the viewer
+  const [isOwnerRoute, setIsOwnerRoute] = useState<boolean>(false);
+
+  /** API Call - check if establishment is owned by user */
+  const checkOwnership = async () => {
+    try {
+      const token = sessionStorage.getItem("tt_token");
+      const idToCheck = { foodId: props.foodId };
+
+      const response = await api.post("/users/check-owner", idToCheck, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setIsOwnerRoute(response.data.isOwner);
+    } catch (error) {
+      setIsOwnerRoute(false);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot perform action";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
 
   /** API Call - fetch details of food item */
   const fetchFoodItem = async () => {
@@ -117,6 +144,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
   useEffect(() => {
     fetchFoodItem();
     fetchReviews();
+    checkOwnership();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -145,7 +173,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
       <div className="m-3 mt-0 flex min-h-screen items-center transition-all ease-out sm:mx-auto sm:w-full sm:max-w-lg">
         <div className="pointer-events-auto flex h-fit rounded-xl w-full flex-col border border-base127c bg-base127">
           <div className="flex items-center justify-between border-b border-base127c px-4 py-3">
-            {props.isOwnerRoute && (
+            {isOwnerRoute && (
               <span
                 className="cursor-pointer"
                 onClick={() => setEditFoodItem(!editFoodItem)}
@@ -232,7 +260,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
                       filterApplied={foodReviewFilter}
                       setFilterApplied={setFoodReviewFilter}
                     />
-                    {isLoggedIn && !props.isOwnerRoute && (
+                    {isLoggedIn && !isOwnerRoute && (
                       <span>
                         <Button
                           type="button"
@@ -282,7 +310,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
         }}
       ></div>
 
-      {isLoggedIn && props.isOwnerRoute && editFoodItem && foodItem && (
+      {isLoggedIn && isOwnerRoute && editFoodItem && foodItem && (
         <AnimatePresence mode="wait">
           <m.span
             key={String(editFoodItem)}
@@ -301,7 +329,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
         </AnimatePresence>
       )}
 
-      {isLoggedIn && !props.isOwnerRoute && newReview && (
+      {isLoggedIn && !isOwnerRoute && newReview && (
         <AnimatePresence mode="wait">
           <m.span
             key={String(newReview)}
