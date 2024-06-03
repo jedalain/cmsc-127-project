@@ -15,6 +15,7 @@ import { FIReviewFilter } from "./FIFilter.tsx";
 import { EmptyReviews, FoodItemNotFound } from "../EmptyResults.tsx";
 import { useNavigate } from "react-router-dom";
 import { deleteFoodItem, deleteReview } from "../../utils/admin.ts";
+import { convertToTitleCase } from "../../utils/helper.ts";
 
 interface FIExpandedViewProps {
   establishmentId: string;
@@ -250,7 +251,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
                 <div className="flex items-center flex-1 flex-col">
                   <span className="text-sm font-light">Classification:</span>
-                  <span>{foodItem.classification}</span>
+                  <span>{convertToTitleCase(foodItem.classification)}</span>
                 </div>
 
                 <div className="flex items-center flex-1 flex-col">
