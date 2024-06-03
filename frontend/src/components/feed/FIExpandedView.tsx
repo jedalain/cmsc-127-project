@@ -12,12 +12,11 @@ import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
 import api from "../../api/api.ts";
 import axios from "axios";
 import { FIReviewFilter } from "./FIFilter.tsx";
-import { filterReviewsByDate } from "../../utils/helper.ts";
 import { EmptyReviews, FoodItemNotFound } from "../EmptyResults.tsx";
 
 interface FIExpandedViewProps {
   establishmentId: string;
-  foodItemId: string;
+  foodId: string;
   isOwnerRoute: boolean;
   closeModal: () => void;
 }
@@ -30,35 +29,45 @@ export function FIExpandedView(props: FIExpandedViewProps) {
 
   // filter
   const [foodReviewFilter, setFoodReviewFilter] = useState<string>("");
-  const filteredReviews = filterReviewsByDate(
-    foodReviewFilter,
-    foodItemReviews
-  );
 
   const [editFoodItem, setEditFoodItem] = useState<boolean>(false);
 
-  /** API Call - fetch details of establishment */
+  /** API Call - fetch details of food item */
   const fetchFoodItem = async () => {
     try {
-      const token = sessionStorage.getItem("tt_token");
-      const response = await api.get("/", {
-        headers: {
-          Authorization: token,
-
-          establishmentId: props.establishmentId,
-          foodItemId: props.foodItemId,
-        },
-      });
+      const response = await api.get(`/food-items/${props.foodId}`);
 
       setFoodItem(response.data);
-      setFoodItemReviews(response.data.reviews);
     } catch (error) {
       setFoodItem(null);
 
       let message;
       if (axios.isAxiosError(error)) {
-        message =
-          error.response?.data?.message || "Cannot fetch establishments";
+        message = error.response?.data?.message || "Cannot fetch food item";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
+  /** API Call - fetch reviews of establishment */
+  const fetchReviews = async () => {
+    try {
+      const response = await api.get(`/reviews/filtered`, {
+        params: {
+          foodId: props.foodId,
+          monthYear: foodReviewFilter,
+        },
+      });
+      setFoodItemReviews(response.data);
+    } catch (error) {
+      setFoodItemReviews([]);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot fetch food items";
       } else {
         message = (error as Error).message;
       }
@@ -82,8 +91,15 @@ export function FIExpandedView(props: FIExpandedViewProps) {
   /** useEffect - fetch details of food item */
   useEffect(() => {
     fetchFoodItem();
+    fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** useEffect - fetch details of food item */
+  useEffect(() => {
+    fetchReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [foodReviewFilter]);
 
   // Disables scroll when modal is opened
   useEffect(() => {
@@ -147,7 +163,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
               <div className="flex-1 flex gap-3 text-orange127c justify-between items-start max-h-[75px] p-4">
                 <div className="flex items-center flex-1 flex-col">
                   <span className="text-sm font-light">Price:</span>
-                  <span>{foodItem.price}</span>
+                  <span>₱ {foodItem.price}</span>
                 </div>
 
                 <div className="flex items-center flex-1 flex-col">
@@ -167,7 +183,7 @@ export function FIExpandedView(props: FIExpandedViewProps) {
               <div className="flex-1 h-full p-4">
                 <span className="flex items-center justify-between text-orange127a font-medium">
                   <span>Reviews:</span>
-                  <span className="flex gap-1">
+                  <span className="flex gap-2">
                     <FIReviewFilter
                       filterApplied={foodReviewFilter}
                       setFilterApplied={setFoodReviewFilter}
@@ -185,9 +201,9 @@ export function FIExpandedView(props: FIExpandedViewProps) {
                     )}
                   </span>
                 </span>
-                <div className="bg-base127b h-full min-h-[300px] max-h-[390px] w-full gap-3 mt-2 p-3 flex-col flex justify-between overflow-y-scroll rounded-lg">
-                  {filteredReviews.length > 0 ? (
-                    filteredReviews.map((review, key) => {
+                <div className="bg-base127b h-full min-h-[300px] max-h-[390px] w-full gap-3 mt-2 p-3 flex-col flex justify-start overflow-y-auto rounded-lg">
+                  {foodItemReviews.length > 0 ? (
+                    foodItemReviews.map((review, key) => {
                       return (
                         <div
                           key={key}

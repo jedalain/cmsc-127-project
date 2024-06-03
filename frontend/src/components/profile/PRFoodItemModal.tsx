@@ -126,7 +126,7 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
           props.foodItem.price === newFoodItem.price
         )
           props.closeModal();
-        else editFoodItem(props.foodItem.foodItemId);
+        else editFoodItem(props.foodItem.foodId);
       } else {
         createFoodItem();
       }
@@ -255,7 +255,7 @@ export function PRFoodItemModal(props: PRFoodItemModalProps) {
                       text="DELETE"
                       onClick={() => {
                         if (props.foodItem !== undefined) {
-                          deleteFoodItem(props.foodItem.foodItemId);
+                          deleteFoodItem(props.foodItem.foodId);
                           props.closeModal();
                         } else {
                           props.closeModal();

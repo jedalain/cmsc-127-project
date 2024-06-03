@@ -86,7 +86,6 @@ export const deleteFoodItem = async (req: Request, res: Response) => {
 export const getFoodItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
     const sql = "SELECT * FROM foodItems WHERE foodId = ?";
 
     const result = await query(sql, [id]);

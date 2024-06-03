@@ -135,7 +135,7 @@ export default function FoodItemFeed() {
                           avgRating={food.avgRating}
                           openDetailed={() => {
                             setExpandedFoodItem(true);
-                            setExpandedFoodItemId(food.foodItemId);
+                            setExpandedFoodItemId(food.foodId);
                           }}
                         />
                       </span>
@@ -177,7 +177,7 @@ export default function FoodItemFeed() {
             <FIExpandedView
               isOwnerRoute={isOwnerRoute}
               closeModal={toggleFoodItemModal}
-              foodItemId={expandedFoodItemId}
+              foodId={expandedFoodItemId}
               establishmentId={""}
             />
           </m.span>

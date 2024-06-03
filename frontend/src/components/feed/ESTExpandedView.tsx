@@ -60,13 +60,10 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     const { keyword, classification, priceSort } = foodFilterApplied;
 
     try {
-      const token = sessionStorage.getItem("tt_token");
       const response = await api.get(
         `/food-establishments/${establishmentId}`,
         {
           headers: {
-            Authorization: token,
-
             establishmentId: establishmentId,
             keyword: keyword,
             classification: classification,
@@ -129,10 +126,9 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
           monthYear: reviewFilterApplied,
         },
       });
-      console.log(response);
       setEstReviews(response.data);
     } catch (error) {
-      setEstablishment(null);
+      setEstReviews([]);
 
       let message;
       if (axios.isAxiosError(error)) {
@@ -206,7 +202,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   // food item opened in detailed view
   const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
   const [expandedFoodItemId, setExpandedFoodItemId] = useState<string>("");
-
+  console.log(expandedFoodItemId);
   /** Function - closes the expanded food item modal */
   const toggleFoodItemModal = () => {
     setExpandedFoodItem(!expandedFoodItem);
@@ -324,7 +320,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                               classification={food.classification}
                               openDetailed={() => {
                                 setExpandedFoodItem(true);
-                                setExpandedFoodItemId(food.foodItemId);
+                                setExpandedFoodItemId(food.foodId);
                               }}
                             />
                           </span>
@@ -430,7 +426,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                   <FIExpandedView
                     isOwnerRoute={isOwnerRoute}
                     closeModal={toggleFoodItemModal}
-                    foodItemId={expandedFoodItemId}
+                    foodId={expandedFoodItemId}
                     establishmentId={establishment.establishmentId}
                   />
                 </m.span>
