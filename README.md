@@ -1,4 +1,4 @@
-### TasteTracker
+# TasteTracker
 This information system allows users to record, in electronic form, data on food reviews and food items from food establishments. It features comprehensive management of food reviews, food establishments, and food items. Users can add, delete, view, and update reviews, establishments, and items. This website was created by a group of undergraduate students for the University of the Philippines - Los Baños CMSC 127 (File Processing and Database Systems) course project.
 
 ### Developers (TEAM TININIW)
