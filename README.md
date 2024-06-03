@@ -47,6 +47,7 @@ To run this project, open MariaDB and connect to the database: 127project.
         $ mysql -u root -p
         Enter password: <password here>
         MariaDB [(none)]> source projectDB.sql
+    - After installing the database make sure the run the UPDATE query commented at the bottom of the file to count the average rating of the existing reviews used to populate the database.
 
 
 After that, open your terminal make sure that you are in the right directory, navigate to the backend and frontend folder, and type in the following commands:
