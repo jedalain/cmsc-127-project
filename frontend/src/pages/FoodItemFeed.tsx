@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { AnimatePresence, motion as m } from "framer-motion";
-import { foodItem, fries, mcflurry } from "../models/Models.tsx";
+import { foodItem } from "../models/Models.tsx";
 import { useLocation } from "react-router-dom";
 import api from "../api/api.ts";
 import axios from "axios";
@@ -18,7 +18,8 @@ export default function FoodItemFeed() {
   const searchParams = new URLSearchParams(location.search);
   const keyword = searchParams.get("keyword") || ""; // keyword
 
-  const [foodItems, setFoodItems] = useState<foodItem[]>([mcflurry, fries]);
+  const [foodItems, setFoodItems] = useState<foodItem[]>([]);
+  const [foodClassifications, setFoodClassifications] = useState<string[]>([]);
   const [filterApplied, setFilterApplied] = useState<{
     keyword: string;
     classification: string;
@@ -26,21 +27,50 @@ export default function FoodItemFeed() {
   }>({ keyword: keyword, classification: "", priceSort: "" });
 
   /** API Call - fetch food items from database */
+  const fetchClassifications = async () => {
+    try {
+      const response = await api.get("/food-items/get/classifications");
+      const classifications = response.data;
+      const classificationArray: string[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      classifications.forEach((object: any) =>
+        classificationArray.push(object.classification)
+      );
+
+      setFoodClassifications(classificationArray);
+
+      console.log(response);
+    } catch (error) {
+      setFoodItems([]);
+      let message;
+      if (axios.isAxiosError(error)) {
+        message =
+          error.response?.data?.message || "Cannot fetch classifications";
+      } else {
+        message = (error as Error).message;
+      }
+      console.log(message);
+      console.log(error);
+    }
+  };
+
+  /** API Call - fetch food items from database */
   const fetchFoodItems = async () => {
     try {
       const { keyword, classification, priceSort } = filterApplied;
 
       const token = sessionStorage.getItem("tt_token");
-      const response = await api.get("/", {
+      const response = await api.get("/food-items", {
         headers: {
           Authorization: token,
-
+        },
+        params: {
           keyword: keyword,
           classification: classification,
           priceSort: priceSort,
         },
       });
-      setFoodItems(response.data.foodItems);
+      setFoodItems(response.data);
     } catch (error) {
       setFoodItems([]);
       let message;
@@ -103,7 +133,8 @@ export default function FoodItemFeed() {
   };
 
   useEffect(() => {
-    // fetchFoodItems();
+    fetchClassifications();
+    fetchFoodItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -152,7 +183,7 @@ export default function FoodItemFeed() {
           <span className="md:sticky md:top-6 flex flex-col gap-3 bg-base127b2 h-fit p-3 rounded-lg">
             <span className="text-blue127b">FILTER</span>
             <FIFilter
-              choices={["Vegetable", "Dessert"]}
+              choices={foodClassifications}
               filterApplied={filterApplied}
               changePriceFilter={changePriceFilter}
               changeClassificationFilter={changeClassificationFilter}

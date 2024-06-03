@@ -5,7 +5,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import api from "../api/api.ts";
 import ESTCard from "../components/feed/ESTCard.tsx";
-import { foodEstablishment, mcdo } from "../models/Models.tsx";
+import { foodEstablishment } from "../models/Models.tsx";
 import { ScrollToTop } from "../utils/helper.ts";
 import { ESTFilter } from "../components/feed/ESTFilter.tsx";
 import { EmptyEstablishments } from "../components/EmptyResults.tsx";
