@@ -32,7 +32,7 @@ export const addUser = async (req: Request, res: Response) => {
       { id: result.insertId.toString(), email, role },
       SECRET_KEY,
       {
-        expiresIn: "1h",
+        expiresIn: "3h",
       }
     );
 

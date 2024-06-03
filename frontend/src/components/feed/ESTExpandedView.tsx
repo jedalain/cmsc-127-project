@@ -12,7 +12,6 @@ import { FIExpandedView } from "./FIExpandedView.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MdArrowBack, MdEdit } from "react-icons/md";
 import { FIFilter } from "./FIFilter.tsx";
-import { filterReviewsByDate } from "../../utils/helper.ts";
 import { AuthPageContext } from "../../pages/AuthPage.tsx";
 import { PREstablishmentModal } from "../profile/PREstablishmentModal.tsx";
 import { PRFoodItemModal } from "../profile/PRFoodItemModal.tsx";
@@ -40,14 +39,16 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const establishmentId = searchParams.get("id") || props.establishmentId || "";
-  console.log(establishmentId);
+
   const [establishment, setEstablishment] =
     useState<foodEstablishment | null>();
   const [foodItems, setFoodItems] = useState<foodItem[]>([]);
-  const [foodClassifications, setFoodClassifications] = useState<string[]>([]);
   const [estReviews, setEstReviews] = useState<review[]>([]);
 
-  // for filtering food items in the establishment
+  // filter for reviews
+  const [reviewFilterApplied, setReviewFilterApplied] = useState<string>("");
+
+  // filter for food items in the establishment
   const [foodFilterApplied, setFoodFilterApplied] = useState<{
     keyword: string;
     classification: string;
@@ -119,6 +120,31 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     }
   };
 
+  /** API Call - fetch reviews of establishment */
+  const fetchReviews = async () => {
+    try {
+      const response = await api.get(`/reviews/filtered`, {
+        params: {
+          establishmentId: establishmentId,
+          monthYear: reviewFilterApplied,
+        },
+      });
+      console.log(response);
+      setEstReviews(response.data);
+    } catch (error) {
+      setEstablishment(null);
+
+      let message;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "Cannot fetch food items";
+      } else {
+        message = (error as Error).message;
+      }
+
+      console.log(message);
+    }
+  };
+
   /** Function - updates the state filterApplied */
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -135,6 +161,7 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
       priceSort: prev.priceSort !== price ? price : "",
     }));
   };
+
   /** Function - updates the classification in state filterApplied */
   const changeClassificationFilter = (classification: string) => {
     setFoodFilterApplied((prev) => ({
@@ -176,17 +203,6 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     return Math.ceil(totalQty / maxQtyPerPage);
   };
 
-  /** useEffect - updates the displayed food items on the current page */
-  useEffect(() => {
-    setCurrentFoodItems(paginateFoodItems(foodItems));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPageFood, foodItems]);
-
-  // for filtering reviews
-  const [reviewFilterApplied, setReviewFilterApplied] = useState<string>("");
-  // const filteredReviews = filterReviewsByDate(reviewFilterApplied, estReviews);
-  const filteredReviews = [];
-
   // food item opened in detailed view
   const [expandedFoodItem, setExpandedFoodItem] = useState<boolean>(false);
   const [expandedFoodItemId, setExpandedFoodItemId] = useState<string>("");
@@ -216,12 +232,25 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
     setNewFoodItem(!newFoodItem);
   };
 
+  /** useEffect - updates the displayed food items on the current page */
+  useEffect(() => {
+    setCurrentFoodItems(paginateFoodItems(foodItems));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPageFood, foodItems]);
+
   /** useEffect - fetch establishment details on load */
   useEffect(() => {
     fetchEstablishment();
     fetchFoodItems();
+    fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** useEffect - fetch establishment details on load */
+  useEffect(() => {
+    fetchReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reviewFilterApplied]);
 
   return (
     <m.div
@@ -348,13 +377,13 @@ export default function ESTExpandedView(props: ESTExpandedViewProps) {
                 </span>
               </span>
               <div className="bg-base127b h-full max-h-[500px] overflow-y-auto min-h-[300px] w-full gap-3 mt-2 p-5 flex-col flex justify-start rounded-lg">
-                {filteredReviews.length > 0 ? (
-                  filteredReviews.map((review, key) => {
+                {estReviews.length > 0 ? (
+                  estReviews.map((review, key) => {
                     return (
                       <div
                         key={key}
                         className={`w-full h-fit py-2  ${
-                          key + 1 === filteredReviews.length
+                          key + 1 === estReviews.length
                             ? ""
                             : "border-b border-base127c"
                         }`}

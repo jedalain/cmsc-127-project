@@ -9,9 +9,12 @@ import { ESTStarRating } from "./ESTStarRating.tsx";
 import { review } from "../../models/Models.tsx";
 import api from "../../api/api.ts";
 import axios from "axios";
+import { InputErrorMessage } from "../InputErrorMessage.tsx";
 
 interface ReviewModalProps {
   action: string;
+  establishmentId?: string;
+  foodItemId?: string;
   review?: review;
   closeModal: () => void;
 }
@@ -60,8 +63,15 @@ export function ReviewModal(props: ReviewModalProps) {
     try {
       const token = sessionStorage.getItem("tt_token");
       await api.post(
-        "/",
-        { review: review },
+        "/reviews",
+        {
+          rating: review.rating,
+          title: review.title,
+          comment: review.comment,
+          userId: "",
+          establishmentId: props.establishmentId ? props.establishmentId : "",
+          foodItemId: props.foodItemId ? props.foodItemId : "",
+        },
         {
           headers: {
             Authorization: token,
@@ -165,9 +175,6 @@ export function ReviewModal(props: ReviewModalProps) {
     };
   }, []);
 
-  console.log(props.review);
-  console.log("SEPARATION");
-  console.log(review);
   return (
     <form onSubmit={saveChanges}>
       <div className="pointer-events-none fixed start-0 top-0 z-20 size-full overflow-y-auto overflow-x-hidden">
@@ -208,21 +215,26 @@ export function ReviewModal(props: ReviewModalProps) {
 
             <div className="overflow-y-auto p-4">
               <ESTStarRating
-                error={
-                  errors?.errors.find((error) => error.path[0] === "rating")
-                    ?.message
-                }
                 name="rating"
-                defaultValue={props.review ? props.review.rating : 0}
+                value={props.review ? props.review.rating : 0}
                 onChange={handleUserInput}
               />
+              {errors?.errors.find((error) => error.path[0] === "rating")
+                ?.message && (
+                <InputErrorMessage
+                  errorMessage={
+                    errors?.errors.find((error) => error.path[0] === "rating")
+                      ?.message
+                  }
+                />
+              )}
 
               <InputField
                 type="text"
                 name="title"
                 label="Title"
                 placeholder="Enter title"
-                defaultValue={props.review ? props.review.title : ""}
+                defaultValue={props.review ? props.review.title : review.title}
                 error={
                   errors?.errors.find((error) => error.path[0] === "title")
                     ?.message
@@ -234,7 +246,9 @@ export function ReviewModal(props: ReviewModalProps) {
                 name="comment"
                 label="Comment"
                 placeholder="Enter review"
-                defaultValue={props.review ? props.review.comment : ""}
+                defaultValue={
+                  props.review ? props.review.comment : review.comment
+                }
                 error={
                   errors?.errors.find((error) => error.path[0] === "comment")
                     ?.message

@@ -1,5 +1,6 @@
 import { PiCalendar, PiStarFill, PiUserCircleThin } from "react-icons/pi";
 import { review } from "../models/Models.tsx";
+import { format, parseISO } from "date-fns";
 
 interface ReviewCardProps {
   review: review;
@@ -7,6 +8,7 @@ interface ReviewCardProps {
 
 export default function ReviewCard(props: ReviewCardProps) {
   const review = props.review;
+
   return (
     <div className="w-full text-base127d items-start gap-2 flex">
       <div className="text-base127d">
@@ -25,7 +27,8 @@ export default function ReviewCard(props: ReviewCardProps) {
         <span className="text-sm mb-1 font-light">{review.comment}</span>
 
         <span className="text-xs items-center gap-1 flex font-light">
-          <PiCalendar /> {review.dateModified.toDateString()}
+          <PiCalendar />
+          {format(parseISO(review.dateModified), "MMM d, yyyy HH:mm:ss a")}
         </span>
       </div>
     </div>
