@@ -1,5 +1,8 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { generateFilterByMonthYear } from "../../utils/helper";
+import {
+  convertToTitleCase,
+  generateFilterByMonthYear,
+} from "../../utils/helper";
 
 interface FIReviewFilterrProps {
   filterApplied: string;
@@ -135,7 +138,7 @@ export function FIFilter(props: FIFilterProps) {
             </svg>
             <span className="opacity-75 font-normal">
               {props.filterApplied.classification !== ""
-                ? `${props.filterApplied.classification}`
+                ? `${convertToTitleCase(props.filterApplied.classification)}`
                 : "Choose"}
             </span>
           </span>
@@ -161,7 +164,7 @@ export function FIFilter(props: FIFilterProps) {
                   else handleClassificationFilter("");
                 }}
               >
-                {option}
+                {convertToTitleCase(option)}
               </span>
             ))}
           </div>

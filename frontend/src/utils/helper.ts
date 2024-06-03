@@ -136,3 +136,16 @@ export const generateFilterByMonthYear = () => {
 
   return monthYearArray;
 };
+
+/**
+ *
+ * Function - converts given words in the format "WORD_WORD" to title case
+ *
+ */
+export const convertToTitleCase = (string: string) => {
+  return string
+    .toLowerCase()
+    .split("_")
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
