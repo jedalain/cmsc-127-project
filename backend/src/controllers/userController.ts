@@ -12,7 +12,7 @@ export const addUser = async (req: Request, res: Response) => {
     const { email, password, fname, mname, lname, role } = req.body;
 
     // hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    //const hashedPassword = await bcrypt.hash(password, 10);
 
     // console.log("Hashed Password:", hashedPassword);
 
@@ -21,7 +21,7 @@ export const addUser = async (req: Request, res: Response) => {
 
     const result = await query(sql, [
       email,
-      hashedPassword, // insert hashed password
+      password, // insert hashed password
       fname,
       mname,
       lname,
@@ -29,7 +29,7 @@ export const addUser = async (req: Request, res: Response) => {
     ]);
 
     // generate token
-    const userId = result.insertId;
+    const userId = result.insertId.toString();
     console.log(userId);
 
     // Generate token
@@ -57,9 +57,8 @@ export const loginUser = async (req: Request, res: Response) => {
       const user = result[0];
 
       // check if password is valid and existing
-      const isPasswordValid = await bcrypt.compare(password, user.password);
 
-      if (isPasswordValid) {
+      if (password === user.password) {
         // passwords match, return user data
         // generate token for the user
         const token = jwt.sign(
